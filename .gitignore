@@ -40,5 +40,5 @@ bin/
 
 ### Mac OS ###
 .DS_Store
-/.idea/
 /config.json
+/.idea/
