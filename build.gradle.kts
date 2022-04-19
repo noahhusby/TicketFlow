@@ -1,3 +1,4 @@
+import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.compose
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
@@ -5,6 +6,8 @@ plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.kapt") version "1.6.10"
+    kotlin("plugin.lombok") version "1.6.10"
+    id("io.freefair.lombok") version "5.3.0"
 }
 
 group = "com.noahhusby"
@@ -17,6 +20,7 @@ repositories {
     maven("https://maven.noahhusby.com/releases")
 }
 
+@OptIn(ExperimentalComposeLibrary::class)
 kotlin {
     jvm {
         compilations.all {
@@ -28,21 +32,15 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
+                implementation(compose.materialIconsExtended)
+                implementation(compose.material3)
                 implementation("com.noahhusby.lib:application:$husbyVersion")
                 implementation("com.noahhusby.lib:data:$husbyVersion")
                 implementation("mysql:mysql-connector-java:$mysqlVersion")
                 implementation("ch.qos.logback:logback-classic:$logbackVersion")
 
-                compileOnly("org.projectlombok:lombok:$lombokVersion")
-                /*
-                configurations.get("kapt").dependencies.add(
-                    org.gradle.api.internal.artifacts.dependencies.DefaultExternalModuleDependency(
-                        "org.projectlombok",
-                        "lombok",
-                        lombokVersion
-                    )
-                )
-                */
+                //compileOnly("org.projectlombok:lombok:$lombokVersion")
+
             }
 
         }
@@ -50,9 +48,17 @@ kotlin {
     }
 }
 
+kapt {
+    keepJavacAnnotationProcessors = true
+}
+
+kotlinLombok {
+    lombokConfigurationFile(file("lombok.config"))
+}
+
 compose.desktop {
     application {
-        mainClass = "MainKt"
+        mainClass = "com.noahhusby.ticketing.TicketingKt"
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "ticketing"

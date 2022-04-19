@@ -1,18 +1,20 @@
 package com.noahhusby.ticketing;
 
+import androidx.compose.ui.text.StringKt;
 import com.noahhusby.lib.application.config.Configuration;
 import com.noahhusby.lib.application.config.exception.ClassNotConfigException;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TicketingLauncher {
+public class Ticketing {
 
     @Getter
-    private final Logger logger = LoggerFactory.getLogger("Ticketing");
+    private static final Logger logger = LoggerFactory.getLogger("Ticketing");
 
     public void start() {
-        logger.info("Starting Ticketing ...");
+        logger.info("Starting Ticketing Backend ...");
 
         // Load config
         try {
@@ -25,7 +27,18 @@ public class TicketingLauncher {
         }
     }
 
-    public static void main(String[] args) {
-        new Thread(() -> new TicketingLauncher().start()).start();
+    public UserHandler getUserHandler() {
+        return UserHandler.getInstance();
+    }
+
+    /**
+     * Starts the java backend from the Kotlin frontend.
+     */
+    public static Ticketing startJavaBackend() {
+        Ticketing ticketing = new Ticketing();
+        Thread javaBackend = new Thread(ticketing::start);
+        javaBackend.setName("Ticketing-Java");
+        javaBackend.start();
+        return ticketing;
     }
 }
