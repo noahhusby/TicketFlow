@@ -5,7 +5,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
-    id("org.jetbrains.kotlin.kapt") version "1.6.10"
+    id("org.jetbrains.kotlin.kapt") version "1.6.21"
     kotlin("plugin.lombok") version "1.6.10"
     id("io.freefair.lombok") version "5.3.0"
 }
