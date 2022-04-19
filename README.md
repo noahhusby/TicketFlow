@@ -7,7 +7,7 @@
 <p>
   <b>A ticketing system for my spring 2022 final project.</b>
   <br/>
-  ⚠️ This is part of a <a href="https://github.com/noahhsuby/university"><strong>larger collection of projects</strong></a> for university. ⚠️
+  ⚠️ This is part of a <a href="https://github.com/noahhusby/university"><strong>larger collection of projects</strong></a> for university. ⚠️
   <br/><br/>
 </p>
 
