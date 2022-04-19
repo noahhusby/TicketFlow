@@ -24,6 +24,7 @@ import androidx.compose.foundation.window.WindowDraggableArea
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
 import com.noahhusby.ticketflow.ui.Login
@@ -42,7 +43,8 @@ fun main() = application {
         undecorated = false,
         resizable = true,
         transparent = false,
-        state = state
+        state = state,
+        icon = painterResource("icon.png")
     ) {
         Login(instance)
         AppWindowTitleBar()
