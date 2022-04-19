@@ -38,13 +38,8 @@ kotlin {
                 implementation("com.noahhusby.lib:data:$husbyVersion")
                 implementation("mysql:mysql-connector-java:$mysqlVersion")
                 implementation("ch.qos.logback:logback-classic:$logbackVersion")
-
-                //compileOnly("org.projectlombok:lombok:$lombokVersion")
-
             }
-
         }
-        val jvmTest by getting
     }
 }
 
