@@ -5,9 +5,6 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
-    id("org.jetbrains.kotlin.kapt") version "1.6.10"
-    kotlin("plugin.lombok") version "1.6.10"
-    id("io.freefair.lombok") version "5.3.0"
 }
 
 group = "com.noahhusby"
@@ -41,14 +38,6 @@ kotlin {
             }
         }
     }
-}
-
-kapt {
-    keepJavacAnnotationProcessors = true
-}
-
-kotlinLombok {
-    lombokConfigurationFile(file("lombok.config"))
 }
 
 compose.desktop {

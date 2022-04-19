@@ -19,7 +19,6 @@ package com.noahhusby.ticketflow;
 
 import com.noahhusby.lib.application.config.Configuration;
 import com.noahhusby.lib.application.config.exception.ClassNotConfigException;
-import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,8 +29,11 @@ import org.slf4j.LoggerFactory;
  */
 public class TicketFlow {
 
-    @Getter
     private static final Logger logger = LoggerFactory.getLogger("Ticketing");
+
+    public static Logger getLogger() {
+        return logger;
+    }
 
     /**
      * Starts the backend

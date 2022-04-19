@@ -18,7 +18,6 @@
 package com.noahhusby.ticketflow;
 
 import java.util.concurrent.CompletableFuture;
-import lombok.Getter;
 
 /**
  * A handler for authenticating, creating, and removing users.
@@ -26,8 +25,11 @@ import lombok.Getter;
  * @author Noah Husby
  */
 public class UserHandler {
-    @Getter
     private static final UserHandler instance = new UserHandler();
+
+    public static UserHandler getInstance() {
+        return instance;
+    }
 
     public CompletableFuture<AuthenticationResult> attemptLogin(String username, String password) {
         CompletableFuture<AuthenticationResult> future = new CompletableFuture<>();
