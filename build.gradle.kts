@@ -58,7 +58,7 @@ kotlinLombok {
 
 compose.desktop {
     application {
-        mainClass = "com.noahhusby.ticketing.TicketingKt"
+        mainClass = "com.noahhusby.ticketflow.TicketFlowKt"
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "ticketing"

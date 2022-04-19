@@ -1,4 +1,4 @@
-package com.noahhusby.ticketing;
+package com.noahhusby.ticketflow;
 
 import lombok.experimental.UtilityClass;
 

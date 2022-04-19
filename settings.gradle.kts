@@ -13,5 +13,5 @@ pluginManagement {
     }
 }
 
-rootProject.name = "ticketing"
+rootProject.name = "TicketFlow"
 

@@ -1,4 +1,5 @@
-package com.noahhusby.ticketing.ui.theme
+package com.noahhusby.ticketflow.ui.theme
+
 import androidx.compose.ui.graphics.Color
 
 
@@ -57,7 +58,6 @@ val md_theme_dark_inverseOnSurface = Color(0xFF1b1b1f)
 val md_theme_dark_inverseSurface = Color(0xFFe3e1e6)
 val md_theme_dark_inversePrimary = Color(0xFF405aa9)
 val md_theme_dark_shadow = Color(0xFF000000)
-
 
 
 val seed = Color(0xFF05153f)

@@ -1,8 +1,7 @@
-package com.noahhusby.ticketing;
-
-import lombok.Getter;
+package com.noahhusby.ticketflow;
 
 import java.util.concurrent.CompletableFuture;
+import lombok.Getter;
 
 /**
  * @author Noah Husby
@@ -13,7 +12,7 @@ public class UserHandler {
 
     public CompletableFuture<AuthenticationResult> attemptLogin(String username, String password) {
         CompletableFuture<AuthenticationResult> future = new CompletableFuture<>();
-        Ticketing.getLogger().info("Attempting to authenticate user: " + username);
+        TicketFlow.getLogger().info("Attempting to authenticate user: " + username);
         Thread temp = new Thread(() -> {
             try {
                 Thread.sleep(5000);

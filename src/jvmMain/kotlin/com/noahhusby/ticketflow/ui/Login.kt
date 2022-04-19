@@ -1,4 +1,4 @@
-package com.noahhusby.ticketing.ui
+package com.noahhusby.ticketflow.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -20,18 +20,21 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import com.noahhusby.ticketing.AuthenticationResult
-import com.noahhusby.ticketing.Ticketing
-import com.noahhusby.ticketing.ui.theme.TicketingButtonColors
-import com.noahhusby.ticketing.ui.theme.TicketingFieldColors
-import com.noahhusby.ticketing.ui.theme.TicketingTheme
+import com.noahhusby.ticketflow.AuthenticationResult
+import com.noahhusby.ticketflow.TicketFlow
+import com.noahhusby.ticketflow.ui.theme.TicketingButtonColors
+import com.noahhusby.ticketflow.ui.theme.TicketingFieldColors
+import com.noahhusby.ticketflow.ui.theme.TicketingTheme
 
 @Composable
-fun Login(ticketing: Ticketing) {
+fun Login(instance: TicketFlow) {
 
     TicketingTheme {
-        Surface (Modifier.fillMaxSize(), color = Color(238, 241, 247), shape = RoundedCornerShape(8.dp)) {
-            Card(Modifier.fillMaxHeight().requiredWidth(480.dp).padding(vertical = 200.dp), shape = RoundedCornerShape(15.dp)) {
+        Surface(Modifier.fillMaxSize(), color = Color(238, 241, 247), shape = RoundedCornerShape(8.dp)) {
+            Card(
+                Modifier.fillMaxHeight().requiredWidth(480.dp).padding(vertical = 200.dp),
+                shape = RoundedCornerShape(15.dp)
+            ) {
                 Column(
                     Modifier
                         .fillMaxSize()
@@ -40,7 +43,7 @@ fun Login(ticketing: Ticketing) {
                     val image: Painter = painterResource("logo.png")
                     Spacer(modifier = Modifier.weight(0.5f))
                     Image(painter = image, contentDescription = "", Modifier.align(Alignment.CenterHorizontally))
-                    InteractionComponent(ticketing)
+                    InteractionComponent(instance)
                 }
             }
         }
@@ -48,7 +51,7 @@ fun Login(ticketing: Ticketing) {
 }
 
 @Composable
-private fun InteractionComponent(ticketing: Ticketing) {
+private fun InteractionComponent(instance: TicketFlow) {
     var username by remember { mutableStateOf("") }
     var buttonText by remember { mutableStateOf("Log In") }
     var isUsernameErrored by remember { mutableStateOf(false) }
@@ -108,7 +111,7 @@ private fun InteractionComponent(ticketing: Ticketing) {
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
-                val future = ticketing.userHandler.attemptLogin(username, password)
+                val future = instance.userHandler.attemptLogin(username, password)
                 isAuthenticating = true
                 buttonText = "Logging In ..."
                 future.thenAccept {

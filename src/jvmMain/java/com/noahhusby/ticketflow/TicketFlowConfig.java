@@ -1,4 +1,4 @@
-package com.noahhusby.ticketing;
+package com.noahhusby.ticketflow;
 
 import com.noahhusby.lib.application.config.Config;
 
@@ -9,7 +9,7 @@ import com.noahhusby.lib.application.config.Config;
  * @author Noah Husby
  */
 @Config
-public class TicketingConfig {
+public class TicketFlowConfig {
     public static String DB_URL = "jdbc:mysql://www.papademas.net:3307/tickets?autoReconnect=true&useSSL=false";
     public static String DB_USERNAME = "fp411";
     public static String DB_PASSWORD = "411";
