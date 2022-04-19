@@ -31,6 +31,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.*
+import com.noahhusby.ticketing.ui.Login
 import com.noahhusby.ticketing.ui.theme.TicketingButtonColors
 import com.noahhusby.ticketing.ui.theme.TicketingFieldColors
 import com.noahhusby.ticketing.ui.theme.TicketingTheme
@@ -57,107 +58,7 @@ fun App() {
     }
 }
 
-@Composable
-fun SignInScreen(ticketing: Ticketing) {
-    var username by remember {
-        mutableStateOf("")
-    }
-    var password by remember {
-        mutableStateOf("")
-    }
-    var isPasswordVisible by remember {
-        mutableStateOf(false)
-    }
-    val isFormValid by derivedStateOf {
-        username.isNotBlank() && password.length >= 7
-    }
-    TicketingTheme {
-        Surface (Modifier.fillMaxSize(), color = Color(238, 241, 247), shape = RoundedCornerShape(8.dp)) {
-            Card(Modifier.fillMaxHeight().requiredWidth(480.dp).padding(vertical = 200.dp), shape = RoundedCornerShape(15.dp)) {
-                Column(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(32.dp)
-                ) {
-                    val image: Painter = painterResource("logo.png")
-                    Spacer(modifier = Modifier.weight(0.5f))
-                    Image(painter = image, contentDescription = "", Modifier.align(androidx.compose.ui.Alignment.CenterHorizontally))
-                    Column(
-                        Modifier.fillMaxSize(),
-                        horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Spacer(modifier = Modifier.weight(0.5f))
-                        OutlinedTextField(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = username,
-                            onValueChange = { username = it },
-                            colors = TicketingFieldColors(),
-                            label = { Text(text = "Username") },
-                            singleLine = true,
-                            trailingIcon = {
-                                if (username.isNotBlank())
-                                    IconButton(onClick = { username = "" }) {
-                                        Icon(imageVector = Icons.Filled.Clear, contentDescription = "")
-                                    }
-                            }
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        OutlinedTextField(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = password,
-                            onValueChange = { password = it },
-                            label = { Text(text = "Password") },
-                            colors = TicketingFieldColors(),
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Password,
-                                imeAction = ImeAction.Done
-                            ),
-                            visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                            trailingIcon = {
-                                IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
-                                    Icon(
-                                        imageVector = if (isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                        contentDescription = "Password Toggle"
-                                    )
-                                }
-                            }
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Button(
-                            onClick = {
-                                val future = ticketing.userHandler.attemptLogin(username, password)
-                                future.thenAccept {
-                                    when (it) {
-                                        AuthenticationResult.FAILURE -> print("x == 1")
-                                        AuthenticationResult.INVALID -> print("x == 2")
-                                        AuthenticationResult.SUCCESS -> {}
-                                    }
 
-                                }
-                            },
-                            enabled = isFormValid,
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = TicketingButtonColors()
-                        ) {
-                            Text(text = "Log In")
-                        }
-                        Spacer(modifier = Modifier.weight(1f))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text("© Husby Labs", color = Color.Gray)
-                            Text("v1.0", color = Color.Gray)
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
 
 @Composable
 private fun WindowScope.AppWindowTitleBar() = WindowDraggableArea {
@@ -169,7 +70,7 @@ fun main() = application {
     val ticketing = Ticketing.startJavaBackend()
     val state = rememberWindowState(placement = WindowPlacement.Maximized)
     Window(onCloseRequest = ::exitApplication, undecorated = false, resizable = true, transparent = false, state = state) {
-        SignInScreen(ticketing)
+        Login(ticketing)
         AppWindowTitleBar()
     }
 }
