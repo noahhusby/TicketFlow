@@ -29,7 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.noahhusby.ticketflow.TicketFlow
 
-class MainWindow(val instance: TicketFlow, val startedDarkMode: Boolean, val toggleDarkMode: () -> Boolean) {
+class MainWindow(private val instance: TicketFlow, private val startedDarkMode: Boolean, val toggleDarkMode: () -> Boolean) {
 
     @Composable
     fun gui() {

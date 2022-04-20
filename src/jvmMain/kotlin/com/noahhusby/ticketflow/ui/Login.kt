@@ -42,11 +42,11 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.noahhusby.ticketflow.AuthenticationResult
 import com.noahhusby.ticketflow.TicketFlow
-import com.noahhusby.ticketflow.ui.theme.TicketingFieldColors
 import com.noahhusby.ticketflow.ui.theme.surfaceColorAtElevation
+import com.noahhusby.ticketflow.ui.theme.ticketingFieldColors
 
 @Composable
-fun Login(instance: TicketFlow, onAuthentication: () -> Unit) {
+fun login(instance: TicketFlow, onAuthentication: () -> Unit) {
     Surface(Modifier.fillMaxSize()) {
         Card(
             Modifier.fillMaxHeight().requiredWidth(480.dp).padding(vertical = 200.dp),
@@ -62,14 +62,14 @@ fun Login(instance: TicketFlow, onAuthentication: () -> Unit) {
                 val image: Painter = painterResource("logo.png")
                 Spacer(modifier = Modifier.weight(0.5f))
                 Image(painter = image, contentDescription = "", Modifier.align(Alignment.CenterHorizontally), colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.primary))
-                InteractionComponent(instance, onAuthentication)
+                interactionComponent(instance, onAuthentication)
             }
         }
     }
 }
 
 @Composable
-private fun InteractionComponent(instance: TicketFlow, onAuthentication: () -> Unit) {
+private fun interactionComponent(instance: TicketFlow, onAuthentication: () -> Unit) {
     var username by remember { mutableStateOf("") }
     var buttonText by remember { mutableStateOf("Log In") }
     var errorText by remember { mutableStateOf("") }
@@ -93,7 +93,7 @@ private fun InteractionComponent(instance: TicketFlow, onAuthentication: () -> U
                 isUsernameErrored = false
                 username = it
             },
-            colors = TicketingFieldColors(),
+            colors = ticketingFieldColors(),
             isError = isUsernameErrored,
 
             label = { Text(text = "Username") },
@@ -116,7 +116,7 @@ private fun InteractionComponent(instance: TicketFlow, onAuthentication: () -> U
             value = password,
             onValueChange = { password = it },
             label = { Text(text = "Password") },
-            colors = TicketingFieldColors(),
+            colors = ticketingFieldColors(),
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,

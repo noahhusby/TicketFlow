@@ -74,7 +74,7 @@ private val DarkThemeColors = darkColorScheme(
 @Composable
 fun TicketFlowTheme(
     isDarkMode: Boolean,
-    content: @Composable() () -> Unit
+    content: @Composable () -> Unit
 ) {
     val colors = if (!isDarkMode) {
         LightThemeColors
@@ -90,7 +90,7 @@ fun TicketFlowTheme(
 }
 
 @Composable
-fun TicketingFieldColors(): TextFieldColors {
+fun ticketingFieldColors(): TextFieldColors {
     return TextFieldDefaults.textFieldColors(
         backgroundColor = Color.Transparent,
         focusedIndicatorColor = MaterialTheme.colorScheme.primaryContainer,

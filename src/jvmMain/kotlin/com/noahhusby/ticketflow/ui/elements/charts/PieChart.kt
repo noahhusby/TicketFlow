@@ -30,7 +30,7 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import com.noahhusby.ticketflow.ui.elements.charts.renderer.SimpleSliceDrawer
 
 @Composable
-fun PieChart(
+fun pieChart(
     pieChartData: PieChartData,
     modifier: Modifier = Modifier,
     animation: AnimationSpec<Float> = TweenSpec(durationMillis = 500)
@@ -41,7 +41,7 @@ fun PieChart(
         transitionProgress.animateTo(1f, animationSpec = animation)
     }
 
-    DrawChart(
+    drawChart(
         pieChartData = pieChartData,
         modifier = modifier.fillMaxSize(),
         progress = transitionProgress.value
@@ -49,7 +49,7 @@ fun PieChart(
 }
 
 @Composable
-private fun DrawChart(
+private fun drawChart(
     pieChartData: PieChartData,
     modifier: Modifier,
     progress: Float
