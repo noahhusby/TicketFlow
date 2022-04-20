@@ -21,7 +21,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.material.Card
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Visibility
@@ -153,8 +155,7 @@ private fun InteractionComponent(instance: TicketFlow, onAuthentication: () -> U
             },
             enabled = isFormValid && !isAuthenticating,
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            colors = TicketingButtonColors()
+            shape = RoundedCornerShape(16.dp)
         ) {
             Text(text = buttonText)
         }

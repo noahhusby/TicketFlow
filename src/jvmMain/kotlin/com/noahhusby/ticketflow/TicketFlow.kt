@@ -52,19 +52,17 @@ fun main() = application {
         icon = painterResource("icon.png"),
         title = "TicketFlow"
     ) {
-        MainWindow(instance).gui()
-        /*
+
         var isAuthenticated by remember { mutableStateOf(false) }
         if (isAuthenticated) {
-            // TODO: Main window
-            test()
+            MainWindow(instance).gui()
         } else {
             Login(instance, onAuthentication = {
                 isAuthenticated = true
             })
         }
 
-         */
+
     }
 }
 
