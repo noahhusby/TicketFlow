@@ -37,6 +37,7 @@ import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import com.noahhusby.ticketflow.ui.Login
+import com.noahhusby.ticketflow.ui.MainWindow
 import com.noahhusby.ticketflow.ui.theme.TicketFlowTheme
 
 fun main() = application {
@@ -51,7 +52,7 @@ fun main() = application {
         icon = painterResource("icon.png"),
         title = "TicketFlow"
     ) {
-        test()
+        MainWindow(instance).gui()
         /*
         var isAuthenticated by remember { mutableStateOf(false) }
         if (isAuthenticated) {
@@ -71,38 +72,5 @@ fun main() = application {
 @Composable
 fun test() {
 
-    TicketFlowTheme {
-        Box (modifier = Modifier.background(color = MaterialTheme.colorScheme.surface).fillMaxSize()) {
-            var selectedItem by remember { mutableStateOf(0) }
-            val items = listOf("Home", "Search", "Settings")
-            val icons = listOf(Icons.Filled.Home, Icons.Filled.Search, Icons.Filled.Settings)
-            NavigationRail (
-                modifier = Modifier.align(Alignment.CenterStart).padding(vertical = 20.dp),
-                header = {
-                    FloatingActionButton(onClick = {}) {
-                        Icon(Icons.Filled.Search, contentDescription = null)
-                    }
-                }
-            ){
-                items.forEachIndexed { index, item ->
-                    NavigationRailItem(
-                        icon = { Icon(icons[index], contentDescription = item) },
-                        label = { Text(item) },
-                        selected = selectedItem == index,
-                        onClick = { selectedItem = index }
-                    )
-                }
-            }
-        }
 
-        /*
-        Surface (
-            color = MaterialTheme.colorScheme.primaryContainer,
-            modifier = Modifier.fillMaxSize()
-                ){
-
-        }
-
-         */
-    }
 }
