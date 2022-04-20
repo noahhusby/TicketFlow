@@ -77,7 +77,7 @@ fun TicketFlowTheme(
     useDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable() () -> Unit
 ) {
-    val colors = if (!useDarkTheme) {
+    val colors = if (!false) {
         LightThemeColors
     } else {
         DarkThemeColors
@@ -107,6 +107,15 @@ fun TicketingFieldColors(): TextFieldColors {
 fun surfaceColorAtElevation(elevation: Dp): Color {
     val surface = MaterialTheme.colorScheme.surface
     val primary = MaterialTheme.colorScheme.primary
+    if (elevation == 0.dp) return surface
+    val alpha = ((4.5f * ln(elevation.value + 1)) + 2f) / 100f
+    return primary.copy(alpha = alpha).compositeOver(surface)
+}
+
+@Composable
+fun onSurfaceColorAtElevation(elevation: Dp): Color {
+    val surface = MaterialTheme.colorScheme.onSurface
+    val primary = MaterialTheme.colorScheme.onPrimary
     if (elevation == 0.dp) return surface
     val alpha = ((4.5f * ln(elevation.value + 1)) + 2f) / 100f
     return primary.copy(alpha = alpha).compositeOver(surface)

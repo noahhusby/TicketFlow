@@ -31,6 +31,7 @@ kotlin {
                 implementation(compose.desktop.currentOs)
                 implementation(compose.materialIconsExtended)
                 implementation(compose.material3)
+                implementation(compose.ui)
                 implementation("com.noahhusby.lib:application:$husbyVersion")
                 implementation("com.noahhusby.lib:data:$husbyVersion")
                 implementation("mysql:mysql-connector-java:$mysqlVersion")

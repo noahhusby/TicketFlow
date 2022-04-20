@@ -27,7 +27,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.noahhusby.ticketflow.TicketFlow
+import com.noahhusby.ticketflow.ui.elements.charts.PieChart
+import com.noahhusby.ticketflow.ui.elements.charts.PieChartData
 import com.noahhusby.ticketflow.ui.theme.lightDisplayMedium
+import com.noahhusby.ticketflow.ui.theme.onSurfaceColorAtElevation
 import com.noahhusby.ticketflow.ui.theme.surfaceColorAtElevation
 
 class HomePage : Page {
@@ -47,7 +50,22 @@ class HomePage : Page {
                         shape = RoundedCornerShape(15.dp),
                         backgroundColor = surfaceColorAtElevation(1.dp),
                         contentColor = MaterialTheme.colorScheme.onSurface
-                    ) {}
+                    ) {
+                        Row(Modifier.fillMaxSize()) {
+                            Column(Modifier.weight(0.3f)) {
+                                Text("Ticket Breakdown", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(top = 25.dp, start = 25.dp), color = onSurfaceColorAtElevation(1.dp))
+                            }
+                            PieChart(
+                                modifier = Modifier.weight(0.6f).padding(40.dp),
+                                pieChartData = PieChartData(
+                                    slices = listOf(
+                                        PieChartData.Slice(29f, MaterialTheme.colorScheme.primary),
+                                        PieChartData.Slice(71f, MaterialTheme.colorScheme.tertiary),
+                                    )
+                                )
+                            )
+                        }
+                    }
                     Spacer(Modifier.weight(0.05f))
                     Card(
                         Modifier.fillMaxHeight().weight(0.3f),
