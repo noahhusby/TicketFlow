@@ -30,7 +30,7 @@ public class User {
     public User(UUID uuid, String username, String name) {
         this.uuid = uuid;
         this.username = username;
-        this.name = name;
+        this.name = name == null ? username : name;
     }
 
     public UUID getUuid() {
@@ -41,7 +41,7 @@ public class User {
         return username;
     }
 
-    private String getName() {
+    public String getName() {
         return name;
     }
 }

@@ -38,7 +38,7 @@ class HomePage : Page {
                 Row(Modifier.weight(0.2f)) {
                     Column {
                         Text("Dashboard", style = MaterialTheme.typography.displayLarge)
-                        Text("Welcome, Admin!", style = lightDisplayMedium)
+                        Text("Welcome, " + instance.userHandler.authenticatedUser.name + "!", style = lightDisplayMedium)
                     }
                 }
                 Row(Modifier.weight(0.3f)) {

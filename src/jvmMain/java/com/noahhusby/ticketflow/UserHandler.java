@@ -17,6 +17,8 @@
 
 package com.noahhusby.ticketflow;
 
+import com.noahhusby.ticketflow.entities.User;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -31,7 +33,9 @@ public class UserHandler {
         return instance;
     }
 
-    public CompletableFuture<AuthenticationResult> attemptLogin(String username, String password) {
+    private User authenticatedUser;
+
+    public CompletableFuture<AuthenticationResult> authenticate(String username, String password) {
         CompletableFuture<AuthenticationResult> future = new CompletableFuture<>();
         TicketFlow.getLogger().info("Attempting to authenticate user: " + username);
         Thread temp = new Thread(() -> {
@@ -40,10 +44,16 @@ public class UserHandler {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+            // TODO: Implement proper login
+            authenticatedUser = new User(UUID.randomUUID(), "admin", "admin");
             future.complete(username.equalsIgnoreCase("admin") ? AuthenticationResult.SUCCESS : AuthenticationResult.INVALID);
         });
         temp.setDaemon(true);
         temp.start();
         return future;
+    }
+
+    public User getAuthenticatedUser() {
+        return authenticatedUser;
     }
 }

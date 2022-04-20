@@ -138,7 +138,7 @@ private fun InteractionComponent(instance: TicketFlow, onAuthentication: () -> U
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
-                val future = instance.userHandler.attemptLogin(username, password)
+                val future = instance.userHandler.authenticate(username, password)
                 isAuthenticating = true
                 errorText = ""
                 buttonText = "Logging In ..."
