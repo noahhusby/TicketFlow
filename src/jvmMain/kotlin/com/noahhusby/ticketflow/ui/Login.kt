@@ -42,30 +42,27 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.noahhusby.ticketflow.AuthenticationResult
 import com.noahhusby.ticketflow.TicketFlow
-import com.noahhusby.ticketflow.ui.theme.TicketFlowTheme
 import com.noahhusby.ticketflow.ui.theme.TicketingFieldColors
 import com.noahhusby.ticketflow.ui.theme.surfaceColorAtElevation
 
 @Composable
 fun Login(instance: TicketFlow, onAuthentication: () -> Unit) {
-    TicketFlowTheme {
-        Surface(Modifier.fillMaxSize()) {
-            Card(
-                Modifier.fillMaxHeight().requiredWidth(480.dp).padding(vertical = 200.dp),
-                shape = RoundedCornerShape(15.dp),
-                backgroundColor = surfaceColorAtElevation(1.dp),
-                contentColor = MaterialTheme.colorScheme.onSurface
+    Surface(Modifier.fillMaxSize()) {
+        Card(
+            Modifier.fillMaxHeight().requiredWidth(480.dp).padding(vertical = 200.dp),
+            shape = RoundedCornerShape(15.dp),
+            backgroundColor = surfaceColorAtElevation(1.dp),
+            contentColor = MaterialTheme.colorScheme.onSurface
+        ) {
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .padding(32.dp)
             ) {
-                Column(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(32.dp)
-                ) {
-                    val image: Painter = painterResource("logo.png")
-                    Spacer(modifier = Modifier.weight(0.5f))
-                    Image(painter = image, contentDescription = "", Modifier.align(Alignment.CenterHorizontally), colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.primary))
-                    InteractionComponent(instance, onAuthentication)
-                }
+                val image: Painter = painterResource("logo.png")
+                Spacer(modifier = Modifier.weight(0.5f))
+                Image(painter = image, contentDescription = "", Modifier.align(Alignment.CenterHorizontally), colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.primary))
+                InteractionComponent(instance, onAuthentication)
             }
         }
     }

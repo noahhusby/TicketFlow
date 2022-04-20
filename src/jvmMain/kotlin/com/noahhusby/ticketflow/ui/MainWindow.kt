@@ -18,28 +18,27 @@
 package com.noahhusby.ticketflow.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.noahhusby.ticketflow.TicketFlow
-import com.noahhusby.ticketflow.ui.theme.TicketFlowTheme
 
-class MainWindow(val instance: TicketFlow) {
+class MainWindow(val instance: TicketFlow, val startedDarkMode: Boolean, val toggleDarkMode: () -> Boolean) {
 
     @Composable
     fun gui() {
         var currentPage by remember { mutableStateOf(Pages.HOME) }
-        TicketFlowTheme {
-            Row(modifier = Modifier.background(color = MaterialTheme.colorScheme.surface).fillMaxSize()) {
-                var selectedItem by remember { mutableStateOf(0) }
-                NavigationRail(
-                    modifier = Modifier.wrapContentWidth().padding(vertical = 36.dp),
-                ) {
+        var darkModeIcon by remember { mutableStateOf(startedDarkMode) }
+        Row(modifier = Modifier.background(color = MaterialTheme.colorScheme.surface).fillMaxSize()) {
+            var selectedItem by remember { mutableStateOf(0) }
+            Column(Modifier.width(80.dp).fillMaxHeight().padding(vertical = 36.dp)) {
+                NavigationRail(Modifier.weight(0.5f)) {
                     Pages.values().forEachIndexed { index, page ->
                         NavigationRailItem(
                             icon = { Icon(page.icon, contentDescription = null) },
@@ -52,18 +51,22 @@ class MainWindow(val instance: TicketFlow) {
                         )
                     }
                 }
-                currentPage.page.gui(instance)
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Bottom,
+                    modifier = Modifier.fillMaxSize().weight(0.5f)
+                ) {
+                    IconButton(onClick = { darkModeIcon = toggleDarkMode.invoke() }) {
+                        Icon(
+                            imageVector = if (!darkModeIcon) Icons.Default.DarkMode else Icons.Default.LightMode,
+                            contentDescription = "Dark Mode",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
             }
 
-            /*
-            Surface (
-                color = MaterialTheme.colorScheme.primaryContainer,
-                modifier = Modifier.fillMaxSize()
-                    ){
-
-            }
-
-             */
+            currentPage.page.gui(instance)
         }
     }
 }

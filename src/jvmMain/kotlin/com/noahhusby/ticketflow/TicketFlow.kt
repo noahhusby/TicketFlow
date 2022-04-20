@@ -16,6 +16,7 @@
  */
 package com.noahhusby.ticketflow
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.painterResource
@@ -25,6 +26,7 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import com.noahhusby.ticketflow.ui.Login
 import com.noahhusby.ticketflow.ui.MainWindow
+import com.noahhusby.ticketflow.ui.theme.TicketFlowTheme
 
 fun main() = application {
     val instance = TicketFlow.startJavaBackend()
@@ -38,17 +40,21 @@ fun main() = application {
         icon = painterResource("icon.png"),
         title = "TicketFlow"
     ) {
-
-        var isAuthenticated by remember { mutableStateOf(false) }
-        if (isAuthenticated) {
-            MainWindow(instance).gui()
-        } else {
-            Login(instance, onAuthentication = {
-                isAuthenticated = true
-            })
+        val isSystemInDarkTheme = isSystemInDarkTheme()
+        var isDarkMode by remember { mutableStateOf(isSystemInDarkTheme) }
+        TicketFlowTheme(isDarkMode) {
+            var isAuthenticated by remember { mutableStateOf(false) }
+            if (isAuthenticated) {
+                MainWindow(instance, isDarkMode, toggleDarkMode = {
+                    isDarkMode = !isDarkMode
+                    return@MainWindow isDarkMode
+                }).gui()
+            } else {
+                Login(instance, onAuthentication = {
+                    isAuthenticated = true
+                })
+            }
         }
-
-
     }
 }
 

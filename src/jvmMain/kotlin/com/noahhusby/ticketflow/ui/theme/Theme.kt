@@ -1,6 +1,5 @@
 package com.noahhusby.ticketflow.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.TextFieldColors
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material3.MaterialTheme
@@ -74,10 +73,10 @@ private val DarkThemeColors = darkColorScheme(
 
 @Composable
 fun TicketFlowTheme(
-    useDarkTheme: Boolean = isSystemInDarkTheme(),
+    isDarkMode: Boolean,
     content: @Composable() () -> Unit
 ) {
-    val colors = if (!false) {
+    val colors = if (!isDarkMode) {
         LightThemeColors
     } else {
         DarkThemeColors
