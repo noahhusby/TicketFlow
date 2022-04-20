@@ -40,7 +40,7 @@ public class UserHandler {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            future.complete(AuthenticationResult.INVALID);
+            future.complete(AuthenticationResult.SUCCESS);
         });
         temp.setDaemon(true);
         temp.start();

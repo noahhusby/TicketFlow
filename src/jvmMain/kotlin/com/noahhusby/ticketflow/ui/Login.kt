@@ -44,8 +44,7 @@ import com.noahhusby.ticketflow.ui.theme.TicketingFieldColors
 import com.noahhusby.ticketflow.ui.theme.TicketingTheme
 
 @Composable
-fun Login(instance: TicketFlow) {
-
+fun Login(instance: TicketFlow, onAuthentication: () -> Unit) {
     TicketingTheme {
         Surface(Modifier.fillMaxSize(), color = Color(238, 241, 247), shape = RoundedCornerShape(8.dp)) {
             Card(
@@ -60,7 +59,7 @@ fun Login(instance: TicketFlow) {
                     val image: Painter = painterResource("logo.png")
                     Spacer(modifier = Modifier.weight(0.5f))
                     Image(painter = image, contentDescription = "", Modifier.align(Alignment.CenterHorizontally))
-                    InteractionComponent(instance)
+                    InteractionComponent(instance, onAuthentication)
                 }
             }
         }
@@ -68,9 +67,10 @@ fun Login(instance: TicketFlow) {
 }
 
 @Composable
-private fun InteractionComponent(instance: TicketFlow) {
+private fun InteractionComponent(instance: TicketFlow, onAuthentication: () -> Unit) {
     var username by remember { mutableStateOf("") }
     var buttonText by remember { mutableStateOf("Log In") }
+    var errorText by remember { mutableStateOf("") }
     var isUsernameErrored by remember { mutableStateOf(false) }
     var isAuthenticating by remember { mutableStateOf(false) }
     var password by remember { mutableStateOf("") }
@@ -87,6 +87,7 @@ private fun InteractionComponent(instance: TicketFlow) {
             enabled = !isAuthenticating,
             value = username,
             onValueChange = {
+                errorText = ""
                 isUsernameErrored = false
                 username = it
             },
@@ -97,7 +98,11 @@ private fun InteractionComponent(instance: TicketFlow) {
             singleLine = true,
             trailingIcon = {
                 if (username.isNotBlank())
-                    IconButton(onClick = { username = "" }) {
+                    IconButton(onClick = {
+                        isUsernameErrored = false
+                        errorText = ""
+                        username = ""
+                    }) {
                         Icon(imageVector = Icons.Filled.Clear, contentDescription = "")
                     }
             }
@@ -130,14 +135,18 @@ private fun InteractionComponent(instance: TicketFlow) {
             onClick = {
                 val future = instance.userHandler.attemptLogin(username, password)
                 isAuthenticating = true
+                errorText = ""
                 buttonText = "Logging In ..."
                 future.thenAccept {
                     isAuthenticating = false
                     buttonText = "Log In"
                     when (it) {
-                        AuthenticationResult.FAILURE -> print("x == 1")
-                        AuthenticationResult.INVALID -> isUsernameErrored = true
-                        AuthenticationResult.SUCCESS -> {}
+                        AuthenticationResult.FAILURE -> errorText = "Failed to authenticate! Please try again."
+                        AuthenticationResult.INVALID -> {
+                            errorText = "Invalid username or password!"
+                            isUsernameErrored = true
+                        }
+                        AuthenticationResult.SUCCESS -> onAuthentication.invoke()
                     }
 
                 }
@@ -149,6 +158,7 @@ private fun InteractionComponent(instance: TicketFlow) {
         ) {
             Text(text = buttonText)
         }
+        Text(text = errorText, color = Color.Red)
         Spacer(modifier = Modifier.weight(1f))
         Row(
             modifier = Modifier.fillMaxWidth(),

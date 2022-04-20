@@ -15,19 +15,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.noahhusby.ticketflow;
+package com.noahhusby.ticketflow.entities;
 
-import com.noahhusby.lib.application.config.Config;
+import java.util.UUID;
 
 /**
- * A representation of config options.
- * The config is automatically handled by <a href="https://github.com/noahhusby/HusbyLib">HusbyLib</a>.
- *
  * @author Noah Husby
  */
-@Config()
-public class TicketFlowConfig {
-    public static String DB_URL = "jdbc:mysql://www.papademas.net:3307/tickets?autoReconnect=true&useSSL=false";
-    public static String DB_USERNAME = "fp411";
-    public static String DB_PASSWORD = "411";
+public class User {
+    private final UUID uuid;
+    private final String username;
+    private final String name;
+
+    public User(UUID uuid, String username, String name) {
+        this.uuid = uuid;
+        this.username = username;
+        this.name = name;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    private String getName() {
+        return name;
+    }
 }
