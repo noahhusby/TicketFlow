@@ -33,7 +33,7 @@ const val actionWeight = .3f
 class TicketCell {
     @Composable
     fun gui() {
-        Row (Modifier.fillMaxWidth().height(16.dp)) {
+        Row(Modifier.fillMaxWidth().height(16.dp)) {
             Text("1", Modifier.weight(idWeight))
             Text("A thing that does stuff", Modifier.weight(descriptionWeight))
             Text("Button", Modifier.weight(actionWeight))

@@ -18,7 +18,10 @@
 package com.noahhusby.ticketflow.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -32,11 +35,11 @@ class MainWindow(val instance: TicketFlow) {
     fun gui() {
         var currentPage by remember { mutableStateOf(Pages.HOME) }
         TicketFlowTheme {
-            Row (modifier = Modifier.background(color = MaterialTheme.colorScheme.surface).fillMaxSize()) {
+            Row(modifier = Modifier.background(color = MaterialTheme.colorScheme.surface).fillMaxSize()) {
                 var selectedItem by remember { mutableStateOf(0) }
-                NavigationRail (
+                NavigationRail(
                     modifier = Modifier.wrapContentWidth().padding(vertical = 36.dp),
-                ){
+                ) {
                     Pages.values().forEachIndexed { index, page ->
                         NavigationRailItem(
                             icon = { Icon(page.icon, contentDescription = null) },

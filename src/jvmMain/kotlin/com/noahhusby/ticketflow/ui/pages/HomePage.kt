@@ -17,14 +17,55 @@
 
 package com.noahhusby.ticketflow.ui.pages
 
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.noahhusby.ticketflow.TicketFlow
+import com.noahhusby.ticketflow.ui.theme.lightDisplayMedium
+import com.noahhusby.ticketflow.ui.theme.surfaceColorAtElevation
 
 class HomePage : Page {
     @Composable
     override fun gui(instance: TicketFlow) {
-        Text("Home!")
-        //TODO("Not yet implemented")
+        Surface(Modifier.padding(48.dp)) {
+            Column {
+                Row(Modifier.weight(0.2f)) {
+                    Column {
+                        Text("Dashboard", style = MaterialTheme.typography.displayLarge)
+                        Text("Welcome, Admin!", style = lightDisplayMedium)
+                    }
+                }
+                Row(Modifier.weight(0.3f)) {
+                    Card(
+                        Modifier.fillMaxHeight().weight(0.3f),
+                        shape = RoundedCornerShape(15.dp),
+                        backgroundColor = surfaceColorAtElevation(1.dp),
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    ) {}
+                    Spacer(Modifier.weight(0.05f))
+                    Card(
+                        Modifier.fillMaxHeight().weight(0.3f),
+                        shape = RoundedCornerShape(15.dp),
+                        backgroundColor = surfaceColorAtElevation(1.dp),
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    ) {}
+                    Spacer(Modifier.weight(0.05f))
+                    Card(
+                        Modifier.fillMaxHeight().weight(0.3f),
+                        shape = RoundedCornerShape(15.dp),
+                        backgroundColor = surfaceColorAtElevation(1.dp),
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    ) {}
+                }
+                Row(Modifier.weight(0.5f)) {}
+            }
+
+        }
     }
 }

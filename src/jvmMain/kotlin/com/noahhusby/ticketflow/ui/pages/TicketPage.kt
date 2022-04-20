@@ -40,12 +40,11 @@ class TicketPage : Page {
                 ExtendedFloatingActionButton(
                     onClick = {},
                     text = {
-                        Text("New Ticket", color = MaterialTheme.colorScheme.onPrimary)
+                        Text("New Ticket")
                     },
                     icon = {
-                        Icon(imageVector = Icons.Default.Add, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
-                    },
-                    contentColor = MaterialTheme.colorScheme.onPrimary
+                        Icon(imageVector = Icons.Default.Add, contentDescription = null)
+                    }
                 )
             }
         ) {

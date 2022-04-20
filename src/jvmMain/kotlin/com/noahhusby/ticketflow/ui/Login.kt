@@ -23,15 +23,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Card
 import androidx.compose.material.OutlinedTextField
-import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
@@ -41,17 +42,19 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.noahhusby.ticketflow.AuthenticationResult
 import com.noahhusby.ticketflow.TicketFlow
-import com.noahhusby.ticketflow.ui.theme.TicketingButtonColors
-import com.noahhusby.ticketflow.ui.theme.TicketingFieldColors
 import com.noahhusby.ticketflow.ui.theme.TicketFlowTheme
+import com.noahhusby.ticketflow.ui.theme.TicketingFieldColors
+import com.noahhusby.ticketflow.ui.theme.surfaceColorAtElevation
 
 @Composable
 fun Login(instance: TicketFlow, onAuthentication: () -> Unit) {
     TicketFlowTheme {
-        Surface(Modifier.fillMaxSize(), color = Color(238, 241, 247), shape = RoundedCornerShape(8.dp)) {
+        Surface(Modifier.fillMaxSize()) {
             Card(
                 Modifier.fillMaxHeight().requiredWidth(480.dp).padding(vertical = 200.dp),
-                shape = RoundedCornerShape(15.dp)
+                shape = RoundedCornerShape(15.dp),
+                backgroundColor = surfaceColorAtElevation(1.dp),
+                contentColor = MaterialTheme.colorScheme.onSurface
             ) {
                 Column(
                     Modifier
@@ -60,7 +63,7 @@ fun Login(instance: TicketFlow, onAuthentication: () -> Unit) {
                 ) {
                     val image: Painter = painterResource("logo.png")
                     Spacer(modifier = Modifier.weight(0.5f))
-                    Image(painter = image, contentDescription = "", Modifier.align(Alignment.CenterHorizontally))
+                    Image(painter = image, contentDescription = "", Modifier.align(Alignment.CenterHorizontally), colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.primary))
                     InteractionComponent(instance, onAuthentication)
                 }
             }

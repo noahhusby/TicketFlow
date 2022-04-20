@@ -28,6 +28,6 @@ import com.noahhusby.ticketflow.ui.pages.TicketPage
 
 enum class Pages(val prettyName: String, val icon: ImageVector, val page: Page, val requireAdmin: Boolean) {
     HOME("Home", Icons.Filled.Home, HomePage(), false),
-    TICKETS("Tickets", Icons.Filled.AirplaneTicket, TicketPage(),false),
+    TICKETS("Tickets", Icons.Filled.AirplaneTicket, TicketPage(), false),
     USERS("Users", Icons.Filled.People, HomePage(), true)
 }

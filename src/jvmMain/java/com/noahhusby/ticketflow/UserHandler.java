@@ -40,7 +40,7 @@ public class UserHandler {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            future.complete(AuthenticationResult.SUCCESS);
+            future.complete(username.equalsIgnoreCase("admin") ? AuthenticationResult.SUCCESS : AuthenticationResult.INVALID);
         });
         temp.setDaemon(true);
         temp.start();
