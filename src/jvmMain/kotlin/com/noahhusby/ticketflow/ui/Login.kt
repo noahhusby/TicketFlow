@@ -41,11 +41,11 @@ import com.noahhusby.ticketflow.AuthenticationResult
 import com.noahhusby.ticketflow.TicketFlow
 import com.noahhusby.ticketflow.ui.theme.TicketingButtonColors
 import com.noahhusby.ticketflow.ui.theme.TicketingFieldColors
-import com.noahhusby.ticketflow.ui.theme.TicketingTheme
+import com.noahhusby.ticketflow.ui.theme.TicketFlowTheme
 
 @Composable
 fun Login(instance: TicketFlow, onAuthentication: () -> Unit) {
-    TicketingTheme {
+    TicketFlowTheme {
         Surface(Modifier.fillMaxSize(), color = Color(238, 241, 247), shape = RoundedCornerShape(8.dp)) {
             Card(
                 Modifier.fillMaxHeight().requiredWidth(480.dp).padding(vertical = 200.dp),

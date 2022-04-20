@@ -36,7 +36,7 @@ public class UserHandler {
         TicketFlow.getLogger().info("Attempting to authenticate user: " + username);
         Thread temp = new Thread(() -> {
             try {
-                Thread.sleep(5000);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

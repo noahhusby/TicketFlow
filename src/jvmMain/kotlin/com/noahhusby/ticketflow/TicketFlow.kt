@@ -16,17 +16,28 @@
  */
 package com.noahhusby.ticketflow
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import com.noahhusby.ticketflow.ui.Login
+import com.noahhusby.ticketflow.ui.theme.TicketFlowTheme
 
 fun main() = application {
     val instance = TicketFlow.startJavaBackend()
@@ -40,14 +51,58 @@ fun main() = application {
         icon = painterResource("icon.png"),
         title = "TicketFlow"
     ) {
+        test()
+        /*
         var isAuthenticated by remember { mutableStateOf(false) }
         if (isAuthenticated) {
             // TODO: Main window
-            Text("Test!")
+            test()
         } else {
             Login(instance, onAuthentication = {
                 isAuthenticated = true
             })
         }
+
+         */
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun test() {
+
+    TicketFlowTheme {
+        Box (modifier = Modifier.background(color = MaterialTheme.colorScheme.surface).fillMaxSize()) {
+            var selectedItem by remember { mutableStateOf(0) }
+            val items = listOf("Home", "Search", "Settings")
+            val icons = listOf(Icons.Filled.Home, Icons.Filled.Search, Icons.Filled.Settings)
+            NavigationRail (
+                modifier = Modifier.align(Alignment.CenterStart).padding(vertical = 20.dp),
+                header = {
+                    FloatingActionButton(onClick = {}) {
+                        Icon(Icons.Filled.Search, contentDescription = null)
+                    }
+                }
+            ){
+                items.forEachIndexed { index, item ->
+                    NavigationRailItem(
+                        icon = { Icon(icons[index], contentDescription = item) },
+                        label = { Text(item) },
+                        selected = selectedItem == index,
+                        onClick = { selectedItem = index }
+                    )
+                }
+            }
+        }
+
+        /*
+        Surface (
+            color = MaterialTheme.colorScheme.primaryContainer,
+            modifier = Modifier.fillMaxSize()
+                ){
+
+        }
+
+         */
     }
 }

@@ -57,7 +57,7 @@ private val LightThemeColors = lightColorScheme(
 )
 
 @Composable
-fun TicketingTheme(
+fun TicketFlowTheme(
     content: @Composable() () -> Unit
 ) {
     MaterialTheme(
