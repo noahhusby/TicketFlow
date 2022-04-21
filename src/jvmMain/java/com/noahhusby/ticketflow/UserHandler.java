@@ -37,7 +37,7 @@ public class UserHandler {
 
     public CompletableFuture<AuthenticationResult> authenticate(String username, String password) {
         CompletableFuture<AuthenticationResult> future = new CompletableFuture<>();
-        TicketFlow.getLogger().info("Attempting to authenticate user: " + username);
+        TicketFlow.getLogger().info(String.format("Attempting to authenticate user: \"%s\".", username));
         Thread temp = new Thread(() -> {
             try {
                 Thread.sleep(500);
@@ -46,7 +46,14 @@ public class UserHandler {
             }
             // TODO: Implement proper login
             authenticatedUser = new User(UUID.randomUUID(), "admin", "admin", true);
-            future.complete(username.equalsIgnoreCase("admin") ? AuthenticationResult.SUCCESS : AuthenticationResult.INVALID);
+            boolean admin = authenticatedUser.isAdmin();
+            if (username.equalsIgnoreCase("admin")) {
+                TicketFlow.getLogger().info(String.format("Successfully authenticated user: \"%s\"", username) + (admin ? " w/ admin privileges." : "."));
+                future.complete(AuthenticationResult.SUCCESS);
+            } else {
+                TicketFlow.getLogger().info(String.format("Failed to authenticate user: \"%s\". Invalid credentials.", username));
+                future.complete(AuthenticationResult.INVALID);
+            }
         });
         temp.setDaemon(true);
         temp.start();
