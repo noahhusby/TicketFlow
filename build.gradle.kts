@@ -35,6 +35,7 @@ kotlin {
                 implementation("com.noahhusby.lib:data:$husbyVersion")
                 implementation("mysql:mysql-connector-java:$mysqlVersion")
                 implementation("ch.qos.logback:logback-classic:$logbackVersion")
+                implementation("com.zaxxer:HikariCP:$hikariVersion")
             }
         }
     }

@@ -27,7 +27,9 @@ import com.noahhusby.lib.application.config.Config;
  */
 @Config()
 public class TicketFlowConfig {
-    public static String DB_URL = "jdbc:mysql://www.papademas.net:3307/tickets?autoReconnect=true&useSSL=false";
+    public static String DB_HOST = "www.papademas.net";
+    public static int DB_PORT = 3307;
     public static String DB_USERNAME = "fp411";
     public static String DB_PASSWORD = "411";
+    public static String DB_NAME = "tickets";
 }

@@ -50,6 +50,9 @@ public class TicketFlow {
         } catch (ClassNotConfigException ignored) {
             // I wrote the config library. This exception won't be thrown, so it can be ignored (:
         }
+
+        Dao.getInstance().connect();
+        Dao.getInstance().createTables();
     }
 
     /**
