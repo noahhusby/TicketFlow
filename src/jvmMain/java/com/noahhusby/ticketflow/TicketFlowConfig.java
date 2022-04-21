@@ -25,6 +25,7 @@ import com.noahhusby.lib.application.config.Config;
  *
  * @author Noah Husby
  */
+@SuppressWarnings("CanBeFinal")
 @Config()
 public class TicketFlowConfig {
     public static String DB_HOST = "www.papademas.net";

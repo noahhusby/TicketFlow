@@ -39,9 +39,4 @@ class TicketCell {
             Text("Button", Modifier.weight(actionWeight))
         }
     }
-
-    @Composable
-    fun test() {
-
-    }
 }

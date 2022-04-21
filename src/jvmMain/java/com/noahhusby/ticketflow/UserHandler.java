@@ -44,6 +44,7 @@ public class UserHandler {
         TicketFlow.getLogger().info(String.format("Attempting to authenticate user: \"%s\".", username));
         Thread authenticationWatchdogThread = new Thread(() -> {
             long start = System.currentTimeMillis();
+            //noinspection StatementWithEmptyBody
             while (System.currentTimeMillis() < start + 6000) {
             }
             if (!future.isDone()) {

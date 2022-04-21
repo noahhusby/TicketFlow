@@ -27,7 +27,6 @@ import com.noahhusby.ticketflow.entities.User;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
@@ -109,6 +108,7 @@ public class Dao {
                 try {
                     stmt.close();
                     con.close();
+                    //noinspection ReturnInsideFinallyBlock
                     return true;
                 } catch (SQLException e) {
                     TicketFlow.getLogger().error("Error while closing statement.");
@@ -217,7 +217,7 @@ public class Dao {
 
         // read data from file
         try {
-            br = new BufferedReader(new FileReader(new File("./userlist.csv")));
+            br = new BufferedReader(new FileReader("./userlist.csv"));
 
             String line;
             while ((line = br.readLine()) != null) {

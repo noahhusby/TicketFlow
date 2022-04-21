@@ -1,3 +1,4 @@
+<!--suppress HtmlDeprecatedAttribute -->
 <div align="center">
 <img src="https://raw.githubusercontent.com/noahhusby/TicketFlow/main/src/jvmMain/resources/logo-white.png" alt="Logo" width="750" height="188">
 
