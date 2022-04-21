@@ -23,6 +23,7 @@ import com.noahhusby.lib.data.sql.actions.Query;
 import com.noahhusby.lib.data.sql.actions.Result;
 import com.noahhusby.lib.data.sql.actions.Row;
 import com.noahhusby.lib.data.sql.actions.Select;
+import com.noahhusby.ticketflow.entities.User;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.io.BufferedReader;
@@ -39,6 +40,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author Noah Husby
@@ -124,7 +126,7 @@ public class Dao {
         Connection con = getConnection();
         if (con == null) {
             TicketFlow.getLogger().error("Connection is null. Cancelling execution.");
-            return new Result();
+            return null;
         }
         PreparedStatement stmt;
         ResultSet res;
@@ -164,7 +166,7 @@ public class Dao {
             } catch (SQLException conCloseEx) {
                 TicketFlow.getLogger().error("Error while closing connection.", e);
             }
-            return new Result();
+            return null;
         }
     }
 
@@ -172,9 +174,9 @@ public class Dao {
      * Creates the required tables
      */
     public void createTables() {
-        final String createTicketsTable = "CREATE TABLE nhusb_tickets(id INT AUTO_INCREMENT PRIMARY KEY, issuer VARCHAR(36), description VARCHAR(200))";
-        final String createUsersTable = "CREATE TABLE nhusb_users(uuid VARCHAR(36) PRIMARY KEY, username VARCHAR(30), password VARCHAR(30), admin int)";
-        final String createTicketStatusTable = "CREATE TABLE nhusb_status(id INT, time LONG, user VARCHAR(36), status VARCHAR(24))";
+        final String createTicketsTable = "CREATE TABLE IF NOT EXISTS n_husb_tickets(id INT AUTO_INCREMENT PRIMARY KEY, issuer VARCHAR(36), description VARCHAR(200))";
+        final String createUsersTable = "CREATE TABLE IF NOT EXISTS n_husb_users(uuid VARCHAR(36) PRIMARY KEY, username VARCHAR(30), password VARCHAR(30), name VARCHAR(70), admin int)";
+        final String createTicketStatusTable = "CREATE TABLE IF NOT EXISTS n_husb_status(id INT, time LONG, user VARCHAR(36), status VARCHAR(24))";
 
         TicketFlow.getLogger().debug("Creating tickets table ...");
         execute(new Custom(createTicketsTable));
@@ -183,6 +185,23 @@ public class Dao {
         TicketFlow.getLogger().debug("Creating status table ...");
         execute(new Custom(createTicketStatusTable));
         TicketFlow.getLogger().debug("All tables have been created.");
+    }
+
+    public User authenticateUser(String username, String password) throws IOException {
+        Result result = select(new Select("n_husb_users", "*", "username='" + username + "'"));
+        if (result == null) {
+            throw new IOException("Failed to fetch user");
+        }
+        if(result.getRows().isEmpty()) {
+            return null;
+        }
+        Row row = result.getRows().get(0);
+        String storedPass = (String) row.get("password");
+        if(storedPass == null || !storedPass.equals(password)) {
+            return null;
+        }
+        int admin = (int) row.get("admin");
+        return new User(UUID.fromString((String) row.get("uuid")), (String) row.get("username"), (String) row.get("name"), admin == 1);
     }
 
     public void addUsers() {

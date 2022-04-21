@@ -18,6 +18,7 @@
 package com.noahhusby.ticketflow;
 
 import com.noahhusby.ticketflow.entities.User;
+import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -38,25 +39,26 @@ public class UserHandler {
     public CompletableFuture<AuthenticationResult> authenticate(String username, String password) {
         CompletableFuture<AuthenticationResult> future = new CompletableFuture<>();
         TicketFlow.getLogger().info(String.format("Attempting to authenticate user: \"%s\".", username));
-        Thread temp = new Thread(() -> {
+        Thread authenticationThread = new Thread(() -> {
             try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            // TODO: Implement proper login
-            authenticatedUser = new User(UUID.randomUUID(), "admin", "admin", true);
-            boolean admin = authenticatedUser.isAdmin();
-            if (username.equalsIgnoreCase("admin")) {
-                TicketFlow.getLogger().info(String.format("Successfully authenticated user: \"%s\"", username) + (admin ? " w/ admin privileges." : "."));
+                User user = Dao.getInstance().authenticateUser(username, password);
+                if(user == null) {
+                    future.complete(AuthenticationResult.INVALID);
+                    TicketFlow.getLogger().info(String.format("Failed to authenticate user: \"%s\". Invalid credentials.", username));
+                    return;
+                }
+                authenticatedUser = user;
                 future.complete(AuthenticationResult.SUCCESS);
-            } else {
-                TicketFlow.getLogger().info(String.format("Failed to authenticate user: \"%s\". Invalid credentials.", username));
-                future.complete(AuthenticationResult.INVALID);
+
+                boolean admin = authenticatedUser.isAdmin();
+                TicketFlow.getLogger().info(String.format("Successfully authenticated user: \"%s\"", username) + (admin ? " w/ admin privileges." : "."));
+            } catch (IOException e) {
+                future.complete(AuthenticationResult.FAILURE);
             }
         });
-        temp.setDaemon(true);
-        temp.start();
+        authenticationThread.setName("TF-Auth");
+        authenticationThread.setDaemon(true);
+        authenticationThread.start();
         return future;
     }
 
