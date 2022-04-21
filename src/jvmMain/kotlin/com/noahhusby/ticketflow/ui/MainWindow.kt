@@ -33,6 +33,7 @@ class MainWindow(private val instance: TicketFlow, private val startedDarkMode: 
 
     @Composable
     fun gui() {
+        val user = instance.userHandler.authenticatedUser
         var currentPage by remember { mutableStateOf(Pages.HOME) }
         var darkModeIcon by remember { mutableStateOf(startedDarkMode) }
         Row(modifier = Modifier.background(color = MaterialTheme.colorScheme.surface).fillMaxSize()) {
@@ -40,15 +41,17 @@ class MainWindow(private val instance: TicketFlow, private val startedDarkMode: 
             Column(Modifier.width(80.dp).fillMaxHeight().padding(vertical = 36.dp)) {
                 NavigationRail(Modifier.weight(0.5f)) {
                     Pages.values().forEachIndexed { index, page ->
-                        NavigationRailItem(
-                            icon = { Icon(page.icon, contentDescription = null) },
-                            label = { Text(page.prettyName) },
-                            selected = selectedItem == index,
-                            onClick = {
-                                currentPage = page
-                                selectedItem = index
-                            }
-                        )
+                        if (!page.requireAdmin || user.isAdmin) {
+                            NavigationRailItem(
+                                icon = { Icon(page.icon, contentDescription = null) },
+                                label = { Text(page.prettyName) },
+                                selected = selectedItem == index,
+                                onClick = {
+                                    currentPage = page
+                                    selectedItem = index
+                                }
+                            )
+                        }
                     }
                 }
                 Column(

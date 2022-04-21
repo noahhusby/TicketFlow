@@ -18,7 +18,10 @@
 package com.noahhusby.ticketflow.ui
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ConfirmationNumber
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.People
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.noahhusby.ticketflow.ui.pages.HomePage
 import com.noahhusby.ticketflow.ui.pages.Page

@@ -45,7 +45,7 @@ public class UserHandler {
                 throw new RuntimeException(e);
             }
             // TODO: Implement proper login
-            authenticatedUser = new User(UUID.randomUUID(), "admin", "admin");
+            authenticatedUser = new User(UUID.randomUUID(), "admin", "admin", true);
             future.complete(username.equalsIgnoreCase("admin") ? AuthenticationResult.SUCCESS : AuthenticationResult.INVALID);
         });
         temp.setDaemon(true);

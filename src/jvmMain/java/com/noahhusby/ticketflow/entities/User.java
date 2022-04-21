@@ -26,11 +26,13 @@ public class User {
     private final UUID uuid;
     private final String username;
     private final String name;
+    private final boolean admin;
 
-    public User(UUID uuid, String username, String name) {
+    public User(UUID uuid, String username, String name, boolean admin) {
         this.uuid = uuid;
         this.username = username;
         this.name = name == null ? username : name;
+        this.admin = admin;
     }
 
     public UUID getUuid() {
@@ -43,5 +45,9 @@ public class User {
 
     public String getName() {
         return name;
+    }
+
+    public boolean isAdmin() {
+        return admin;
     }
 }
