@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TicketFlow {
 
-    private static final Logger logger = LoggerFactory.getLogger("Ticketing");
+    private static final Logger logger = LoggerFactory.getLogger("TicketFlow");
 
     public static Logger getLogger() {
         return logger;
@@ -67,7 +67,7 @@ public class TicketFlow {
     public static TicketFlow startJavaBackend() {
         TicketFlow ticketing = new TicketFlow();
         Thread javaBackend = new Thread(ticketing::start);
-        javaBackend.setName("TicketFlow");
+        javaBackend.setName("TF-Backend");
         javaBackend.start();
         return ticketing;
     }
