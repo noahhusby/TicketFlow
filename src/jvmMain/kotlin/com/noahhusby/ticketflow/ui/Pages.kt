@@ -18,9 +18,7 @@
 package com.noahhusby.ticketflow.ui
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AirplaneTicket
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.noahhusby.ticketflow.ui.pages.HomePage
 import com.noahhusby.ticketflow.ui.pages.Page
@@ -28,6 +26,7 @@ import com.noahhusby.ticketflow.ui.pages.TicketPage
 
 enum class Pages(val prettyName: String, val icon: ImageVector, val page: Page, val requireAdmin: Boolean) {
     HOME("Home", Icons.Filled.Home, HomePage(), false),
-    TICKETS("Tickets", Icons.Filled.AirplaneTicket, TicketPage(), false),
-    USERS("Users", Icons.Filled.People, HomePage(), true)
+    TICKETS("Tickets", Icons.Filled.ConfirmationNumber, TicketPage(), false),
+    USERS("Users", Icons.Filled.People, HomePage(), true),
+    HISTORY("History", Icons.Filled.History, HomePage(), true)
 }
