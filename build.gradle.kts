@@ -32,6 +32,8 @@ kotlin {
                 implementation(compose.materialIconsExtended)
                 implementation(compose.material3)
                 implementation(compose.ui)
+                implementation(compose.animation)
+                implementation(compose.animationGraphics)
                 implementation("com.noahhusby.lib:application:$husbyVersion")
                 implementation("com.noahhusby.lib:data:$husbyVersion")
                 implementation("mysql:mysql-connector-java:$mysqlVersion")

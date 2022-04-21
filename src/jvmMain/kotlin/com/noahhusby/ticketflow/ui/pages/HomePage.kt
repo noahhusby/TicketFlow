@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.noahhusby.ticketflow.TicketFlow
 import com.noahhusby.ticketflow.ui.elements.charts.PieChartData
+import com.noahhusby.ticketflow.ui.elements.charts.PieChartLegendKey
 import com.noahhusby.ticketflow.ui.elements.charts.pieChart
 import com.noahhusby.ticketflow.ui.theme.lightDisplayMedium
 import com.noahhusby.ticketflow.ui.theme.onSurfaceColorAtElevation
@@ -52,8 +53,22 @@ class HomePage : Page {
                         contentColor = MaterialTheme.colorScheme.onSurface
                     ) {
                         Row(Modifier.fillMaxSize()) {
-                            Column(Modifier.weight(0.3f)) {
-                                Text("Ticket Breakdown", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(top = 25.dp, start = 25.dp), color = onSurfaceColorAtElevation(1.dp))
+                            Column(Modifier.weight(0.3f).padding(top = 25.dp, start = 25.dp)) {
+                                Text("Ticket Breakdown", style = MaterialTheme.typography.titleLarge, color = onSurfaceColorAtElevation(1.dp))
+                                Column(
+                                    modifier = Modifier.fillMaxHeight(),
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    PieChartLegendKey(
+                                        name = "Open",
+                                        color = MaterialTheme.colorScheme.primary
+                                    ).render()
+                                    Spacer(Modifier.height(6.dp))
+                                    PieChartLegendKey(
+                                        name = "Closed",
+                                        color = MaterialTheme.colorScheme.tertiary
+                                    ).render()
+                                }
                             }
                             pieChart(
                                 modifier = Modifier.weight(0.6f).padding(40.dp),
