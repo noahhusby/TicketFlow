@@ -56,7 +56,7 @@ class TicketPage : Page {
 
     @Composable
     private fun table(instance: TicketFlow) {
-        Surface(Modifier.fillMaxSize().padding(40.dp), shape = RoundedCornerShape(10.dp), border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline), tonalElevation = 1.dp) {
+        Surface(Modifier.fillMaxSize().padding(40.dp), shape = RoundedCornerShape(10.dp), tonalElevation = 1.dp) {
             LazyColumn(Modifier.fillMaxSize()) {
                 item {
                     TicketCell().gui()
