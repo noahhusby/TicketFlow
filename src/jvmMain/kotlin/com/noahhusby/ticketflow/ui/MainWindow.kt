@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,7 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.noahhusby.ticketflow.TicketFlow
 
-class MainWindow(private val instance: TicketFlow, private val startedDarkMode: Boolean, val toggleDarkMode: () -> Boolean) {
+class MainWindow(private val instance: TicketFlow, private val startedDarkMode: Boolean, val toggleDarkMode: () -> Boolean, val logout: () -> Unit) {
 
     @Composable
     fun gui() {
@@ -59,6 +60,13 @@ class MainWindow(private val instance: TicketFlow, private val startedDarkMode: 
                     verticalArrangement = Arrangement.Bottom,
                     modifier = Modifier.fillMaxSize().weight(0.5f)
                 ) {
+                    IconButton(onClick = { logout.invoke() }) {
+                        Icon(
+                            imageVector = Icons.Default.Logout,
+                            contentDescription = "Logout",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                     IconButton(onClick = { darkModeIcon = toggleDarkMode.invoke() }) {
                         Icon(
                             imageVector = if (!darkModeIcon) Icons.Default.DarkMode else Icons.Default.LightMode,

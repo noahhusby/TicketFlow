@@ -47,10 +47,15 @@ fun main() = application {
         TicketFlowTheme(isDarkMode) {
             var isAuthenticated by remember { mutableStateOf(false) }
             if (isAuthenticated) {
-                MainWindow(instance, isDarkMode, toggleDarkMode = {
-                    isDarkMode = !isDarkMode
-                    return@MainWindow isDarkMode
-                }).gui()
+                MainWindow(instance, isDarkMode,
+                    toggleDarkMode = {
+                        isDarkMode = !isDarkMode
+                        return@MainWindow isDarkMode
+                    },
+                    logout = {
+                        instance.userHandler.logout()
+                        isAuthenticated = false
+                    }).gui()
             } else {
                 login(instance, onAuthentication = {
                     isAuthenticated = true

@@ -31,7 +31,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -62,7 +61,7 @@ public class Dao {
     private HikariDataSource ds;
 
     protected Dao() {
-        credentials = new Credentials(TicketFlowConfig.DB_HOST, TicketFlowConfig.DB_PORT, TicketFlowConfig.DB_USERNAME,  TicketFlowConfig.DB_PASSWORD, TicketFlowConfig.DB_NAME);
+        credentials = new Credentials(TicketFlowConfig.DB_HOST, TicketFlowConfig.DB_PORT, TicketFlowConfig.DB_USERNAME, TicketFlowConfig.DB_PASSWORD, TicketFlowConfig.DB_NAME);
         new Select(null, null, null).query();
     }
 
@@ -74,12 +73,14 @@ public class Dao {
         config.addDataSourceProperty("cachePrepStmts", true);
         config.addDataSourceProperty("useServerPrepStmts", true);
         config.addDataSourceProperty("verifyServerCertificate", false);
+        config.addDataSourceProperty("allowPublicKeyRetrieval", true);
         config.addDataSourceProperty("useSSL", false);
         ds = new HikariDataSource(config);
     }
 
     public Connection getConnection() {
         try {
+
             return ds.getConnection();
         } catch (SQLException e) {
             TicketFlow.getLogger().error("Failed to get database connection.", e);
@@ -104,7 +105,7 @@ public class Dao {
         } catch (SQLException e) {
             TicketFlow.getLogger().error("Error while executing statement.");
         } finally {
-            if(stmt != null) {
+            if (stmt != null) {
                 try {
                     stmt.close();
                     con.close();
@@ -192,12 +193,12 @@ public class Dao {
         if (result == null) {
             throw new IOException("Failed to fetch user");
         }
-        if(result.getRows().isEmpty()) {
+        if (result.getRows().isEmpty()) {
             return null;
         }
         Row row = result.getRows().get(0);
         String storedPass = (String) row.get("password");
-        if(storedPass == null || !storedPass.equals(password)) {
+        if (storedPass == null || !storedPass.equals(password)) {
             return null;
         }
         int admin = (int) row.get("admin");

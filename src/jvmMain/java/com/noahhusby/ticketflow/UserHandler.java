@@ -19,7 +19,6 @@ package com.noahhusby.ticketflow;
 
 import com.noahhusby.ticketflow.entities.User;
 import java.io.IOException;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -36,13 +35,30 @@ public class UserHandler {
 
     private User authenticatedUser;
 
+    public void logout() {
+        authenticatedUser = null;
+    }
+
     public CompletableFuture<AuthenticationResult> authenticate(String username, String password) {
         CompletableFuture<AuthenticationResult> future = new CompletableFuture<>();
         TicketFlow.getLogger().info(String.format("Attempting to authenticate user: \"%s\".", username));
+        Thread authenticationWatchdogThread = new Thread(() -> {
+            long start = System.currentTimeMillis();
+            while (System.currentTimeMillis() < start + 6000) {
+            }
+            if (!future.isDone()) {
+                future.complete(AuthenticationResult.FAILURE);
+                TicketFlow.getLogger().error("Authentication request timed out.");
+            }
+        });
+        authenticationWatchdogThread.setName("TF-Auth-Watchdog");
+        authenticationWatchdogThread.setDaemon(true);
+        authenticationWatchdogThread.start();
+
         Thread authenticationThread = new Thread(() -> {
             try {
                 User user = Dao.getInstance().authenticateUser(username, password);
-                if(user == null) {
+                if (user == null) {
                     future.complete(AuthenticationResult.INVALID);
                     TicketFlow.getLogger().info(String.format("Failed to authenticate user: \"%s\". Invalid credentials.", username));
                     return;

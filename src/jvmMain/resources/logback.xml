@@ -23,11 +23,11 @@
         </encoder>
     </appender>
 
-    <logger name="com.zaxxer.hikari.pool.HikariPool" level="INFO" />
-    <logger name="com.zaxxer.hikari.HikariConfig" level="INFO" />
-    <logger name="com.zaxxer.hikari.HikariDataSource" level="INFO" />
+    <logger name="com.zaxxer.hikari.pool.HikariPool" level="INFO"/>
+    <logger name="com.zaxxer.hikari.HikariConfig" level="INFO"/>
+    <logger name="com.zaxxer.hikari.HikariDataSource" level="INFO"/>
 
     <root level="debug">
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="STDOUT"/>
     </root>
 </configuration>
