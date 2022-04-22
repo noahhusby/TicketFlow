@@ -2,9 +2,7 @@ package com.noahhusby.ticketflow.ui.theme
 
 import androidx.compose.material.TextFieldColors
 import androidx.compose.material.TextFieldDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
@@ -99,6 +97,13 @@ fun ticketingFieldColors(): TextFieldColors {
         cursorColor = MaterialTheme.colorScheme.onPrimaryContainer,
         unfocusedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
         placeholderColor = MaterialTheme.colorScheme.onPrimaryContainer
+    )
+}
+
+@Composable
+fun warningButtonColors(): ButtonColors {
+    return ButtonDefaults.buttonColors(
+        containerColor = MaterialTheme.colorScheme.tertiary
     )
 }
 

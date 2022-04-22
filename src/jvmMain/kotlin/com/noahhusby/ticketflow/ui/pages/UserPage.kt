@@ -21,13 +21,19 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.WindowPosition
+import androidx.compose.ui.window.rememberDialogState
 import com.noahhusby.ticketflow.TicketFlow
 import com.noahhusby.ticketflow.entities.User
 import com.noahhusby.ticketflow.ui.elements.UserCard
+import com.noahhusby.ticketflow.ui.theme.warningButtonColors
 import java.util.*
 
 class UserPage : Page {
@@ -37,6 +43,42 @@ class UserPage : Page {
         var users = remember { mutableStateListOf<User>() }
         users.removeAll { true }
         users.addAll(instance.userHandler.users.values)
+        var isDeleteUserDialogOpen by remember { mutableStateOf(false) }
+        var selectedIndex by remember { mutableStateOf(-1) }
+
+        if (isDeleteUserDialogOpen) {
+            Dialog(
+                onCloseRequest = { isDeleteUserDialogOpen = false },
+                state = rememberDialogState(position = WindowPosition(Alignment.Center), height = 125.dp, width = 500.dp),
+                undecorated = true,
+                transparent = true
+            ) {
+                Surface(shape = RoundedCornerShape(10.dp), modifier = Modifier.fillMaxSize()) {
+                    Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.SpaceBetween) {
+                        Text("Are you sure you want to delete " + users[selectedIndex].name + "?")
+                        Row(Modifier.fillMaxWidth().wrapContentHeight(), verticalAlignment = Alignment.CenterVertically) {
+                            OutlinedButton(onClick = {
+                                isDeleteUserDialogOpen = false
+                            }) {
+                                Text("Cancel")
+                            }
+                            Spacer(Modifier.width(12.dp))
+                            FilledTonalButton(
+                                onClick = {
+                                    // TODO: Delete user
+                                    isDeleteUserDialogOpen = false
+                                },
+                                colors = warningButtonColors()
+                            ) {
+                                Text(text = "Yes")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
         Scaffold(
             floatingActionButton = {
                 ExtendedFloatingActionButton(
@@ -60,7 +102,6 @@ class UserPage : Page {
                     Column {
                         Text("Users", style = MaterialTheme.typography.displayLarge, modifier = Modifier.wrapContentHeight())
                         Text("Select a user to edit.", style = MaterialTheme.typography.labelLarge, modifier = Modifier.wrapContentHeight(), color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        var selectedIndex by remember { mutableStateOf(-1) }
                         Row(Modifier.fillMaxSize()) {
                             // Users column
                             Column(Modifier.fillMaxHeight().wrapContentWidth()) {
@@ -81,8 +122,36 @@ class UserPage : Page {
 
                             // Data column
                             if (selectedIndex != -1) {
+                                val user = users[selectedIndex]
                                 Surface(Modifier.fillMaxSize().padding(horizontal = 25.dp, vertical = 10.dp), tonalElevation = 2.dp, shadowElevation = 1.dp, shape = RoundedCornerShape(10.dp)) {
-                                    Text(users[selectedIndex].name)
+                                    Column(Modifier.fillMaxSize().padding(25.dp), verticalArrangement = Arrangement.SpaceBetween) {
+                                        Column {
+                                            Row(Modifier.fillMaxWidth().height(40.dp), verticalAlignment = Alignment.CenterVertically) {
+                                                Text(user.name, style = MaterialTheme.typography.headlineSmall)
+                                                if (user.isAdmin) {
+                                                    Icon(Icons.Outlined.Shield, modifier = Modifier.padding(6.dp), contentDescription = "Administrator", tint = MaterialTheme.colorScheme.onSurface)
+                                                }
+                                            }
+                                            Text("Username: " + user.username + " | Creation Date: 01/01/1970", style = MaterialTheme.typography.labelMedium)
+                                        }
+
+                                        Row(Modifier.fillMaxWidth().wrapContentHeight(), verticalAlignment = Alignment.CenterVertically) {
+                                            FilledTonalButton(
+                                                onClick = {
+                                                },
+                                            ) {
+                                                Text(text = "Edit User")
+                                            }
+                                            Spacer(Modifier.width(16.dp))
+                                            OutlinedButton(
+                                                onClick = {
+                                                    isDeleteUserDialogOpen = true
+                                                }
+                                            ) {
+                                                Text("Delete User", color = MaterialTheme.colorScheme.error)
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
