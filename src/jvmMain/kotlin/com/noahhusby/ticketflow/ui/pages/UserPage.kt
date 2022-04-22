@@ -148,7 +148,7 @@ class UserPage : Page {
                                             ) {
                                                 Text(text = "Edit User")
                                             }
-                                            if (!user.username.equals("admin")) {
+                                            if (!user.username.equals("admin") && user.id != UserHandler.getInstance().authenticatedUser.id) {
                                                 Spacer(Modifier.width(16.dp))
                                                 OutlinedButton(
                                                     onClick = {
