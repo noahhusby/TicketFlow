@@ -20,6 +20,7 @@ package com.noahhusby.ticketflow;
 import com.noahhusby.ticketflow.entities.User;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -38,7 +39,7 @@ public class UserHandler {
 
     private User authenticatedUser;
 
-    private Map<Integer, User> users = new HashMap<>();
+    private Map<Integer, User> users = new LinkedHashMap<>();
 
     public void logout() {
         authenticatedUser = null;
