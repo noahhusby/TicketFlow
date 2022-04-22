@@ -51,6 +51,7 @@ public class Dao {
     private static final Dao instance = new Dao();
     private final Credentials credentials;
     private HikariDataSource ds;
+
     protected Dao() {
         // Using a few utility classes from HusbyLib, my own library, to keep data structured.
         credentials = new Credentials(TicketFlowConfig.DB_HOST, TicketFlowConfig.DB_PORT, TicketFlowConfig.DB_USERNAME, TicketFlowConfig.DB_PASSWORD, TicketFlowConfig.DB_NAME);

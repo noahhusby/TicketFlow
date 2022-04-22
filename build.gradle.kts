@@ -45,9 +45,23 @@ compose.desktop {
     application {
         mainClass = "com.noahhusby.ticketflow.TicketFlowKt"
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "ticketing"
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi)
+            packageName = "TicketFlow"
             packageVersion = "1.0.0"
+            copyright = "© 2022 Noah Husby. All rights reserved."
+            vendor = "Husby Labs"
+            licenseFile.set(project.file("LICENSE"))
+            macOS {
+                iconFile.set(project.file("src/jvmMain/resources/icon.icns"))
+            }
+            windows {
+                iconFile.set(project.file("src/jvmMain/resources/icon.ico"))
+                dirChooser = false
+                menuGroup = "TicketFlow"
+            }
+            linux {
+                iconFile.set(project.file("src/jvmMain/resources/icon.png"))
+            }
         }
     }
 }
