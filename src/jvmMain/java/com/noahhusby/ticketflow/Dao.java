@@ -172,24 +172,19 @@ public class Dao {
     }
 
     public void loadEntitiesIntoCache() {
-        Result result = select(new Select("n_husb_users", "*", null));
-        /*
-        if (result == null) {
-            throw new IOException("Failed to fetch user");
+        TicketFlow.getLogger().info("Loading entities into cache ...");
+        Result users = select(new Select("n_husb_users", "*", null));
+        if (users == null) {
+            TicketFlow.getLogger().warn("Failed to load user cache!");
+        } else if (!users.getRows().isEmpty()) {
+            List<User> tempUsers = new ArrayList<>();
+            for (Row row : users.getRows()) {
+                int admin = (int) row.get("admin");
+                tempUsers.add(new User(UUID.fromString((String) row.get("uuid")), (String) row.get("username"), (String) row.get("name"), admin == 1));
+            }
+            UserHandler.getInstance().insertStoredUsers(tempUsers);
         }
-        if (result.getRows().isEmpty()) {
-            return null;
-        }
-        Row row = result.getRows().get(0);
-        String storedPass = (String) row.get("password");
-        if (storedPass == null || !storedPass.equals(password)) {
-            return null;
-        }
-        int admin = (int) row.get("admin");
-        return new User(UUID.fromString((String) row.get("uuid")), (String) row.get("username"), (String) row.get("name"), admin == 1);
-
-
-         */
+        TicketFlow.getLogger().info("Finished loading entities into cache.");
     }
 
     /**

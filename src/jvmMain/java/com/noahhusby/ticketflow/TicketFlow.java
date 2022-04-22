@@ -53,6 +53,7 @@ public class TicketFlow {
 
         Dao.getInstance().connect();
         Dao.getInstance().createTables();
+        Dao.getInstance().loadEntitiesIntoCache();
     }
 
     /**

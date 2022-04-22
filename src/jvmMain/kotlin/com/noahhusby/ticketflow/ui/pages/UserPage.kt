@@ -26,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.noahhusby.ticketflow.TicketFlow
-import com.noahhusby.ticketflow.entities.User
 import com.noahhusby.ticketflow.ui.elements.UserCell
 
 class UserPage : Page {
@@ -58,13 +57,9 @@ class UserPage : Page {
                     Text("Users", style = MaterialTheme.typography.displayLarge, modifier = Modifier.wrapContentHeight())
                     Row(Modifier.fillMaxSize()) {
                         // Users column
-                        val user1 = User(null, "admin", "Administrator", true)
-                        val user2 = User(null, "noah", "Noah Husby", false)
-                        var temp = true
                         Column(Modifier.fillMaxHeight().wrapContentWidth()) {
-                            for (i in 1..100) {
-                                UserCell(if (temp) user1 else user2).render()
-                                temp = !temp
+                            for (user in instance.userHandler.users.values) {
+                                UserCell(user).render()
                             }
                         }
                         // Data column

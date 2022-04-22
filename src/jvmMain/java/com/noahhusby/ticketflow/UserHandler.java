@@ -19,6 +19,10 @@ package com.noahhusby.ticketflow;
 
 import com.noahhusby.ticketflow.entities.User;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -34,6 +38,8 @@ public class UserHandler {
     }
 
     private User authenticatedUser;
+
+    private Map<UUID, User> users = new HashMap<>();
 
     public void logout() {
         authenticatedUser = null;
@@ -77,6 +83,16 @@ public class UserHandler {
         authenticationThread.setDaemon(true);
         authenticationThread.start();
         return future;
+    }
+
+    public Map<UUID, User> getUsers() {
+        return users;
+    }
+
+    protected void insertStoredUsers(List<User> userList) {
+        Map<UUID, User> temp = new HashMap<>();
+        userList.forEach(user -> temp.put(user.getUuid(), user));
+        this.users = temp;
     }
 
     public User getAuthenticatedUser() {
