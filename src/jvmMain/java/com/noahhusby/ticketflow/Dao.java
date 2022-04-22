@@ -171,6 +171,27 @@ public class Dao {
         }
     }
 
+    public void loadEntitiesIntoCache() {
+        Result result = select(new Select("n_husb_users", "*", null));
+        /*
+        if (result == null) {
+            throw new IOException("Failed to fetch user");
+        }
+        if (result.getRows().isEmpty()) {
+            return null;
+        }
+        Row row = result.getRows().get(0);
+        String storedPass = (String) row.get("password");
+        if (storedPass == null || !storedPass.equals(password)) {
+            return null;
+        }
+        int admin = (int) row.get("admin");
+        return new User(UUID.fromString((String) row.get("uuid")), (String) row.get("username"), (String) row.get("name"), admin == 1);
+
+
+         */
+    }
+
     /**
      * Creates the required tables
      */

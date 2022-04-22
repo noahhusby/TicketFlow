@@ -20,8 +20,10 @@ package com.noahhusby.ticketflow.ui.elements
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Shield
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,15 +37,22 @@ class UserCell(val user: User) {
     @Composable
     fun render() {
         Card(
-            Modifier.height(96.dp).fillMaxWidth().padding(vertical = 10.dp),
+            Modifier.height(96.dp).width(350.dp).padding(vertical = 10.dp),
             shape = RoundedCornerShape(10.dp),
             backgroundColor = surfaceColorAtElevation(2.dp),
             contentColor = MaterialTheme.colorScheme.onSurface
         ) {
-            Row(Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
-                Column {
-                    Text("Noah Husby", style = MaterialTheme.typography.labelMedium)
-                    Text("noahhusby", style = MaterialTheme.typography.labelSmall)
+            Row(Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                Row {
+                    userHead(user.name)
+                    Spacer(Modifier.width(12.dp))
+                    Column {
+                        Text(user.name, style = MaterialTheme.typography.labelMedium)
+                        Text(user.username, style = MaterialTheme.typography.labelSmall)
+                    }
+                }
+                if (user.isAdmin) {
+                    Icon(Icons.Default.Shield, modifier = Modifier.padding(6.dp), contentDescription = "Administrator", tint = MaterialTheme.colorScheme.onSurface)
                 }
             }
         }

@@ -30,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.noahhusby.ticketflow.TicketFlow
 import com.noahhusby.ticketflow.ui.TicketCell
-import com.noahhusby.ticketflow.ui.theme.lightDisplayMedium
 
 class TicketPage : Page {
     @OptIn(ExperimentalMaterial3Api::class)
