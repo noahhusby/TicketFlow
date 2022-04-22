@@ -107,14 +107,20 @@ class UserPage : Page {
                                 val user = users[selectedIndex]
                                 Surface(Modifier.fillMaxSize().padding(horizontal = 25.dp, vertical = 10.dp), tonalElevation = 2.dp, shadowElevation = 1.dp, shape = RoundedCornerShape(10.dp)) {
                                     Column(Modifier.fillMaxSize().padding(25.dp), verticalArrangement = Arrangement.SpaceBetween) {
-                                        Column {
+                                        Column() {
                                             Row(Modifier.fillMaxWidth().height(40.dp), verticalAlignment = Alignment.CenterVertically) {
                                                 Text(user.name, style = MaterialTheme.typography.headlineSmall)
                                                 if (user.isAdmin) {
                                                     Icon(Icons.Outlined.Shield, modifier = Modifier.padding(6.dp), contentDescription = "Administrator", tint = MaterialTheme.colorScheme.onSurface)
                                                 }
                                             }
-                                            Text("Username: " + user.username + " | Creation Date: 01/01/1970", style = MaterialTheme.typography.labelMedium)
+                                            Text("Username: " + user.username + " | Created At: " + user.formattedDate, style = MaterialTheme.typography.labelMedium)
+                                            //History
+                                            Surface(Modifier.fillMaxWidth().wrapContentHeight().padding(vertical = 40.dp), tonalElevation = 3.dp, shadowElevation = 1.dp, shape = RoundedCornerShape(10.dp)) {
+                                                Column(Modifier.padding(20.dp)) {
+                                                    Text("User History", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.wrapContentHeight())
+                                                }
+                                            }
                                         }
 
                                         Row(Modifier.fillMaxWidth().wrapContentHeight(), verticalAlignment = Alignment.CenterVertically) {
@@ -124,7 +130,7 @@ class UserPage : Page {
                                             ) {
                                                 Text(text = "Edit User")
                                             }
-                                            if(user.username.equals("admin")) {
+                                            if (!user.username.equals("admin")) {
                                                 Spacer(Modifier.width(16.dp))
                                                 OutlinedButton(
                                                     onClick = {

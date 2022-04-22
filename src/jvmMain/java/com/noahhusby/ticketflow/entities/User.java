@@ -17,6 +17,9 @@
 
 package com.noahhusby.ticketflow.entities;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 /**
  * @author Noah Husby
  */
@@ -25,12 +28,14 @@ public class User {
     private final String username;
     private final String name;
     private final boolean admin;
+    private final LocalDateTime createdAt;
 
-    public User(int id, String username, String name, boolean admin) {
+    public User(int id, String username, String name, boolean admin, LocalDateTime createdAt) {
         this.id = id;
         this.username = username;
         this.name = name == null ? username : name;
         this.admin = admin;
+        this.createdAt = createdAt;
     }
 
     public int getId() {
@@ -47,5 +52,9 @@ public class User {
 
     public boolean isAdmin() {
         return admin;
+    }
+
+    public String getFormattedDate() {
+        return createdAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 }

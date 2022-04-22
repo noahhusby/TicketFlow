@@ -34,8 +34,10 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Noah Husby
@@ -177,7 +179,7 @@ public class Dao {
             List<User> tempUsers = new ArrayList<>();
             for (Row row : users.getRows()) {
                 int admin = (int) row.get("admin");
-                tempUsers.add(new User((Integer) row.get("id"), (String) row.get("username"), (String) row.get("name"), admin == 1));
+                tempUsers.add(new User((Integer) row.get("id"), (String) row.get("username"), (String) row.get("name"), admin == 1, (LocalDateTime) row.get("created_at")));
             }
             UserHandler.getInstance().insertStoredUsers(tempUsers);
         }
@@ -189,7 +191,7 @@ public class Dao {
      */
     public void createTables() {
         final String createTicketsTable = "CREATE TABLE IF NOT EXISTS n_husb_tickets(id INT AUTO_INCREMENT PRIMARY KEY, issuer VARCHAR(36), description VARCHAR(200))";
-        final String createUsersTable = "CREATE TABLE IF NOT EXISTS n_husb_users(id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(30), password VARCHAR(30), name VARCHAR(70), admin int)";
+        final String createUsersTable = "CREATE TABLE IF NOT EXISTS n_husb_users(id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(30), password VARCHAR(30), name VARCHAR(70), admin int, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)";
         final String createTicketStatusTable = "CREATE TABLE IF NOT EXISTS n_husb_status(id INT, time LONG, user VARCHAR(36), status VARCHAR(24))";
 
         TicketFlow.getLogger().debug("Creating tickets table ...");
@@ -215,11 +217,11 @@ public class Dao {
             return null;
         }
         int admin = (int) row.get("admin");
-        return new User((Integer) row.get("id"), (String) row.get("username"), (String) row.get("name"), admin == 1);
+        return new User((Integer) row.get("id"), (String) row.get("username"), (String) row.get("name"), admin == 1, (LocalDateTime) row.get("created_at"));
     }
 
 
-    public int saveNewUser(String username, String password, String name, boolean admin) {
+    public Map.Entry<Integer, LocalDateTime> saveNewUser(String username, String password, String name, boolean admin) {
         TicketFlow.getLogger().debug("Saving user: " + name);
 
         execute(
@@ -230,8 +232,25 @@ public class Dao {
                 )
         );
 
-        Result result = select(new Select("n_husb_users", "id", "username='" + username + "'"));
-        return (int) result.getRows().get(0).get("id");
+        Result result = select(new Select("n_husb_users", "id,created_at", "username='" + username + "'"));
+
+        // Hacky way to cleanly return two values since I've yet to implement Pair<> into HusbyLib
+        return new Map.Entry<>() {
+            @Override
+            public Integer getKey() {
+                return (Integer) result.getRows().get(0).get("id");
+            }
+
+            @Override
+            public LocalDateTime getValue() {
+                return (LocalDateTime) result.getRows().get(0).get("created_at");
+            }
+
+            @Override
+            public LocalDateTime setValue(LocalDateTime value) {
+                return null;
+            }
+        };
     }
 
     public void removeUser(int id) {

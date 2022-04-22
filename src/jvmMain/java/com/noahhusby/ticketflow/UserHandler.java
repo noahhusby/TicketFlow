@@ -19,6 +19,7 @@ package com.noahhusby.ticketflow;
 
 import com.noahhusby.ticketflow.entities.User;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -94,8 +95,8 @@ public class UserHandler {
         if (name == null) {
             name = username;
         }
-        int id = Dao.getInstance().saveNewUser(username, password, name, admin);
-        User user = new User(id, username, name, admin);
+        Map.Entry<Integer, LocalDateTime> userEntry = Dao.getInstance().saveNewUser(username, password, name, admin);
+        User user = new User(userEntry.getKey(), username, name, admin, userEntry.getValue());
         users.put(user.getId(), user);
         return user;
     }
