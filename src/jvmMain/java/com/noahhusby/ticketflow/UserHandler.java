@@ -21,7 +21,6 @@ import com.noahhusby.ticketflow.entities.User;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -85,6 +84,24 @@ public class UserHandler {
         authenticationThread.setDaemon(true);
         authenticationThread.start();
         return future;
+    }
+
+    public void editUser(User user, String name, String username, String password, boolean admin) {
+        if (!user.getName().equals(name)) {
+            Dao.getInstance().updateUser(user.getId(), "name", name);
+            users.get(user.getId()).setName(name);
+        }
+        if (!user.getUsername().equals(username)) {
+            Dao.getInstance().updateUser(user.getId(), "username", username);
+            users.get(user.getId()).setUsername(username);
+        }
+        if (password != null) {
+            Dao.getInstance().updateUser(user.getId(), "password", password);
+        }
+        if (user.isAdmin() != admin) {
+            Dao.getInstance().updateUser(user.getId(), "admin", String.valueOf(admin ? 1 : 0));
+            users.get(user.getId()).setAdmin(admin);
+        }
     }
 
     public boolean isUsernameTaken(String username) {

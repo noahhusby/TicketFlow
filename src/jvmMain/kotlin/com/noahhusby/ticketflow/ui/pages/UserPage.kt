@@ -50,12 +50,16 @@ class UserPage : Page {
     @Composable
     override fun render(instance: TicketFlow) {
         val users = remember { mutableStateListOf<User>() }
-        users.removeAll { true }
-        users.addAll(instance.userHandler.users.values)
+        LaunchedEffect(true) {
+            users.removeAll { true }
+            users.addAll(instance.userHandler.users.values)
+        }
         var selectedIndex by remember { mutableStateOf(-1) }
+        val showUserPanel by derivedStateOf { selectedIndex != -1 }
 
         var isDeleteUserDialogOpen by remember { mutableStateOf(false) }
         var isAddUserDialogOpen by remember { mutableStateOf(false) }
+        var isEditUserDialogOpen by remember { mutableStateOf(false) }
 
         if (isDeleteUserDialogOpen) {
             dialog(
@@ -63,12 +67,14 @@ class UserPage : Page {
                 height = 125.dp,
                 width = 500.dp
             ) {
-                deleteUserDialog(users[selectedIndex], onCloseDialog = { isDeleteUserDialogOpen = false }, onUserDelete = {
-                    selectedIndex = -1
-                    isDeleteUserDialogOpen = false
-                    users.removeAll { true }
-                    users.addAll(instance.userHandler.users.values)
-                })
+                if (selectedIndex != -1) {
+                    deleteUserDialog(users[selectedIndex], onCloseDialog = { isDeleteUserDialogOpen = false }, onUserDelete = {
+                        selectedIndex = -1
+                        isDeleteUserDialogOpen = false
+                        users.removeAll { true }
+                        users.addAll(instance.userHandler.users.values)
+                    })
+                }
             }
         }
 
@@ -80,13 +86,25 @@ class UserPage : Page {
             ) {
                 addUserDialog(onCloseDialog = { isAddUserDialogOpen = false }, onUserAdd = {
                     isAddUserDialogOpen = false
-                    selectedIndex = -1
                     users.removeAll { true }
                     users.addAll(instance.userHandler.users.values)
                 })
             }
         }
 
+        if (isEditUserDialogOpen) {
+            dialog(
+                onCloseRequest = { isEditUserDialogOpen = false },
+                height = 600.dp,
+                width = 500.dp
+            ) {
+                editUserDialog(users[selectedIndex], onCloseDialog = { isEditUserDialogOpen = false }, onUserAdd = {
+                    isEditUserDialogOpen = false
+                    users.removeAll { true }
+                    users.addAll(instance.userHandler.users.values)
+                })
+            }
+        }
 
         Scaffold(
             floatingActionButton = {
@@ -110,10 +128,10 @@ class UserPage : Page {
                                         user,
                                         index == selectedIndex,
                                         onSelection = {
-                                            if (selectedIndex == index) {
-                                                selectedIndex = -1
+                                            selectedIndex = if (selectedIndex == index) {
+                                                -1
                                             } else {
-                                                selectedIndex = index
+                                                index
                                             }
                                         }
                                     ).render()
@@ -121,7 +139,7 @@ class UserPage : Page {
                             }
 
                             // Data column
-                            if (selectedIndex != -1) {
+                            if (showUserPanel) {
                                 val user = users[selectedIndex]
                                 Surface(Modifier.fillMaxSize().padding(horizontal = 25.dp, vertical = 10.dp), tonalElevation = 2.dp, shadowElevation = 1.dp, shape = RoundedCornerShape(10.dp)) {
                                     Column(Modifier.fillMaxSize().padding(25.dp), verticalArrangement = Arrangement.SpaceBetween) {
@@ -144,6 +162,7 @@ class UserPage : Page {
                                         Row(Modifier.fillMaxWidth().wrapContentHeight(), verticalAlignment = Alignment.CenterVertically) {
                                             FilledTonalButton(
                                                 onClick = {
+                                                    isEditUserDialogOpen = true
                                                 },
                                             ) {
                                                 Text(text = "Edit User")
@@ -183,7 +202,7 @@ class UserPage : Page {
             var isAdmin by remember { mutableStateOf(false) }
 
             val isPasswordValid by derivedStateOf { password.matches(Regex(PASSWORD_REGEX)) }
-            val isFormValid by derivedStateOf { username.matches(Regex(USERNAME_REGEX)) && username.isNotBlank() && password.length >= 7 && !UserHandler.getInstance().isUsernameTaken(username) }
+            val isFormValid by derivedStateOf { username.matches(Regex(USERNAME_REGEX)) && username.isNotBlank() && isPasswordValid && !UserHandler.getInstance().isUsernameTaken(username) }
 
             Column(
                 Modifier.fillMaxSize().padding(20.dp),
@@ -345,6 +364,188 @@ class UserPage : Page {
                         colors = warningButtonColors()
                     ) {
                         Text(text = "Yes")
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun editUserDialog(user: User, onCloseDialog: () -> Unit, onUserAdd: () -> Unit) {
+        Surface(shape = RoundedCornerShape(10.dp), modifier = Modifier.fillMaxSize()) {
+            val isEditingAdministrator = user.username == "admin"
+
+            var name by remember { mutableStateOf(user.name) }
+
+            var username by remember { mutableStateOf(user.username) }
+            var errorText by remember { mutableStateOf("") }
+
+            var password by remember { mutableStateOf("") }
+            var passwordConfirm by remember { mutableStateOf("") }
+            var isPasswordVisible by remember { mutableStateOf(false) }
+            var isPasswordConfirmErrored by remember { mutableStateOf(false) }
+            var shouldResetPassword by remember { mutableStateOf(false) }
+
+            var isUsernameErrored by remember { mutableStateOf(false) }
+            var isAdmin by remember { mutableStateOf(user.isAdmin) }
+
+            val isPasswordValid by derivedStateOf { password.matches(Regex(PASSWORD_REGEX)) }
+            val isFormValid by derivedStateOf { username.matches(Regex(USERNAME_REGEX)) && username.isNotBlank() && (!shouldResetPassword || (isPasswordValid && shouldResetPassword)) && (!UserHandler.getInstance().isUsernameTaken(username) || username == user.username) }
+
+            Column(
+                Modifier.fillMaxSize().padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Login Column
+                Column(Modifier.fillMaxWidth().wrapContentHeight()) {
+                    Text("Edit User")
+                    Spacer(Modifier.height(48.dp))
+
+                    // Names Row
+                    Row(Modifier.fillMaxWidth()) {
+                        OutlinedTextField(
+                            modifier = Modifier.weight(0.5f),
+                            value = name,
+                            onValueChange = {
+                                if (username.replace(".", " ").equals(name, ignoreCase = true)) {
+                                    username = it.replace(" ", ".").lowercase(Locale.US)
+                                }
+                                name = it
+                            },
+                            colors = ticketingFieldColors(),
+                            label = { Text(text = "Name") },
+                            singleLine = true
+                        )
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        OutlinedTextField(
+                            modifier = Modifier.weight(0.5f),
+                            enabled = !isEditingAdministrator,
+                            value = username,
+                            onValueChange = {
+                                isUsernameErrored = false
+                                username = it
+                                val usernameTaken = UserHandler.getInstance().isUsernameTaken(username) && username != user.username
+                                isUsernameErrored = usernameTaken
+                                if (usernameTaken) {
+                                    errorText = ADD_USER_TAKEN_ERROR
+                                } else if (errorText == ADD_USER_TAKEN_ERROR) {
+                                    errorText = ""
+                                }
+                            },
+                            colors = ticketingFieldColors(),
+                            isError = isUsernameErrored || (UserHandler.getInstance().isUsernameTaken(username) && username != user.username),
+
+                            label = { Text(text = "Username") },
+                            singleLine = true
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.wrapContentSize()) {
+                        Checkbox(checked = shouldResetPassword, onCheckedChange = { b ->
+                            shouldResetPassword = b
+                            if (!b) {
+                                password = ""
+                                passwordConfirm = ""
+                                isPasswordConfirmErrored = false
+                                errorText = ""
+                            }
+                        })
+                        Text("Reset Password?")
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = shouldResetPassword,
+                        value = password,
+                        onValueChange = {
+                            password = it
+                            if (!isPasswordValid) {
+                                errorText = ADD_USER_PASSWORD_INVALID
+                            } else if (errorText == ADD_USER_PASSWORD_INVALID) {
+                                errorText = ""
+                            }
+                        },
+                        label = { Text(text = "Password") },
+                        colors = ticketingFieldColors(),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Password,
+                            imeAction = ImeAction.Done
+                        ),
+                        visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        trailingIcon = {
+                            IconButton(enabled = shouldResetPassword, onClick = { isPasswordVisible = !isPasswordVisible }) {
+                                Icon(
+                                    imageVector = if (isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                    contentDescription = "Password Toggle"
+                                )
+                            }
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = shouldResetPassword,
+                        value = passwordConfirm,
+                        onValueChange = {
+                            passwordConfirm = it
+                            if (passwordConfirm != password) {
+                                errorText = ADD_USER_PASSWORDS_DONT_MATCH
+                                isPasswordConfirmErrored = true
+                            } else if (errorText == ADD_USER_PASSWORDS_DONT_MATCH) {
+                                isPasswordConfirmErrored = false
+                                errorText = ""
+                            }
+                        },
+                        isError = isPasswordConfirmErrored,
+                        label = { Text(text = "Confirm Password") },
+                        colors = ticketingFieldColors(),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Password,
+                            imeAction = ImeAction.Done
+                        ),
+                        visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        trailingIcon = {
+                            IconButton(enabled = shouldResetPassword, onClick = { isPasswordVisible = !isPasswordVisible }) {
+                                Icon(
+                                    imageVector = if (isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                    contentDescription = "Password Toggle"
+                                )
+                            }
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = errorText, color = Color.Red, style = MaterialTheme.typography.labelMedium)
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.wrapContentSize()) {
+                        Checkbox(checked = isAdmin, enabled = !isEditingAdministrator && UserHandler.getInstance().authenticatedUser.id != user.id, onCheckedChange = { b -> isAdmin = b })
+                        Text("Administrator")
+                    }
+                }
+
+                // Action Row
+                Row(Modifier.fillMaxWidth().wrapContentHeight(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End) {
+                    TextButton(onClick = { onCloseDialog.invoke() }) {
+                        Text("Cancel")
+                    }
+                    Spacer(Modifier.width(12.dp))
+                    Button(
+                        onClick = {
+                            UserHandler.getInstance().editUser(user, name, username, if (shouldResetPassword) password else null, isAdmin)
+                            onUserAdd.invoke()
+                        },
+                        enabled = isFormValid
+                    ) {
+                        Text("Save")
+                        Icon(Icons.Default.Check, contentDescription = null)
                     }
                 }
             }

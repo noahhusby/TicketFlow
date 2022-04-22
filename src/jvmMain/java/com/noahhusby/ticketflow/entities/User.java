@@ -25,9 +25,9 @@ import java.time.format.DateTimeFormatter;
  */
 public class User {
     private final int id;
-    private final String username;
-    private final String name;
-    private final boolean admin;
+    private String username;
+    private String name;
+    private boolean admin;
     private final LocalDateTime createdAt;
 
     public User(int id, String username, String name, boolean admin, LocalDateTime createdAt) {
@@ -52,6 +52,18 @@ public class User {
 
     public boolean isAdmin() {
         return admin;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
     }
 
     public String getFormattedDate() {

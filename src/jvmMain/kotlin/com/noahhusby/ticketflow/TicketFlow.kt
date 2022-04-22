@@ -53,8 +53,8 @@ fun main() = application {
                         return@MainWindow isDarkMode
                     },
                     logout = {
-                        instance.userHandler.logout()
                         isAuthenticated = false
+                        instance.userHandler.logout()
                     }).gui()
             } else {
                 login(instance, onAuthentication = {

@@ -24,6 +24,8 @@ import com.noahhusby.lib.data.sql.actions.Query;
 import com.noahhusby.lib.data.sql.actions.Result;
 import com.noahhusby.lib.data.sql.actions.Row;
 import com.noahhusby.lib.data.sql.actions.Select;
+import com.noahhusby.lib.data.sql.actions.Update;
+import com.noahhusby.lib.data.sql.actions.UpdateValue;
 import com.noahhusby.ticketflow.entities.User;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -220,6 +222,9 @@ public class Dao {
         return new User((Integer) row.get("id"), (String) row.get("username"), (String) row.get("name"), admin == 1, (LocalDateTime) row.get("created_at"));
     }
 
+    public void updateUser(int id, String column, String value) {
+        execute(new Update("n_husb_users", new UpdateValue(column, value), "id='" + id + "'"));
+    }
 
     public Map.Entry<Integer, LocalDateTime> saveNewUser(String username, String password, String name, boolean admin) {
         TicketFlow.getLogger().debug("Saving user: " + name);
