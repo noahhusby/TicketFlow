@@ -31,7 +31,6 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.noahhusby.ticketflow.Dao
 import com.noahhusby.ticketflow.TicketFlow
 import com.noahhusby.ticketflow.entities.User
 import com.noahhusby.ticketflow.ui.elements.UserCell
@@ -66,6 +65,7 @@ class UserPage : Page {
                 Surface(Modifier.padding(48.dp)) {
                     Column {
                         Text("Users", style = MaterialTheme.typography.displayLarge, modifier = Modifier.wrapContentHeight())
+                        Text("Select a user to edit.", style = MaterialTheme.typography.labelLarge, modifier = Modifier.wrapContentHeight(), color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Row(Modifier.fillMaxSize()) {
                             // Users column
                             Column(Modifier.fillMaxHeight().wrapContentWidth()) {
@@ -73,7 +73,9 @@ class UserPage : Page {
                                     UserCell(user).render()
                                 }
                             }
+
                             // Data column
+                            Surface(Modifier.fillMaxSize().padding(horizontal = 25.dp, vertical = 10.dp), tonalElevation = 2.dp, shadowElevation = 1.dp, shape = RoundedCornerShape(10.dp)) { }
                             Column(Modifier.fillMaxWidth()) { }
                         }
                     }
