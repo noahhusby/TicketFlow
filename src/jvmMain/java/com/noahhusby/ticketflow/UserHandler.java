@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -40,7 +41,7 @@ public class UserHandler {
 
     private User authenticatedUser;
 
-    private Map<Integer, User> users = new LinkedHashMap<>();
+    private Map<Integer, User> users = new TreeMap<>();
 
     public void logout() {
         authenticatedUser = null;
