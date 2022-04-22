@@ -17,9 +17,7 @@
 
 package com.noahhusby.ticketflow.ui.pages
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -29,10 +27,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.noahhusby.ticketflow.TicketFlow
+import com.noahhusby.ticketflow.entities.User
 import com.noahhusby.ticketflow.ui.TicketCell
+import com.noahhusby.ticketflow.ui.elements.UserCell
 import com.noahhusby.ticketflow.ui.theme.lightDisplayMedium
 
-class TicketPage : Page {
+class UserPage : Page {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun gui(instance: TicketFlow) {
@@ -41,7 +41,7 @@ class TicketPage : Page {
                 ExtendedFloatingActionButton(
                     onClick = {},
                     text = {
-                        Text("New Ticket")
+                        Text("New User")
                     },
                     icon = {
                         Icon(imageVector = Icons.Default.Add, contentDescription = null)
@@ -49,23 +49,27 @@ class TicketPage : Page {
                 )
             }
         ) {
-            table(instance)
+            users(instance)
         }
-
-        //TODO("Not yet implemented")
     }
 
     @Composable
-    private fun table(instance: TicketFlow) {
+    private fun users(instance: TicketFlow) {
         Surface(Modifier.fillMaxSize(), shape = RoundedCornerShape(topStart = 25.dp, bottomStart = 25.dp), tonalElevation = 1.dp) {
             Surface(Modifier.padding(48.dp)) {
                 Column {
-                    Text("Tickets", style = MaterialTheme.typography.displayLarge)
-                }
-            }
-            LazyColumn(Modifier.fillMaxSize()) {
-                item {
-                    TicketCell().gui()
+                    Text("Users", style = MaterialTheme.typography.displayLarge, modifier = Modifier.wrapContentHeight())
+                    Row(Modifier.fillMaxSize()) {
+                        // Users column
+                        val user = User(null, null, null, false)
+                        Column(Modifier.fillMaxHeight().weight(0.3f)) {
+                            for (i in 1..100) {
+                                UserCell(user).render()
+                            }
+                        }
+                        // Data column
+                        Column(Modifier.fillMaxHeight().weight(0.7f)) {  }
+                    }
                 }
             }
         }

@@ -26,10 +26,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.noahhusby.ticketflow.ui.pages.HomePage
 import com.noahhusby.ticketflow.ui.pages.Page
 import com.noahhusby.ticketflow.ui.pages.TicketPage
+import com.noahhusby.ticketflow.ui.pages.UserPage
 
 enum class Pages(val prettyName: String, val icon: ImageVector, val page: Page, val requireAdmin: Boolean) {
     HOME("Home", Icons.Filled.Home, HomePage(), false),
     TICKETS("Tickets", Icons.Filled.ConfirmationNumber, TicketPage(), false),
-    USERS("Users", Icons.Filled.People, HomePage(), true),
+    USERS("Users", Icons.Filled.People, UserPage(), true),
     HISTORY("History", Icons.Filled.History, HomePage(), true)
 }
