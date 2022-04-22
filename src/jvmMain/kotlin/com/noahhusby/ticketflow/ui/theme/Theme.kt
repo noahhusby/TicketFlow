@@ -87,16 +87,31 @@ fun TicketFlowTheme(
     )
 }
 
+// Wrapper for Material V3 colors for V2 Text Inputs
 @Composable
 fun ticketingFieldColors(): TextFieldColors {
     return TextFieldDefaults.textFieldColors(
+        textColor = MaterialTheme.colorScheme.onSurface,
+        disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+        cursorColor = MaterialTheme.colorScheme.primary,
+        errorCursorColor = MaterialTheme.colorScheme.error,
+        focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+        unfocusedIndicatorColor = MaterialTheme.colorScheme.outline,
+        errorIndicatorColor = MaterialTheme.colorScheme.error,
+        disabledIndicatorColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+        leadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        disabledLeadingIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+        errorLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        trailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        disabledTrailingIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+        errorTrailingIconColor = MaterialTheme.colorScheme.error,
         backgroundColor = Color.Transparent,
-        focusedIndicatorColor = MaterialTheme.colorScheme.primaryContainer,
-        focusedLabelColor = MaterialTheme.colorScheme.primaryContainer,
-        textColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        cursorColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        unfocusedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        placeholderColor = MaterialTheme.colorScheme.onPrimaryContainer
+        focusedLabelColor = MaterialTheme.colorScheme.primary,
+        unfocusedLabelColor = MaterialTheme.colorScheme.primary,
+        disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+        errorLabelColor = MaterialTheme.colorScheme.error,
+        placeholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        disabledPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
     )
 }
 
