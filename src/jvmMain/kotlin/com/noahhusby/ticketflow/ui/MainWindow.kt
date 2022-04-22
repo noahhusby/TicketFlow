@@ -77,7 +77,7 @@ class MainWindow(private val instance: TicketFlow, private val startedDarkMode: 
                 }
             }
 
-            currentPage.page.gui(instance)
+            currentPage.page.render(instance)
         }
     }
 }

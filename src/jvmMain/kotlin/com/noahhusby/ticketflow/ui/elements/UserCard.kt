@@ -27,7 +27,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,12 +35,11 @@ import androidx.compose.ui.unit.dp
 import com.noahhusby.ticketflow.entities.User
 import com.noahhusby.ticketflow.ui.theme.surfaceColorAtElevation
 
-class UserCard(val user: User) {
+class UserCard(private val user: User, private val isSelected: Boolean, private val onSelection: () -> Unit) {
 
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
     fun render() {
-        var isSelected by remember { mutableStateOf(false) }
         Card(
             modifier = Modifier.height(96.dp).width(350.dp).padding(vertical = 10.dp),
             shape = RoundedCornerShape(10.dp),
@@ -48,7 +47,7 @@ class UserCard(val user: User) {
             contentColor = MaterialTheme.colorScheme.onSurface,
             border = BorderStroke(2.dp, if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent),
             onClick = {
-                isSelected = !isSelected
+                onSelection.invoke()
             }
         ) {
             Row(Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {

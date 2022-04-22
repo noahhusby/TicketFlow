@@ -17,10 +17,28 @@
 
 package com.noahhusby.ticketflow.ui.pages
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.noahhusby.ticketflow.TicketFlow
 
-interface Page {
+class HistoryPage : Page {
+
     @Composable
-    fun render(instance: TicketFlow)
+    override fun render(instance: TicketFlow) {
+        Surface(Modifier.fillMaxSize(), shape = RoundedCornerShape(topStart = 25.dp, bottomStart = 25.dp), tonalElevation = 1.dp) {
+            Surface(Modifier.padding(48.dp)) {
+                Column {
+                    Text("History", style = MaterialTheme.typography.displayLarge)
+                }
+            }
+        }
+    }
 }

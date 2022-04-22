@@ -36,7 +36,7 @@ import com.noahhusby.ticketflow.ui.theme.surfaceColorAtElevation
 
 class HomePage : Page {
     @Composable
-    override fun gui(instance: TicketFlow) {
+    override fun render(instance: TicketFlow) {
         Surface(Modifier.padding(48.dp)) {
             Column {
                 Row(Modifier.weight(0.2f)) {

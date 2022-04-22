@@ -34,7 +34,7 @@ import com.noahhusby.ticketflow.ui.TicketCell
 class TicketPage : Page {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    override fun gui(instance: TicketFlow) {
+    override fun render(instance: TicketFlow) {
         Scaffold(
             floatingActionButton = {
                 ExtendedFloatingActionButton(
