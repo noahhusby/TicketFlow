@@ -17,26 +17,24 @@
 
 package com.noahhusby.ticketflow.entities;
 
-import java.util.UUID;
-
 /**
  * @author Noah Husby
  */
 public class User {
-    private final UUID uuid;
+    private final int id;
     private final String username;
     private final String name;
     private final boolean admin;
 
-    public User(UUID uuid, String username, String name, boolean admin) {
-        this.uuid = uuid;
+    public User(int id, String username, String name, boolean admin) {
+        this.id = id;
         this.username = username;
         this.name = name == null ? username : name;
         this.admin = admin;
     }
 
-    public UUID getUuid() {
-        return uuid;
+    public int getId() {
+        return id;
     }
 
     public String getUsername() {

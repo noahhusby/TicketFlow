@@ -23,19 +23,36 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.noahhusby.ticketflow.Dao
 import com.noahhusby.ticketflow.TicketFlow
+import com.noahhusby.ticketflow.entities.User
 import com.noahhusby.ticketflow.ui.elements.UserCell
+import java.util.*
 
 class UserPage : Page {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun gui(instance: TicketFlow) {
+        var users = remember { mutableStateListOf<User>() }
+        users.removeAll { true }
+        users.addAll(instance.userHandler.users.values)
         Scaffold(
             floatingActionButton = {
                 ExtendedFloatingActionButton(
-                    onClick = {},
+                    onClick = {
+                        val temp = Random().nextInt()
+                        Dao.getInstance().saveNewUser("Joe User$temp", "password01", "Joe User$temp", temp % 2 == 0)
+                        users.removeAll { true }
+                        users.addAll(instance.userHandler.users.values)
+                    },
                     text = {
                         Text("New User")
                     },
@@ -45,28 +62,43 @@ class UserPage : Page {
                 )
             }
         ) {
-            users(instance)
+            Surface(Modifier.fillMaxSize(), shape = RoundedCornerShape(topStart = 25.dp, bottomStart = 25.dp), tonalElevation = 1.dp) {
+                Surface(Modifier.padding(48.dp)) {
+                    Column {
+                        Text("Users", style = MaterialTheme.typography.displayLarge, modifier = Modifier.wrapContentHeight())
+                        Row(Modifier.fillMaxSize()) {
+                            // Users column
+                            Column(Modifier.fillMaxHeight().wrapContentWidth()) {
+                                for (user in users) {
+                                    UserCell(user).render()
+                                }
+                            }
+                            // Data column
+                            Column(Modifier.fillMaxWidth()) { }
+                        }
+                    }
+                }
+            }
         }
     }
 
     @Composable
-    private fun users(instance: TicketFlow) {
-        Surface(Modifier.fillMaxSize(), shape = RoundedCornerShape(topStart = 25.dp, bottomStart = 25.dp), tonalElevation = 1.dp) {
-            Surface(Modifier.padding(48.dp)) {
-                Column {
-                    Text("Users", style = MaterialTheme.typography.displayLarge, modifier = Modifier.wrapContentHeight())
-                    Row(Modifier.fillMaxSize()) {
-                        // Users column
-                        Column(Modifier.fillMaxHeight().wrapContentWidth()) {
-                            for (user in instance.userHandler.users.values) {
-                                UserCell(user).render()
-                            }
+    fun <T : Any> rememberMutableStateListOf(vararg elements: T): SnapshotStateList<T> {
+        return rememberSaveable(
+            saver = listSaver(
+                save = { stateList ->
+                    if (stateList.isNotEmpty()) {
+                        val first = stateList.first()
+                        if (!canBeSaved(first)) {
+                            throw IllegalStateException("${first::class} cannot be saved. By default only types which can be stored in the Bundle class can be saved.")
                         }
-                        // Data column
-                        Column(Modifier.fillMaxWidth()) { }
                     }
-                }
-            }
+                    stateList.toList()
+                },
+                restore = { it.toMutableStateList() }
+            )
+        ) {
+            elements.toList().toMutableStateList()
         }
     }
 }

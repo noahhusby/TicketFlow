@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -39,7 +38,7 @@ public class UserHandler {
 
     private User authenticatedUser;
 
-    private Map<UUID, User> users = new HashMap<>();
+    private Map<Integer, User> users = new HashMap<>();
 
     public void logout() {
         authenticatedUser = null;
@@ -85,13 +84,27 @@ public class UserHandler {
         return future;
     }
 
-    public Map<UUID, User> getUsers() {
+    public User createNewUser(int id, String username, String name, boolean admin) {
+        for (User user : users.values()) {
+            if (user.getUsername().equalsIgnoreCase(username)) {
+                return null;
+            }
+        }
+        if (name == null) {
+            name = username;
+        }
+        User user = new User(id, username, name, admin);
+        users.put(user.getId(), user);
+        return user;
+    }
+
+    public Map<Integer, User> getUsers() {
         return users;
     }
 
     protected void insertStoredUsers(List<User> userList) {
-        Map<UUID, User> temp = new HashMap<>();
-        userList.forEach(user -> temp.put(user.getUuid(), user));
+        Map<Integer, User> temp = new HashMap<>();
+        userList.forEach(user -> temp.put(user.getId(), user));
         this.users = temp;
     }
 

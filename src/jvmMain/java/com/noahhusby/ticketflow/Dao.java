@@ -19,6 +19,7 @@ package com.noahhusby.ticketflow;
 
 import com.noahhusby.lib.data.sql.Credentials;
 import com.noahhusby.lib.data.sql.actions.Custom;
+import com.noahhusby.lib.data.sql.actions.Insert;
 import com.noahhusby.lib.data.sql.actions.Query;
 import com.noahhusby.lib.data.sql.actions.Result;
 import com.noahhusby.lib.data.sql.actions.Row;
@@ -26,8 +27,6 @@ import com.noahhusby.lib.data.sql.actions.Select;
 import com.noahhusby.ticketflow.entities.User;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -36,9 +35,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @author Noah Husby
@@ -180,7 +177,7 @@ public class Dao {
             List<User> tempUsers = new ArrayList<>();
             for (Row row : users.getRows()) {
                 int admin = (int) row.get("admin");
-                tempUsers.add(new User(UUID.fromString((String) row.get("uuid")), (String) row.get("username"), (String) row.get("name"), admin == 1));
+                tempUsers.add(new User((Integer) row.get("id"), (String) row.get("username"), (String) row.get("name"), admin == 1));
             }
             UserHandler.getInstance().insertStoredUsers(tempUsers);
         }
@@ -192,7 +189,7 @@ public class Dao {
      */
     public void createTables() {
         final String createTicketsTable = "CREATE TABLE IF NOT EXISTS n_husb_tickets(id INT AUTO_INCREMENT PRIMARY KEY, issuer VARCHAR(36), description VARCHAR(200))";
-        final String createUsersTable = "CREATE TABLE IF NOT EXISTS n_husb_users(uuid VARCHAR(36) PRIMARY KEY, username VARCHAR(30), password VARCHAR(30), name VARCHAR(70), admin int)";
+        final String createUsersTable = "CREATE TABLE IF NOT EXISTS n_husb_users(id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(30), password VARCHAR(30), name VARCHAR(70), admin int)";
         final String createTicketStatusTable = "CREATE TABLE IF NOT EXISTS n_husb_status(id INT, time LONG, user VARCHAR(36), status VARCHAR(24))";
 
         TicketFlow.getLogger().debug("Creating tickets table ...");
@@ -218,53 +215,25 @@ public class Dao {
             return null;
         }
         int admin = (int) row.get("admin");
-        return new User(UUID.fromString((String) row.get("uuid")), (String) row.get("username"), (String) row.get("name"), admin == 1);
+        return new User((Integer) row.get("id"), (String) row.get("username"), (String) row.get("name"), admin == 1);
     }
 
-    public void addUsers() {
-        // add list of users from userlist.csv file to users table
 
-        // variables for SQL Query inserts
-        String sql;
+    public void saveNewUser(String username, String password, String name, boolean admin) {
+        TicketFlow.getLogger().debug("Saving user: " + name);
 
-        Statement statement;
-        BufferedReader br;
-        List<List<String>> array = new ArrayList<>(); // list to hold (rows & cols)
+        execute(
+                new Insert(
+                        "n_husb_users",
+                        "username,password,name,admin",
+                        username, password, name, String.valueOf(admin ? 1 : 0)
+                )
+        );
 
-        // read data from file
-        try {
-            br = new BufferedReader(new FileReader("./userlist.csv"));
-
-            String line;
-            while ((line = br.readLine()) != null) {
-                array.add(Arrays.asList(line.split(",")));
-            }
-        } catch (Exception e) {
-            System.out.println("There was a problem loading the file");
-        }
-
-        try {
-
-            // Setup the connection with the DB
-
-            statement = getConnection().createStatement();
-
-            // create loop to grab each array index containing a list of values
-            // and PASS (insert) that data into your User table
-            for (List<String> rowData : array) {
-
-                sql = "insert into jpapa_users(uname,upass,admin) " + "values('" + rowData.get(0) + "'," + " '"
-                      + rowData.get(1) + "','" + rowData.get(2) + "');";
-                statement.executeUpdate(sql);
-            }
-            System.out.println("Inserts completed in the given database...");
-
-            // close statement object
-            statement.close();
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        Result result = select(new Select("n_husb_users", "id", "username='" + username + "'"));
+        int id = (int) result.getRows().get(0).get("id");
+        UserHandler.getInstance().createNewUser(id, username, name, admin);
+        TicketFlow.getLogger().debug("Saved user: " + name);
     }
 
     /*
