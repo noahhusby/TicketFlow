@@ -27,12 +27,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.noahhusby.ticketflow.TicketFlow
 
 class HistoryPage : Page {
 
     @Composable
-    override fun render(instance: TicketFlow) {
+    override fun render() {
         Surface(Modifier.fillMaxSize(), shape = RoundedCornerShape(topStart = 25.dp, bottomStart = 25.dp), tonalElevation = 1.dp) {
             Surface(Modifier.padding(48.dp)) {
                 Column {

@@ -26,7 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.noahhusby.ticketflow.TicketFlow
+import com.noahhusby.ticketflow.UserHandler
 import com.noahhusby.ticketflow.ui.elements.charts.PieChartData
 import com.noahhusby.ticketflow.ui.elements.charts.PieChartLegendKey
 import com.noahhusby.ticketflow.ui.elements.charts.pieChart
@@ -36,13 +36,13 @@ import com.noahhusby.ticketflow.ui.theme.surfaceColorAtElevation
 
 class HomePage : Page {
     @Composable
-    override fun render(instance: TicketFlow) {
+    override fun render() {
         Surface(Modifier.padding(48.dp)) {
             Column {
                 Row(Modifier.weight(0.2f)) {
                     Column {
                         Text("Dashboard", style = MaterialTheme.typography.displayLarge)
-                        Text("Welcome, " + instance.userHandler.authenticatedUser.name + "!", style = lightDisplayMedium)
+                        Text("Welcome, " + UserHandler.getInstance().authenticatedUser.name + "!", style = lightDisplayMedium)
                     }
                 }
                 Row(Modifier.weight(0.3f)) {

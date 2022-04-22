@@ -36,6 +36,16 @@ public class TicketFlow {
     }
 
     /**
+     * Starts the java backend from the Kotlin frontend.
+     */
+    public static void startJavaBackend() {
+        TicketFlow tf = new TicketFlow();
+        Thread javaBackend = new Thread(tf::start);
+        javaBackend.setName("TF-Backend");
+        javaBackend.start();
+    }
+
+    /**
      * Starts the backend
      */
     public void start() {
@@ -54,25 +64,5 @@ public class TicketFlow {
         Dao.getInstance().connect();
         Dao.getInstance().createTables();
         Dao.getInstance().loadEntitiesIntoCache();
-    }
-
-    /**
-     * Gets the user handler.
-     *
-     * @return {@link UserHandler}
-     */
-    public UserHandler getUserHandler() {
-        return UserHandler.getInstance();
-    }
-
-    /**
-     * Starts the java backend from the Kotlin frontend.
-     */
-    public static TicketFlow startJavaBackend() {
-        TicketFlow ticketing = new TicketFlow();
-        Thread javaBackend = new Thread(ticketing::start);
-        javaBackend.setName("TF-Backend");
-        javaBackend.start();
-        return ticketing;
     }
 }

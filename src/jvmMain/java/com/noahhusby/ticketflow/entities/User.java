@@ -21,14 +21,16 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
+ * A representation of a user object.
+ *
  * @author Noah Husby
  */
 public class User {
     private final int id;
+    private final LocalDateTime createdAt;
     private String username;
     private String name;
     private boolean admin;
-    private final LocalDateTime createdAt;
 
     public User(int id, String username, String name, boolean admin, LocalDateTime createdAt) {
         this.id = id;
@@ -38,34 +40,77 @@ public class User {
         this.createdAt = createdAt;
     }
 
+    /**
+     * Gets the numerical id of the user.
+     * This is assigned by sequently by the database.
+     *
+     * @return ID of user.
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * Gets the username of the user.
+     *
+     * @return The username of the user.
+     */
     public String getUsername() {
         return username;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public boolean isAdmin() {
-        return admin;
-    }
-
+    /**
+     * Sets the username of the user in the local cache.
+     *
+     * @param username The new username of the user.
+     */
     public void setUsername(String username) {
         this.username = username;
     }
 
+    /**
+     * Gets the full name of the user.
+     *
+     * @return The full name of the user.
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the name of the user in the local cache.
+     *
+     * @param name The new name of the user.
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Gets whether the user has administrative privileges or not.
+     * - Users can only open and view their own tickets.
+     * - Admins can manage all tickets and users.
+     *
+     * @return True if the user is an admin, false otherwise.
+     */
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    /**
+     * Sets whether the user has administrative privileges in the local cache.
+     *
+     * @param admin True if admin, false otherwise.
+     */
     public void setAdmin(boolean admin) {
         this.admin = admin;
     }
 
+    /**
+     * Gets the date and time of the user creation.
+     *
+     * @return Date and time formatted as a String.
+     */
     public String getFormattedDate() {
         return createdAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }

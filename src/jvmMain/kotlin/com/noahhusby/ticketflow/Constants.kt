@@ -24,3 +24,11 @@ const val ADD_USER_TAKEN_ERROR = "Username is taken. Please choose another usern
 const val ADD_USER_USERNAME_SUPPORTS = "Username is invalid. Valid characters include \"[a-zA-Z0-9._]\"."
 const val ADD_USER_PASSWORD_INVALID = "Password must have minimum eight characters, at least one letter and one number."
 const val ADD_USER_PASSWORDS_DONT_MATCH = "Passwords don't match."
+
+const val DB_TICKETS_TABLE = "n_husb_tickets"
+const val DB_USERS_TABLE = "n_husb_users"
+const val DB_STATUS_TABLE = "n_husb_status"
+
+const val DB_CREATE_TICKETS_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS $DB_TICKETS_TABLE(id INT AUTO_INCREMENT PRIMARY KEY, issuer VARCHAR(36), description VARCHAR(200))"
+const val DB_CREATE_USERS_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS $DB_USERS_TABLE(id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(30), password VARCHAR(30), name VARCHAR(70), admin int, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)"
+const val DB_CREATE_STATUS_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS $DB_STATUS_TABLE(id INT, time LONG, user VARCHAR(36), status VARCHAR(24))"

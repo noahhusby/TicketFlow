@@ -48,11 +48,11 @@ import java.util.*
 class UserPage : Page {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    override fun render(instance: TicketFlow) {
+    override fun render() {
         val users = remember { mutableStateListOf<User>() }
         LaunchedEffect(true) {
             users.removeAll { true }
-            users.addAll(instance.userHandler.users.values)
+            users.addAll(UserHandler.getInstance().users.values)
         }
         var selectedIndex by remember { mutableStateOf(-1) }
         val showUserPanel by derivedStateOf { selectedIndex != -1 }
@@ -72,7 +72,7 @@ class UserPage : Page {
                         selectedIndex = -1
                         isDeleteUserDialogOpen = false
                         users.removeAll { true }
-                        users.addAll(instance.userHandler.users.values)
+                        users.addAll(UserHandler.getInstance().users.values)
                     })
                 }
             }
@@ -87,7 +87,7 @@ class UserPage : Page {
                 addUserDialog(onCloseDialog = { isAddUserDialogOpen = false }, onUserAdd = {
                     isAddUserDialogOpen = false
                     users.removeAll { true }
-                    users.addAll(instance.userHandler.users.values)
+                    users.addAll(UserHandler.getInstance().users.values)
                 })
             }
         }
@@ -101,7 +101,7 @@ class UserPage : Page {
                 editUserDialog(users[selectedIndex], onCloseDialog = { isEditUserDialogOpen = false }, onUserAdd = {
                     isEditUserDialogOpen = false
                     users.removeAll { true }
-                    users.addAll(instance.userHandler.users.values)
+                    users.addAll(UserHandler.getInstance().users.values)
                 })
             }
         }
@@ -143,7 +143,7 @@ class UserPage : Page {
                                 val user = users[selectedIndex]
                                 Surface(Modifier.fillMaxSize().padding(horizontal = 25.dp, vertical = 10.dp), tonalElevation = 2.dp, shadowElevation = 1.dp, shape = RoundedCornerShape(10.dp)) {
                                     Column(Modifier.fillMaxSize().padding(25.dp), verticalArrangement = Arrangement.SpaceBetween) {
-                                        Column() {
+                                        Column {
                                             Row(Modifier.fillMaxWidth().height(40.dp), verticalAlignment = Alignment.CenterVertically) {
                                                 Text(user.name, style = MaterialTheme.typography.headlineSmall)
                                                 if (user.isAdmin) {

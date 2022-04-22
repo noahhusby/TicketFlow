@@ -41,12 +41,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.noahhusby.ticketflow.AuthenticationResult
-import com.noahhusby.ticketflow.TicketFlow
+import com.noahhusby.ticketflow.UserHandler
 import com.noahhusby.ticketflow.ui.theme.surfaceColorAtElevation
 import com.noahhusby.ticketflow.ui.theme.ticketingFieldColors
 
 @Composable
-fun login(instance: TicketFlow, onAuthentication: () -> Unit) {
+fun login(onAuthentication: () -> Unit) {
     Surface(Modifier.fillMaxSize()) {
         Card(
             Modifier.fillMaxHeight().requiredWidth(480.dp).padding(vertical = 200.dp),
@@ -62,14 +62,14 @@ fun login(instance: TicketFlow, onAuthentication: () -> Unit) {
                 val image: Painter = painterResource("logo.png")
                 Spacer(modifier = Modifier.weight(0.5f))
                 Image(painter = image, contentDescription = "", Modifier.align(Alignment.CenterHorizontally), colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.primary))
-                interactionComponent(instance, onAuthentication)
+                interactionComponent(onAuthentication)
             }
         }
     }
 }
 
 @Composable
-private fun interactionComponent(instance: TicketFlow, onAuthentication: () -> Unit) {
+private fun interactionComponent(onAuthentication: () -> Unit) {
     var username by remember { mutableStateOf("") }
     var buttonText by remember { mutableStateOf("Log In") }
     var errorText by remember { mutableStateOf("") }
@@ -135,7 +135,7 @@ private fun interactionComponent(instance: TicketFlow, onAuthentication: () -> U
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
-                val future = instance.userHandler.authenticate(username, password)
+                val future = UserHandler.getInstance().authenticate(username, password)
                 isAuthenticating = true
                 errorText = ""
                 buttonText = "Logging In ..."

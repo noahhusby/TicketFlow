@@ -28,10 +28,10 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import com.noahhusby.ticketflow.ui.MainWindow
 import com.noahhusby.ticketflow.ui.login
-import com.noahhusby.ticketflow.ui.theme.TicketFlowTheme
+import com.noahhusby.ticketflow.ui.theme.ticketFlowTheme
 
 fun main() = application {
-    val instance = TicketFlow.startJavaBackend()
+    TicketFlow.startJavaBackend()
     val state = rememberWindowState(placement = WindowPlacement.Maximized)
     Window(
         onCloseRequest = ::exitApplication,
@@ -44,20 +44,20 @@ fun main() = application {
     ) {
         val isSystemInDarkTheme = isSystemInDarkTheme()
         var isDarkMode by remember { mutableStateOf(isSystemInDarkTheme) }
-        TicketFlowTheme(isDarkMode) {
+        ticketFlowTheme(isDarkMode) {
             var isAuthenticated by remember { mutableStateOf(false) }
             if (isAuthenticated) {
-                MainWindow(instance, isDarkMode,
+                MainWindow(isDarkMode,
                     toggleDarkMode = {
                         isDarkMode = !isDarkMode
                         return@MainWindow isDarkMode
                     },
                     logout = {
                         isAuthenticated = false
-                        instance.userHandler.logout()
+                        UserHandler.getInstance().logout()
                     }).gui()
             } else {
-                login(instance, onAuthentication = {
+                login(onAuthentication = {
                     isAuthenticated = true
                 })
             }

@@ -70,7 +70,7 @@ private val DarkThemeColors = darkColorScheme(
 )
 
 @Composable
-fun TicketFlowTheme(
+fun ticketFlowTheme(
     isDarkMode: Boolean,
     content: @Composable () -> Unit
 ) {

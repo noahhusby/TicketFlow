@@ -33,22 +33,32 @@ import java.util.concurrent.CompletableFuture;
  */
 public class UserHandler {
     private static final UserHandler instance = new UserHandler();
+    private User authenticatedUser;
+    private Map<Integer, User> users = new TreeMap<>();
 
     public static UserHandler getInstance() {
         return instance;
     }
 
-    private User authenticatedUser;
-
-    private Map<Integer, User> users = new TreeMap<>();
-
+    /**
+     * Logs the current user out.
+     */
     public void logout() {
         authenticatedUser = null;
     }
 
+    /**
+     * Attempts to authenticate a user given its username and password.
+     *
+     * @param username The username of the user.
+     * @param password The password of the user.
+     * @return A future of {@link AuthenticationResult}.
+     */
     public CompletableFuture<AuthenticationResult> authenticate(String username, String password) {
         CompletableFuture<AuthenticationResult> future = new CompletableFuture<>();
         TicketFlow.getLogger().info(String.format("Attempting to authenticate user: \"%s\".", username));
+
+        // Starts a watchdog in-case DB thread locks up
         Thread authenticationWatchdogThread = new Thread(() -> {
             long start = System.currentTimeMillis();
             //noinspection StatementWithEmptyBody
@@ -63,6 +73,7 @@ public class UserHandler {
         authenticationWatchdogThread.setDaemon(true);
         authenticationWatchdogThread.start();
 
+        // Cross-checks authentication request with the database
         Thread authenticationThread = new Thread(() -> {
             try {
                 User user = Dao.getInstance().authenticateUser(username, password);
@@ -86,6 +97,15 @@ public class UserHandler {
         return future;
     }
 
+    /**
+     * Edits a user's information and saves it to the DB and cache.
+     *
+     * @param user     The user to be updated.
+     * @param name     The new name of the user.
+     * @param username The new username of the user.
+     * @param password The new password of the user.
+     * @param admin    Whether the user should be an admin or not.
+     */
     public void editUser(User user, String name, String username, String password, boolean admin) {
         if (!user.getName().equals(name)) {
             Dao.getInstance().updateUser(user.getId(), "name", name);
@@ -104,6 +124,12 @@ public class UserHandler {
         }
     }
 
+    /**
+     * Checks whether a given username is taken.
+     *
+     * @param username The username to check.
+     * @return True if taken, false otherwise.
+     */
     public boolean isUsernameTaken(String username) {
         for (User user : users.values()) {
             if (user.getUsername().equalsIgnoreCase(username)) {
@@ -113,6 +139,15 @@ public class UserHandler {
         return false;
     }
 
+    /**
+     * Creates a new user and saves it to the database / cache.
+     *
+     * @param username Username of the user.
+     * @param password Password of the user.
+     * @param name     Name of the user.
+     * @param admin    Whether the user should be an admin or not.
+     * @return {@link User} if account creation was successful, null otherwise.
+     */
     public User createNewUser(String username, String password, String name, boolean admin) {
         for (User user : users.values()) {
             if (user.getUsername().equalsIgnoreCase(username)) {
@@ -128,21 +163,41 @@ public class UserHandler {
         return user;
     }
 
+    /**
+     * Removes a user based upon a given user object.
+     *
+     * @param user The user to be deleted.
+     */
     public void removeUser(User user) {
         Dao.getInstance().removeUser(user.getId());
         this.users.remove(user.getId());
     }
 
+    /**
+     * Gets a map of users.
+     *
+     * @return A map of users by their IDs. [sorted in natural order]
+     */
     public Map<Integer, User> getUsers() {
         return users;
     }
 
+    /**
+     * Inserts a list of stored users. This is used as a cache drop on start-up.
+     *
+     * @param userList A list of users to be inserted into the cache.
+     */
     protected void insertStoredUsers(List<User> userList) {
         Map<Integer, User> temp = new HashMap<>();
         userList.forEach(user -> temp.put(user.getId(), user));
         this.users = temp;
     }
 
+    /**
+     * Gets the currently authenticated user.
+     *
+     * @return {@link User} representation of current user.
+     */
     public User getAuthenticatedUser() {
         return authenticatedUser;
     }

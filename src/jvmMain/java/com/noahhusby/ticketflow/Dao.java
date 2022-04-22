@@ -42,11 +42,20 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * A utility for handling database connections
+ *
  * @author Noah Husby
  */
 public class Dao {
 
     private static final Dao instance = new Dao();
+    private final Credentials credentials;
+    private HikariDataSource ds;
+    protected Dao() {
+        // Using a few utility classes from HusbyLib, my own library, to keep data structured.
+        credentials = new Credentials(TicketFlowConfig.DB_HOST, TicketFlowConfig.DB_PORT, TicketFlowConfig.DB_USERNAME, TicketFlowConfig.DB_PASSWORD, TicketFlowConfig.DB_NAME);
+        new Select(null, null, null).query();
+    }
 
     /**
      * Gets the singleton instance of the database handler.
@@ -57,16 +66,8 @@ public class Dao {
         return instance;
     }
 
-    private final Credentials credentials;
-    private HikariDataSource ds;
-
-    protected Dao() {
-        credentials = new Credentials(TicketFlowConfig.DB_HOST, TicketFlowConfig.DB_PORT, TicketFlowConfig.DB_USERNAME, TicketFlowConfig.DB_PASSWORD, TicketFlowConfig.DB_NAME);
-        new Select(null, null, null).query();
-    }
-
-
     public void connect() {
+        // Hikari is a DB pool that helps manage SQL connections in a better way. Syntax for queries remains the same.
         HikariConfig config = credentials.toHikariConfig("jdbc:mysql://");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", 2048);
@@ -78,6 +79,11 @@ public class Dao {
         ds = new HikariDataSource(config);
     }
 
+    /**
+     * Gets the SQL connection from the Hikari pool.
+     *
+     * @return {@link Connection}
+     */
     public Connection getConnection() {
         try {
 
@@ -88,10 +94,12 @@ public class Dao {
         }
     }
 
-    public void close() {
-        ds.close();
-    }
-
+    /**
+     * Executes a query.
+     *
+     * @param query The query to be executed.
+     * @return True if correctly executed, false otherwise.
+     */
     public boolean execute(Query query) {
         Connection con = getConnection();
         if (con == null) {
@@ -124,6 +132,12 @@ public class Dao {
         return false;
     }
 
+    /**
+     * Gets a {@link Result} from a selection query.
+     *
+     * @param select {@link Select}
+     * @return A {@link Result} if query was successful, null otherwise.
+     */
     public Result select(Select select) {
         Connection con = getConnection();
         if (con == null) {
@@ -143,20 +157,14 @@ public class Dao {
                 boolean bound = true;
                 while (bound) {
                     try {
-                        boolean addedJson = false;
-                        if (!addedJson) {
-                            row.addColumn(resmeta.getColumnName(i), res.getObject(i));
-                        }
-
+                        row.addColumn(resmeta.getColumnName(i), res.getObject(i));
                     } catch (SQLException e) {
                         bound = false;
                     }
-
                     i++;
                 }
                 result.addRow(row);
             }
-
             res.close();
             stmt.close();
             con.close();
@@ -172,9 +180,13 @@ public class Dao {
         }
     }
 
+    /**
+     * Loads entities from database into the local cache.
+     * This allows the interface to be updated without querying the database on recomposition.
+     */
     public void loadEntitiesIntoCache() {
         TicketFlow.getLogger().info("Loading entities into cache ...");
-        Result users = select(new Select("n_husb_users", "*", null));
+        Result users = select(new Select(ConstantsKt.DB_USERS_TABLE, "*", null));
         if (users == null) {
             TicketFlow.getLogger().warn("Failed to load user cache!");
         } else if (!users.getRows().isEmpty()) {
@@ -189,24 +201,35 @@ public class Dao {
     }
 
     /**
-     * Creates the required tables
+     * Creates the required tables.
      */
     public void createTables() {
-        final String createTicketsTable = "CREATE TABLE IF NOT EXISTS n_husb_tickets(id INT AUTO_INCREMENT PRIMARY KEY, issuer VARCHAR(36), description VARCHAR(200))";
-        final String createUsersTable = "CREATE TABLE IF NOT EXISTS n_husb_users(id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(30), password VARCHAR(30), name VARCHAR(70), admin int, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)";
-        final String createTicketStatusTable = "CREATE TABLE IF NOT EXISTS n_husb_status(id INT, time LONG, user VARCHAR(36), status VARCHAR(24))";
-
+        // The queries are located in Constants.kt file (ConstantsKt in java syntax)
         TicketFlow.getLogger().debug("Creating tickets table ...");
-        execute(new Custom(createTicketsTable));
+        if (!execute(new Custom(ConstantsKt.DB_CREATE_TICKETS_TABLE_QUERY))) {
+            TicketFlow.getLogger().warn("Failed to create tickets table!");
+        }
         TicketFlow.getLogger().debug("Creating users table ...");
-        execute(new Custom(createUsersTable));
+        if (!execute(new Custom(ConstantsKt.DB_CREATE_USERS_TABLE_QUERY))) {
+            TicketFlow.getLogger().warn("Failed to create users table!");
+        }
         TicketFlow.getLogger().debug("Creating status table ...");
-        execute(new Custom(createTicketStatusTable));
+        if (!execute(new Custom(ConstantsKt.DB_CREATE_STATUS_TABLE_QUERY))) {
+            TicketFlow.getLogger().warn("Failed to create status table!");
+        }
         TicketFlow.getLogger().debug("All tables have been created.");
     }
 
+    /**
+     * Attempts to authenticate a user based upon a given username and password.
+     *
+     * @param username The username of the user.
+     * @param password The password of the user.
+     * @return {@link User} if credentials are correct, null otherwise.
+     * @throws IOException if there is an error while contacting the database.
+     */
     public User authenticateUser(String username, String password) throws IOException {
-        Result result = select(new Select("n_husb_users", "*", "username='" + username + "'"));
+        Result result = select(new Select(ConstantsKt.DB_USERS_TABLE, "*", "username='" + username + "'"));
         if (result == null) {
             throw new IOException("Failed to fetch user");
         }
@@ -222,22 +245,34 @@ public class Dao {
         return new User((Integer) row.get("id"), (String) row.get("username"), (String) row.get("name"), admin == 1, (LocalDateTime) row.get("created_at"));
     }
 
+    /**
+     * Updates a specific column for a specified user.
+     *
+     * @param id     The id of the user to update.
+     * @param column The column name to update.
+     * @param value  The new value.
+     */
     public void updateUser(int id, String column, String value) {
-        execute(new Update("n_husb_users", new UpdateValue(column, value), "id='" + id + "'"));
+        if (!execute(new Update(ConstantsKt.DB_USERS_TABLE, new UpdateValue(column, value), "id='" + id + "'"))) {
+            TicketFlow.getLogger().warn(String.format("Failed to update user \"%s\" in column \"%s\" with value \"%s\"", id, column, value));
+        }
     }
 
+    /**
+     * Saves a new user to the database.
+     *
+     * @param username The username of the user.
+     * @param password The password of the user.
+     * @param name     The name of the user.
+     * @param admin    True if the user has administrative rights, false otherwise.
+     * @return An entry consisting of the user's id, and the time of account creation.
+     */
     public Map.Entry<Integer, LocalDateTime> saveNewUser(String username, String password, String name, boolean admin) {
         TicketFlow.getLogger().debug("Saving user: " + name);
-
-        execute(
-                new Insert(
-                        "n_husb_users",
-                        "username,password,name,admin",
-                        username, password, name, String.valueOf(admin ? 1 : 0)
-                )
-        );
-
-        Result result = select(new Select("n_husb_users", "id,created_at", "username='" + username + "'"));
+        if (execute(new Insert(ConstantsKt.DB_USERS_TABLE, "username,password,name,admin", username, password, name, String.valueOf(admin ? 1 : 0)))) {
+            TicketFlow.getLogger().warn("Failed to save new user: " + username);
+        }
+        Result result = select(new Select(ConstantsKt.DB_USERS_TABLE, "id,created_at", "username='" + username + "'"));
 
         // Hacky way to cleanly return two values since I've yet to implement Pair<> into HusbyLib
         return new Map.Entry<>() {
@@ -258,9 +293,16 @@ public class Dao {
         };
     }
 
+    /**
+     * Removes a user from the database given its id.
+     *
+     * @param id ID of user to remove.
+     */
     public void removeUser(int id) {
         TicketFlow.getLogger().debug("Removing user by ID: " + id);
-        execute(new Custom("DELETE FROM n_husb_users WHERE id='" + id + "'"));
+        if (execute(new Custom("DELETE FROM " + ConstantsKt.DB_USERS_TABLE + " WHERE id='" + id + "'"))) {
+            TicketFlow.getLogger().warn(String.format("Failed to remove user \"%s\" by ID.", id));
+        }
     }
 
     /*
@@ -300,9 +342,5 @@ public class Dao {
         }
         return results;
     }
-    // continue coding for updateRecords implementation
-
-    // continue coding for deleteRecords implementation
-
      */
 }

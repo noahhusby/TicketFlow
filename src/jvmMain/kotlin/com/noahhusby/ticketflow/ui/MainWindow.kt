@@ -28,13 +28,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.noahhusby.ticketflow.TicketFlow
+import com.noahhusby.ticketflow.UserHandler
 
-class MainWindow(private val instance: TicketFlow, private val startedDarkMode: Boolean, val toggleDarkMode: () -> Boolean, val logout: () -> Unit) {
+class MainWindow(private val startedDarkMode: Boolean, val toggleDarkMode: () -> Boolean, val logout: () -> Unit) {
 
     @Composable
     fun gui() {
-        val user = instance.userHandler.authenticatedUser
+        val user = UserHandler.getInstance().authenticatedUser
         var currentPage by remember { mutableStateOf(Pages.HOME) }
         var darkModeIcon by remember { mutableStateOf(startedDarkMode) }
         Row(modifier = Modifier.background(color = MaterialTheme.colorScheme.surface).fillMaxSize()) {
@@ -77,7 +77,7 @@ class MainWindow(private val instance: TicketFlow, private val startedDarkMode: 
                 }
             }
 
-            currentPage.page.render(instance)
+            currentPage.page.render()
         }
     }
 }

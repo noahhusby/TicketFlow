@@ -18,9 +18,8 @@
 package com.noahhusby.ticketflow.ui.pages
 
 import androidx.compose.runtime.Composable
-import com.noahhusby.ticketflow.TicketFlow
 
 interface Page {
     @Composable
-    fun render(instance: TicketFlow)
+    fun render()
 }

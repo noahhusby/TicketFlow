@@ -28,7 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 
-class PieChartLegendKey(val name: String, val color: Color, var textColor: Color? = null, var textStyle: TextStyle? = null) {
+class PieChartLegendKey(val name: String, val color: Color, private var textColor: Color? = null, private var textStyle: TextStyle? = null) {
     @Composable
     fun render() {
         if (textColor == null) {

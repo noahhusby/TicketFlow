@@ -24,7 +24,7 @@ import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.PaintingStyle
 import com.noahhusby.ticketflow.ui.elements.charts.PieChartData
 
-class SimpleSliceDrawer() {
+class SimpleSliceDrawer {
 
     private val sectionPaint = Paint().apply {
         isAntiAlias = true
