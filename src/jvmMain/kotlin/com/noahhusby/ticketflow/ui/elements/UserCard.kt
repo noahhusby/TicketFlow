@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.noahhusby.ticketflow.entities.User
 import com.noahhusby.ticketflow.ui.theme.surfaceColorAtElevation
 
-class UserCell(val user: User) {
+class UserCard(val user: User) {
 
     @OptIn(ExperimentalMaterialApi::class)
     @Composable

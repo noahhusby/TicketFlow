@@ -33,7 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.noahhusby.ticketflow.TicketFlow
 import com.noahhusby.ticketflow.entities.User
-import com.noahhusby.ticketflow.ui.elements.UserCell
+import com.noahhusby.ticketflow.ui.elements.UserCard
 import java.util.*
 
 class UserPage : Page {
@@ -70,7 +70,7 @@ class UserPage : Page {
                             // Users column
                             Column(Modifier.fillMaxHeight().wrapContentWidth()) {
                                 for (user in users) {
-                                    UserCell(user).render()
+                                    UserCard(user).render()
                                 }
                             }
 
@@ -81,26 +81,6 @@ class UserPage : Page {
                     }
                 }
             }
-        }
-    }
-
-    @Composable
-    fun <T : Any> rememberMutableStateListOf(vararg elements: T): SnapshotStateList<T> {
-        return rememberSaveable(
-            saver = listSaver(
-                save = { stateList ->
-                    if (stateList.isNotEmpty()) {
-                        val first = stateList.first()
-                        if (!canBeSaved(first)) {
-                            throw IllegalStateException("${first::class} cannot be saved. By default only types which can be stored in the Bundle class can be saved.")
-                        }
-                    }
-                    stateList.toList()
-                },
-                restore = { it.toMutableStateList() }
-            )
-        ) {
-            elements.toList().toMutableStateList()
         }
     }
 }
