@@ -49,7 +49,7 @@ class UserPage : Page {
                 ExtendedFloatingActionButton(
                     onClick = {
                         val temp = Random().nextInt()
-                        Dao.getInstance().saveNewUser("Joe User$temp", "password01", "Joe User$temp", temp % 2 == 0)
+                        instance.userHandler.createNewUser("Joe User$temp", "password01", "Joe User$temp", temp % 2 == 0)
                         users.removeAll { true }
                         users.addAll(instance.userHandler.users.values)
                     },

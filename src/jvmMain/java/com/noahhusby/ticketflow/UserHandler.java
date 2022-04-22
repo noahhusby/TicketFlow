@@ -84,7 +84,7 @@ public class UserHandler {
         return future;
     }
 
-    public User createNewUser(int id, String username, String name, boolean admin) {
+    public User createNewUser(String username, String password, String name, boolean admin) {
         for (User user : users.values()) {
             if (user.getUsername().equalsIgnoreCase(username)) {
                 return null;
@@ -93,6 +93,7 @@ public class UserHandler {
         if (name == null) {
             name = username;
         }
+        int id = Dao.getInstance().saveNewUser(username, password, name, admin);
         User user = new User(id, username, name, admin);
         users.put(user.getId(), user);
         return user;

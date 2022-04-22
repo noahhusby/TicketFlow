@@ -219,7 +219,7 @@ public class Dao {
     }
 
 
-    public void saveNewUser(String username, String password, String name, boolean admin) {
+    public int saveNewUser(String username, String password, String name, boolean admin) {
         TicketFlow.getLogger().debug("Saving user: " + name);
 
         execute(
@@ -231,9 +231,7 @@ public class Dao {
         );
 
         Result result = select(new Select("n_husb_users", "id", "username='" + username + "'"));
-        int id = (int) result.getRows().get(0).get("id");
-        UserHandler.getInstance().createNewUser(id, username, name, admin);
-        TicketFlow.getLogger().debug("Saved user: " + name);
+        return (int) result.getRows().get(0).get("id");
     }
 
     /*
