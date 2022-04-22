@@ -27,12 +27,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.WindowPosition
-import androidx.compose.ui.window.rememberDialogState
 import com.noahhusby.ticketflow.TicketFlow
 import com.noahhusby.ticketflow.entities.User
 import com.noahhusby.ticketflow.ui.elements.UserCard
+import com.noahhusby.ticketflow.ui.elements.dialog
 import com.noahhusby.ticketflow.ui.theme.warningButtonColors
 import java.util.*
 
@@ -47,34 +45,12 @@ class UserPage : Page {
         var selectedIndex by remember { mutableStateOf(-1) }
 
         if (isDeleteUserDialogOpen) {
-            Dialog(
+            dialog(
                 onCloseRequest = { isDeleteUserDialogOpen = false },
-                state = rememberDialogState(position = WindowPosition(Alignment.Center), height = 125.dp, width = 500.dp),
-                undecorated = true,
-                transparent = true
+                height = 125.dp,
+                width = 500.dp
             ) {
-                Surface(shape = RoundedCornerShape(10.dp), modifier = Modifier.fillMaxSize()) {
-                    Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.SpaceBetween) {
-                        Text("Are you sure you want to delete " + users[selectedIndex].name + "?")
-                        Row(Modifier.fillMaxWidth().wrapContentHeight(), verticalAlignment = Alignment.CenterVertically) {
-                            OutlinedButton(onClick = {
-                                isDeleteUserDialogOpen = false
-                            }) {
-                                Text("Cancel")
-                            }
-                            Spacer(Modifier.width(12.dp))
-                            FilledTonalButton(
-                                onClick = {
-                                    // TODO: Delete user
-                                    isDeleteUserDialogOpen = false
-                                },
-                                colors = warningButtonColors()
-                            ) {
-                                Text(text = "Yes")
-                            }
-                        }
-                    }
-                }
+                deleteUserDialog(users[selectedIndex], onCloseDialog = { isDeleteUserDialogOpen = false })
             }
         }
 
@@ -155,6 +131,34 @@ class UserPage : Page {
                                 }
                             }
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun deleteUserDialog(user: User, onCloseDialog: () -> Unit) {
+        Surface(shape = RoundedCornerShape(10.dp), modifier = Modifier.fillMaxSize()) {
+            Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.SpaceBetween) {
+                Text("Are you sure you want to delete " + user.name + "?")
+                Row(Modifier.fillMaxWidth().wrapContentHeight(), verticalAlignment = Alignment.CenterVertically) {
+                    OutlinedButton(
+                        onClick = {
+                            onCloseDialog.invoke()
+                        }
+                    ) {
+                        Text("Cancel")
+                    }
+                    Spacer(Modifier.width(12.dp))
+                    FilledTonalButton(
+                        onClick = {
+                            // TODO: Delete user
+                            onCloseDialog.invoke()
+                        },
+                        colors = warningButtonColors()
+                    ) {
+                        Text(text = "Yes")
                     }
                 }
             }
