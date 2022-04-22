@@ -32,6 +32,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
 import com.noahhusby.ticketflow.TicketFlow
 import com.noahhusby.ticketflow.UserHandler
@@ -40,6 +41,7 @@ import com.noahhusby.ticketflow.ui.elements.UserCard
 import com.noahhusby.ticketflow.ui.elements.dialog
 import com.noahhusby.ticketflow.ui.theme.ticketingFieldColors
 import com.noahhusby.ticketflow.ui.theme.warningButtonColors
+import java.util.*
 
 class UserPage : Page {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -206,6 +208,9 @@ class UserPage : Page {
                             modifier = Modifier.weight(0.5f),
                             value = name,
                             onValueChange = {
+                                if(username.replace(".", " ").equals(name, ignoreCase = true)) {
+                                    username = it.replace(" ", ".").lowercase(Locale.US)
+                                }
                                 isUsernameErrored = false
                                 name = it
                             },
