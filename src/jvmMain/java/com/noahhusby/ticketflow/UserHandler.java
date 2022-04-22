@@ -86,6 +86,15 @@ public class UserHandler {
         return future;
     }
 
+    public boolean isUsernameTaken(String username) {
+        for (User user : users.values()) {
+            if (user.getUsername().equalsIgnoreCase(username)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public User createNewUser(String username, String password, String name, boolean admin) {
         for (User user : users.values()) {
             if (user.getUsername().equalsIgnoreCase(username)) {

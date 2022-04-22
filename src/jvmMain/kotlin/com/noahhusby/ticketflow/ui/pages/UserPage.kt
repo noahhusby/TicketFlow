@@ -22,20 +22,22 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
-import com.noahhusby.ticketflow.TicketFlow
-import com.noahhusby.ticketflow.UserHandler
+import com.noahhusby.ticketflow.*
 import com.noahhusby.ticketflow.entities.User
 import com.noahhusby.ticketflow.ui.elements.UserCard
 import com.noahhusby.ticketflow.ui.elements.dialog
@@ -73,17 +75,14 @@ class UserPage : Page {
         if (isAddUserDialogOpen) {
             dialog(
                 onCloseRequest = { isAddUserDialogOpen = false },
-                height = 700.dp,
+                height = 600.dp,
                 width = 500.dp
             ) {
                 addUserDialog(onCloseDialog = { isAddUserDialogOpen = false }, onUserAdd = {
                     isAddUserDialogOpen = false
-                    /*
                     selectedIndex = -1
                     users.removeAll { true }
                     users.addAll(instance.userHandler.users.values)
-
-                     */
                 })
             }
         }
@@ -92,19 +91,9 @@ class UserPage : Page {
         Scaffold(
             floatingActionButton = {
                 ExtendedFloatingActionButton(
-                    onClick = {
-                        isAddUserDialogOpen = true
-                        //val temp = Random().nextInt()
-                        //instance.userHandler.createNewUser("Joe User$temp", "password01", "Joe User$temp", temp % 2 == 0)
-                        //users.removeAll { true }
-                        //users.addAll(instance.userHandler.users.values)
-                    },
-                    text = {
-                        Text("New User")
-                    },
-                    icon = {
-                        Icon(imageVector = Icons.Default.Add, contentDescription = null)
-                    }
+                    onClick = { isAddUserDialogOpen = true },
+                    text = { Text("New User") },
+                    icon = { Icon(imageVector = Icons.Default.Add, contentDescription = null) }
                 )
             }
         ) {
@@ -185,12 +174,16 @@ class UserPage : Page {
         Surface(shape = RoundedCornerShape(10.dp), modifier = Modifier.fillMaxSize()) {
             var name by remember { mutableStateOf("") }
             var username by remember { mutableStateOf("") }
-            var buttonText by remember { mutableStateOf("Log In") }
-            var isUsernameErrored by remember { mutableStateOf(false) }
-            var isAuthenticating by remember { mutableStateOf(false) }
+            var errorText by remember { mutableStateOf("") }
             var password by remember { mutableStateOf("") }
+            var passwordConfirm by remember { mutableStateOf("") }
             var isPasswordVisible by remember { mutableStateOf(false) }
-            val isFormValid by derivedStateOf { username.isNotBlank() && password.length >= 7 }
+            var isUsernameErrored by remember { mutableStateOf(false) }
+            var isPasswordConfirmErrored by remember { mutableStateOf(false) }
+            var isAdmin by remember { mutableStateOf(false) }
+
+            val isPasswordValid by derivedStateOf { password.matches(Regex(PASSWORD_REGEX)) }
+            val isFormValid by derivedStateOf { username.matches(Regex(USERNAME_REGEX)) && username.isNotBlank() && password.length >= 7 && !UserHandler.getInstance().isUsernameTaken(username) }
 
             Column(
                 Modifier.fillMaxSize().padding(20.dp),
@@ -208,15 +201,12 @@ class UserPage : Page {
                             modifier = Modifier.weight(0.5f),
                             value = name,
                             onValueChange = {
-                                if(username.replace(".", " ").equals(name, ignoreCase = true)) {
+                                if (username.replace(".", " ").equals(name, ignoreCase = true)) {
                                     username = it.replace(" ", ".").lowercase(Locale.US)
                                 }
-                                isUsernameErrored = false
                                 name = it
                             },
                             colors = ticketingFieldColors(),
-                            isError = isUsernameErrored,
-
                             label = { Text(text = "Name") },
                             singleLine = true
                         )
@@ -227,9 +217,16 @@ class UserPage : Page {
                             onValueChange = {
                                 isUsernameErrored = false
                                 username = it
+                                val usernameTaken = UserHandler.getInstance().isUsernameTaken(username)
+                                isUsernameErrored = usernameTaken
+                                if (usernameTaken) {
+                                    errorText = ADD_USER_TAKEN_ERROR
+                                } else if (errorText == ADD_USER_TAKEN_ERROR) {
+                                    errorText = ""
+                                }
                             },
                             colors = ticketingFieldColors(),
-                            isError = isUsernameErrored,
+                            isError = isUsernameErrored || UserHandler.getInstance().isUsernameTaken(username),
 
                             label = { Text(text = "Username") },
                             singleLine = true
@@ -238,9 +235,15 @@ class UserPage : Page {
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
-                        enabled = !isAuthenticating,
                         value = password,
-                        onValueChange = { password = it },
+                        onValueChange = {
+                            password = it
+                            if (!isPasswordValid) {
+                                errorText = ADD_USER_PASSWORD_INVALID
+                            } else if (errorText == ADD_USER_PASSWORD_INVALID) {
+                                errorText = ""
+                            }
+                        },
                         label = { Text(text = "Password") },
                         colors = ticketingFieldColors(),
                         singleLine = true,
@@ -258,6 +261,45 @@ class UserPage : Page {
                             }
                         }
                     )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = passwordConfirm,
+                        onValueChange = {
+                            passwordConfirm = it
+                            if (passwordConfirm != password) {
+                                errorText = ADD_USER_PASSWORDS_DONT_MATCH
+                                isPasswordConfirmErrored = true
+                            } else if (errorText == ADD_USER_PASSWORDS_DONT_MATCH) {
+                                isPasswordConfirmErrored = false
+                                errorText = ""
+                            }
+                        },
+                        isError = isPasswordConfirmErrored,
+                        label = { Text(text = "Confirm Password") },
+                        colors = ticketingFieldColors(),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Password,
+                            imeAction = ImeAction.Done
+                        ),
+                        visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        trailingIcon = {
+                            IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+                                Icon(
+                                    imageVector = if (isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                    contentDescription = "Password Toggle"
+                                )
+                            }
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = errorText, color = Color.Red, style = MaterialTheme.typography.labelMedium)
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.wrapContentSize()) {
+                        Checkbox(checked = isAdmin, onCheckedChange = { b -> isAdmin = b })
+                        Text("Administrator")
+                    }
                 }
 
                 // Action Row
@@ -266,9 +308,13 @@ class UserPage : Page {
                         Text("Cancel")
                     }
                     Spacer(Modifier.width(12.dp))
-                    Button(onClick = {
-                        onUserAdd.invoke()
-                    }) {
+                    Button(
+                        onClick = {
+                            UserHandler.getInstance().createNewUser(username, password, name, isAdmin)
+                            onUserAdd.invoke()
+                        },
+                        enabled = isFormValid
+                    ) {
                         Text("Create")
                         Icon(Icons.Default.Check, contentDescription = null)
                     }
