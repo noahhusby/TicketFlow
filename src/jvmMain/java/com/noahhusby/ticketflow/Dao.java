@@ -234,6 +234,11 @@ public class Dao {
         return (int) result.getRows().get(0).get("id");
     }
 
+    public void removeUser(int id) {
+        TicketFlow.getLogger().debug("Removing user by ID: " + id);
+        execute(new Custom("DELETE FROM n_husb_users WHERE id='" + id + "'"));
+    }
+
     /*
     public int insertRecords(String ticketName, String ticketDesc) {
 

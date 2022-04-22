@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.noahhusby.ticketflow.TicketFlow
+import com.noahhusby.ticketflow.UserHandler
 import com.noahhusby.ticketflow.entities.User
 import com.noahhusby.ticketflow.ui.elements.UserCard
 import com.noahhusby.ticketflow.ui.elements.dialog
@@ -38,7 +39,7 @@ class UserPage : Page {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun render(instance: TicketFlow) {
-        var users = remember { mutableStateListOf<User>() }
+        val users = remember { mutableStateListOf<User>() }
         users.removeAll { true }
         users.addAll(instance.userHandler.users.values)
         var isDeleteUserDialogOpen by remember { mutableStateOf(false) }
@@ -50,7 +51,12 @@ class UserPage : Page {
                 height = 125.dp,
                 width = 500.dp
             ) {
-                deleteUserDialog(users[selectedIndex], onCloseDialog = { isDeleteUserDialogOpen = false })
+                deleteUserDialog(users[selectedIndex], onCloseDialog = { isDeleteUserDialogOpen = false }, onUserDelete = {
+                    isDeleteUserDialogOpen = false
+                    selectedIndex = -1
+                    users.removeAll { true }
+                    users.addAll(instance.userHandler.users.values)
+                })
             }
         }
 
@@ -138,7 +144,7 @@ class UserPage : Page {
     }
 
     @Composable
-    private fun deleteUserDialog(user: User, onCloseDialog: () -> Unit) {
+    private fun deleteUserDialog(user: User, onCloseDialog: () -> Unit, onUserDelete: () -> Unit) {
         Surface(shape = RoundedCornerShape(10.dp), modifier = Modifier.fillMaxSize()) {
             Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.SpaceBetween) {
                 Text("Are you sure you want to delete " + user.name + "?")
@@ -153,8 +159,8 @@ class UserPage : Page {
                     Spacer(Modifier.width(12.dp))
                     FilledTonalButton(
                         onClick = {
-                            // TODO: Delete user
-                            onCloseDialog.invoke()
+                            UserHandler.getInstance().removeUser(user)
+                            onUserDelete.invoke()
                         },
                         colors = warningButtonColors()
                     ) {

@@ -100,6 +100,11 @@ public class UserHandler {
         return user;
     }
 
+    public void removeUser(User user) {
+        Dao.getInstance().removeUser(user.getId());
+        this.users.remove(user.getId());
+    }
+
     public Map<Integer, User> getUsers() {
         return users;
     }
