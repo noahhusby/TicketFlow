@@ -124,13 +124,15 @@ class UserPage : Page {
                                             ) {
                                                 Text(text = "Edit User")
                                             }
-                                            Spacer(Modifier.width(16.dp))
-                                            OutlinedButton(
-                                                onClick = {
-                                                    isDeleteUserDialogOpen = true
+                                            if(user.username.equals("admin")) {
+                                                Spacer(Modifier.width(16.dp))
+                                                OutlinedButton(
+                                                    onClick = {
+                                                        isDeleteUserDialogOpen = true
+                                                    }
+                                                ) {
+                                                    Text("Delete User", color = MaterialTheme.colorScheme.error)
                                                 }
-                                            ) {
-                                                Text("Delete User", color = MaterialTheme.colorScheme.error)
                                             }
                                         }
                                     }
