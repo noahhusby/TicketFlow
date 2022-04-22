@@ -19,21 +19,27 @@ package com.noahhusby.ticketflow.ui.pages
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.noahhusby.ticketflow.TicketFlow
 import com.noahhusby.ticketflow.UserHandler
 import com.noahhusby.ticketflow.entities.User
 import com.noahhusby.ticketflow.ui.elements.UserCard
 import com.noahhusby.ticketflow.ui.elements.dialog
+import com.noahhusby.ticketflow.ui.theme.ticketingFieldColors
 import com.noahhusby.ticketflow.ui.theme.warningButtonColors
-import java.util.*
 
 class UserPage : Page {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -42,8 +48,10 @@ class UserPage : Page {
         val users = remember { mutableStateListOf<User>() }
         users.removeAll { true }
         users.addAll(instance.userHandler.users.values)
-        var isDeleteUserDialogOpen by remember { mutableStateOf(false) }
         var selectedIndex by remember { mutableStateOf(-1) }
+
+        var isDeleteUserDialogOpen by remember { mutableStateOf(false) }
+        var isAddUserDialogOpen by remember { mutableStateOf(false) }
 
         if (isDeleteUserDialogOpen) {
             dialog(
@@ -52,10 +60,28 @@ class UserPage : Page {
                 width = 500.dp
             ) {
                 deleteUserDialog(users[selectedIndex], onCloseDialog = { isDeleteUserDialogOpen = false }, onUserDelete = {
+                    selectedIndex = -1
                     isDeleteUserDialogOpen = false
+                    users.removeAll { true }
+                    users.addAll(instance.userHandler.users.values)
+                })
+            }
+        }
+
+        if (isAddUserDialogOpen) {
+            dialog(
+                onCloseRequest = { isAddUserDialogOpen = false },
+                height = 700.dp,
+                width = 500.dp
+            ) {
+                addUserDialog(onCloseDialog = { isAddUserDialogOpen = false }, onUserAdd = {
+                    isAddUserDialogOpen = false
+                    /*
                     selectedIndex = -1
                     users.removeAll { true }
                     users.addAll(instance.userHandler.users.values)
+
+                     */
                 })
             }
         }
@@ -65,10 +91,11 @@ class UserPage : Page {
             floatingActionButton = {
                 ExtendedFloatingActionButton(
                     onClick = {
-                        val temp = Random().nextInt()
-                        instance.userHandler.createNewUser("Joe User$temp", "password01", "Joe User$temp", temp % 2 == 0)
-                        users.removeAll { true }
-                        users.addAll(instance.userHandler.users.values)
+                        isAddUserDialogOpen = true
+                        //val temp = Random().nextInt()
+                        //instance.userHandler.createNewUser("Joe User$temp", "password01", "Joe User$temp", temp % 2 == 0)
+                        //users.removeAll { true }
+                        //users.addAll(instance.userHandler.users.values)
                     },
                     text = {
                         Text("New User")
@@ -145,6 +172,100 @@ class UserPage : Page {
                                 }
                             }
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun addUserDialog(onCloseDialog: () -> Unit, onUserAdd: () -> Unit) {
+        Surface(shape = RoundedCornerShape(10.dp), modifier = Modifier.fillMaxSize()) {
+            var name by remember { mutableStateOf("") }
+            var username by remember { mutableStateOf("") }
+            var buttonText by remember { mutableStateOf("Log In") }
+            var isUsernameErrored by remember { mutableStateOf(false) }
+            var isAuthenticating by remember { mutableStateOf(false) }
+            var password by remember { mutableStateOf("") }
+            var isPasswordVisible by remember { mutableStateOf(false) }
+            val isFormValid by derivedStateOf { username.isNotBlank() && password.length >= 7 }
+
+            Column(
+                Modifier.fillMaxSize().padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Login Column
+                Column(Modifier.fillMaxWidth().wrapContentHeight()) {
+                    Text("Create a new user")
+                    Spacer(Modifier.height(48.dp))
+
+                    // Names Row
+                    Row(Modifier.fillMaxWidth()) {
+                        OutlinedTextField(
+                            modifier = Modifier.weight(0.5f),
+                            value = name,
+                            onValueChange = {
+                                isUsernameErrored = false
+                                name = it
+                            },
+                            colors = ticketingFieldColors(),
+                            isError = isUsernameErrored,
+
+                            label = { Text(text = "Name") },
+                            singleLine = true
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        OutlinedTextField(
+                            modifier = Modifier.weight(0.5f),
+                            value = username,
+                            onValueChange = {
+                                isUsernameErrored = false
+                                username = it
+                            },
+                            colors = ticketingFieldColors(),
+                            isError = isUsernameErrored,
+
+                            label = { Text(text = "Username") },
+                            singleLine = true
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = !isAuthenticating,
+                        value = password,
+                        onValueChange = { password = it },
+                        label = { Text(text = "Password") },
+                        colors = ticketingFieldColors(),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Password,
+                            imeAction = ImeAction.Done
+                        ),
+                        visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        trailingIcon = {
+                            IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+                                Icon(
+                                    imageVector = if (isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                    contentDescription = "Password Toggle"
+                                )
+                            }
+                        }
+                    )
+                }
+
+                // Action Row
+                Row(Modifier.fillMaxWidth().wrapContentHeight(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End) {
+                    TextButton(onClick = { onCloseDialog.invoke() }) {
+                        Text("Cancel")
+                    }
+                    Spacer(Modifier.width(12.dp))
+                    Button(onClick = {
+                        onUserAdd.invoke()
+                    }) {
+                        Text("Create")
+                        Icon(Icons.Default.Check, contentDescription = null)
                     }
                 }
             }
