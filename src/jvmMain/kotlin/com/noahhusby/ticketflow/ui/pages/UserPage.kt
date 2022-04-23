@@ -202,7 +202,7 @@ class UserPage : Page {
             var isAdmin by remember { mutableStateOf(false) }
 
             val isPasswordValid by derivedStateOf { password.matches(Regex(PASSWORD_REGEX)) }
-            val isFormValid by derivedStateOf { username.matches(Regex(USERNAME_REGEX)) && username.isNotBlank() && isPasswordValid && !UserHandler.getInstance().isUsernameTaken(username) }
+            val isFormValid by derivedStateOf { username.matches(Regex(USERNAME_REGEX)) && password == passwordConfirm && username.isNotBlank() && isPasswordValid && !UserHandler.getInstance().isUsernameTaken(username) }
 
             Column(
                 Modifier.fillMaxSize().padding(20.dp),
@@ -390,7 +390,7 @@ class UserPage : Page {
             var isAdmin by remember { mutableStateOf(user.isAdmin) }
 
             val isPasswordValid by derivedStateOf { password.matches(Regex(PASSWORD_REGEX)) }
-            val isFormValid by derivedStateOf { username.matches(Regex(USERNAME_REGEX)) && username.isNotBlank() && (!shouldResetPassword || (isPasswordValid && shouldResetPassword)) && (!UserHandler.getInstance().isUsernameTaken(username) || username == user.username) }
+            val isFormValid by derivedStateOf { username.matches(Regex(USERNAME_REGEX)) && password == passwordConfirm && username.isNotBlank() && (!shouldResetPassword || (isPasswordValid && shouldResetPassword)) && (!UserHandler.getInstance().isUsernameTaken(username) || username == user.username) }
 
             Column(
                 Modifier.fillMaxSize().padding(20.dp),
