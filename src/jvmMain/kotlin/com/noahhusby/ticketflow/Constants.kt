@@ -17,6 +17,9 @@
 
 package com.noahhusby.ticketflow
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+
 const val USERNAME_REGEX = "^[a-zA-Z0-9]([._-](?![._-])|[a-zA-Z0-9]){3,18}[a-zA-Z0-9]$"
 const val PASSWORD_REGEX = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$"
 
@@ -34,3 +37,13 @@ const val DB_HISTORY_TABLE = "n_husb_history"
 const val DB_CREATE_TICKETS_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS $DB_TICKETS_TABLE(id INT AUTO_INCREMENT PRIMARY KEY, issuer INT, description VARCHAR(200), opened DATETIME DEFAULT CURRENT_TIMESTAMP, closed DATETIME)"
 const val DB_CREATE_USERS_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS $DB_USERS_TABLE(id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(30), password VARCHAR(30), name VARCHAR(70), admin int, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)"
 const val DB_CREATE_HISTORY_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS $DB_HISTORY_TABLE(created_at DATETIME DEFAULT CURRENT_TIMESTAMP, user INT, type VARCHAR(255), msg VARCHAR(255))"
+
+val HISTORY_ICONS = mapOf(
+    HistoryType.LOGIN to Icons.Filled.Login,
+    HistoryType.LOGOUT to Icons.Filled.Logout,
+    HistoryType.USER_ADDED to Icons.Filled.PersonAdd,
+    HistoryType.USER_EDITED to Icons.Filled.ManageAccounts,
+    HistoryType.USER_DELETED to Icons.Filled.PersonRemove,
+    HistoryType.TICKET_OPENED to Icons.Filled.AddCircle,
+    HistoryType.TICKET_CLOSED to Icons.Filled.Delete
+)

@@ -19,6 +19,7 @@ package com.noahhusby.ticketflow.entities;
 
 import com.noahhusby.ticketflow.HistoryType;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * A representation of a stored event.
@@ -74,4 +75,14 @@ public class History {
     public String getMessage() {
         return message;
     }
+
+    /**
+     * Gets the date and time of the event.
+     *
+     * @return Date and time formatted as a String.
+     */
+    public String getFormattedDate() {
+        return timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    }
+
 }
