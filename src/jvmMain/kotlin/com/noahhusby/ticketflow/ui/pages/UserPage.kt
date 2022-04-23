@@ -408,7 +408,7 @@ class UserPage : Page {
                             modifier = Modifier.weight(0.5f),
                             value = name,
                             onValueChange = {
-                                if (username.replace(".", " ").equals(name, ignoreCase = true)) {
+                                if (username.replace(".", " ").equals(name, ignoreCase = true) && user.username != "admin") {
                                     username = it.replace(" ", ".").lowercase(Locale.US)
                                 }
                                 name = it
