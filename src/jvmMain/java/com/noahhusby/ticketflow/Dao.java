@@ -133,6 +133,52 @@ public class Dao {
         return false;
     }
 
+    /*
+     * The method above and below this comment block are nearly indentical in purpose.
+     * It's a hacky way to get generated keys.
+     *
+     * I would really like to use my SQL library for this,
+     * but part of the assignment calls for showing the SQL implementation so ...
+     */
+
+    /**
+     * Executes a query and returns the generated fields.
+     *
+     * @param query The query to be executed.
+     * @return The generated keys from the execution.
+     */
+    public ResultSet executeAndGetKeys(Query query) {
+        Connection con = getConnection();
+        if (con == null) {
+            TicketFlow.getLogger().warn("Connection is null. Cancelling execution.");
+            return null;
+        }
+        Statement stmt = null;
+        try {
+            stmt = con.createStatement();
+            stmt.execute(query.query());
+            return stmt.getGeneratedKeys();
+        } catch (SQLException e) {
+            TicketFlow.getLogger().error("Error while executing statement.");
+        } finally {
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                    con.close();
+                    //noinspection ReturnInsideFinallyBlock
+                } catch (SQLException e) {
+                    TicketFlow.getLogger().error("Error while closing statement.");
+                }
+            }
+        }
+        try {
+            con.close();
+        } catch (SQLException e) {
+            TicketFlow.getLogger().error("Error while closing connection.");
+        }
+        return null;
+    }
+
     /**
      * Gets a {@link Result} from a selection query.
      *
@@ -270,7 +316,7 @@ public class Dao {
      */
     public Map.Entry<Integer, LocalDateTime> saveNewUser(String username, String password, String name, boolean admin) {
         TicketFlow.getLogger().debug("Saving user: " + name);
-        if (execute(new Insert(ConstantsKt.DB_USERS_TABLE, "username,password,name,admin", username, password, name, String.valueOf(admin ? 1 : 0)))) {
+        if (!execute(new Insert(ConstantsKt.DB_USERS_TABLE, "username,password,name,admin", username, password, name, String.valueOf(admin ? 1 : 0)))) {
             TicketFlow.getLogger().warn("Failed to save new user: " + username);
         }
         Result result = select(new Select(ConstantsKt.DB_USERS_TABLE, "id,created_at", "username='" + username + "'"));
@@ -292,6 +338,40 @@ public class Dao {
                 return null;
             }
         };
+    }
+
+    public Map.Entry<Integer, LocalDateTime> saveNewTicket(User user, String description) {
+        TicketFlow.getLogger().debug("Saving new ticket for: " + user.getName());
+        ResultSet set = executeAndGetKeys(new Insert(ConstantsKt.DB_TICKETS_TABLE, "issuer,description", String.valueOf(user.getId()), description));
+        if (set == null) {
+            TicketFlow.getLogger().warn("Failed to save new ticket for: " + user.getName());
+        } else {
+            try {
+                int id = set.getInt("id");
+                LocalDateTime localDateTime = set.getObject("opened", LocalDateTime.class);
+
+                // TODO: History
+                return new Map.Entry<>() {
+                    @Override
+                    public Integer getKey() {
+                        return id;
+                    }
+
+                    @Override
+                    public LocalDateTime getValue() {
+                        return localDateTime;
+                    }
+
+                    @Override
+                    public LocalDateTime setValue(LocalDateTime value) {
+                        return null;
+                    }
+                };
+            } catch (SQLException e) {
+                TicketFlow.getLogger().error("Error while trying to save ticket: ", e);
+            }
+        }
+        return null;
     }
 
     /**
