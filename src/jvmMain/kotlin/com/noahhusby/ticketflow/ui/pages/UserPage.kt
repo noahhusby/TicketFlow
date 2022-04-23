@@ -18,6 +18,7 @@
 package com.noahhusby.ticketflow.ui.pages
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.OutlinedTextField
@@ -40,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import com.noahhusby.ticketflow.*
 import com.noahhusby.ticketflow.entities.User
 import com.noahhusby.ticketflow.ui.elements.UserCard
+import com.noahhusby.ticketflow.ui.elements.UserHistoryCard
 import com.noahhusby.ticketflow.ui.elements.dialog
 import com.noahhusby.ticketflow.ui.theme.ticketingFieldColors
 import com.noahhusby.ticketflow.ui.theme.warningButtonColors
@@ -155,6 +157,14 @@ class UserPage : Page {
                                             Surface(Modifier.fillMaxWidth().wrapContentHeight().padding(vertical = 40.dp), tonalElevation = 3.dp, shadowElevation = 1.dp, shape = RoundedCornerShape(10.dp)) {
                                                 Column(Modifier.padding(20.dp)) {
                                                     Text("User History", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.wrapContentHeight())
+                                                    LazyColumn {
+                                                        for (history in HistoryHandler.getInstance().getHistoryByUser(user)) {
+                                                            item {
+                                                                UserHistoryCard(history.value, user, renderName = false).render()
+                                                            }
+                                                        }
+                                                    }
+
                                                 }
                                             }
                                         }
