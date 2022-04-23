@@ -27,6 +27,7 @@ import com.noahhusby.lib.data.sql.actions.Select;
 import com.noahhusby.lib.data.sql.actions.Update;
 import com.noahhusby.lib.data.sql.actions.UpdateValue;
 import com.noahhusby.ticketflow.entities.User;
+import com.noahhusby.ticketflow.util.Pair;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.io.IOException;
@@ -39,7 +40,6 @@ import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A utility for handling database connections
@@ -314,33 +314,16 @@ public class Dao {
      * @param admin    True if the user has administrative rights, false otherwise.
      * @return An entry consisting of the user's id, and the time of account creation.
      */
-    public Map.Entry<Integer, LocalDateTime> saveNewUser(String username, String password, String name, boolean admin) {
+    public Pair<Integer, LocalDateTime> saveNewUser(String username, String password, String name, boolean admin) {
         TicketFlow.getLogger().debug("Saving user: " + name);
         if (!execute(new Insert(ConstantsKt.DB_USERS_TABLE, "username,password,name,admin", username, password, name, String.valueOf(admin ? 1 : 0)))) {
             TicketFlow.getLogger().warn("Failed to save new user: " + username);
         }
         Result result = select(new Select(ConstantsKt.DB_USERS_TABLE, "id,created_at", "username='" + username + "'"));
-
-        // Hacky way to cleanly return two values since I've yet to implement Pair<> into HusbyLib
-        return new Map.Entry<>() {
-            @Override
-            public Integer getKey() {
-                return (Integer) result.getRows().get(0).get("id");
-            }
-
-            @Override
-            public LocalDateTime getValue() {
-                return (LocalDateTime) result.getRows().get(0).get("created_at");
-            }
-
-            @Override
-            public LocalDateTime setValue(LocalDateTime value) {
-                return null;
-            }
-        };
+        return new Pair<>((Integer) result.getRows().get(0).get("id"), (LocalDateTime) result.getRows().get(0).get("created_at"));
     }
 
-    public Map.Entry<Integer, LocalDateTime> saveNewTicket(User user, String description) {
+    public Pair<Integer, LocalDateTime> saveNewTicket(User user, String description) {
         TicketFlow.getLogger().debug("Saving new ticket for: " + user.getName());
         ResultSet set = executeAndGetKeys(new Insert(ConstantsKt.DB_TICKETS_TABLE, "issuer,description", String.valueOf(user.getId()), description));
         if (set == null) {
@@ -349,24 +332,8 @@ public class Dao {
             try {
                 int id = set.getInt("id");
                 LocalDateTime localDateTime = set.getObject("opened", LocalDateTime.class);
-
+                return new Pair<>(id, localDateTime);
                 // TODO: History
-                return new Map.Entry<>() {
-                    @Override
-                    public Integer getKey() {
-                        return id;
-                    }
-
-                    @Override
-                    public LocalDateTime getValue() {
-                        return localDateTime;
-                    }
-
-                    @Override
-                    public LocalDateTime setValue(LocalDateTime value) {
-                        return null;
-                    }
-                };
             } catch (SQLException e) {
                 TicketFlow.getLogger().error("Error while trying to save ticket: ", e);
             }
