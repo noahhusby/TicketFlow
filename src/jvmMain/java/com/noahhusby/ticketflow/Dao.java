@@ -214,9 +214,9 @@ public class Dao {
         if (!execute(new Custom(ConstantsKt.DB_CREATE_USERS_TABLE_QUERY))) {
             TicketFlow.getLogger().warn("Failed to create users table!");
         }
-        TicketFlow.getLogger().debug("Creating status table ...");
-        if (!execute(new Custom(ConstantsKt.DB_CREATE_STATUS_TABLE_QUERY))) {
-            TicketFlow.getLogger().warn("Failed to create status table!");
+        TicketFlow.getLogger().debug("Creating history table ...");
+        if (!execute(new Custom(ConstantsKt.DB_CREATE_HISTORY_TABLE_QUERY))) {
+            TicketFlow.getLogger().warn("Failed to create history table!");
         }
         TicketFlow.getLogger().debug("All tables have been created.");
     }
