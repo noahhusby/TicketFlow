@@ -27,16 +27,20 @@ import java.time.format.DateTimeFormatter;
  */
 public class Ticket {
     private final int id;
-    private final LocalDateTime createdAt;
     private final int issuer;
+    private final LocalDateTime opened;
     private String description;
-    private boolean closed;
+    private LocalDateTime closed;
 
-    public Ticket(int id, LocalDateTime createdAt, int issuer, String description, boolean closed) {
+    public Ticket(int id, int issuer, String description, LocalDateTime opened) {
+        this(id, issuer, description, opened, null);
+    }
+
+    public Ticket(int id, int issuer, String description, LocalDateTime opened, LocalDateTime closed) {
         this.id = id;
-        this.createdAt = createdAt;
         this.issuer = issuer;
         this.description = description;
+        this.opened = opened;
         this.closed = closed;
     }
 
@@ -83,7 +87,7 @@ public class Ticket {
      * @return True if the ticket is closed, false otherwise.
      */
     public boolean isClosed() {
-        return closed;
+        return closed != null;
     }
 
     /**
@@ -92,7 +96,11 @@ public class Ticket {
      * @param closed True if closed, false otherwise.
      */
     public void setClosed(boolean closed) {
-        this.closed = closed;
+        if (closed) {
+            this.closed = LocalDateTime.now();
+        } else {
+            this.closed = null;
+        }
     }
 
     /**
@@ -100,7 +108,7 @@ public class Ticket {
      *
      * @return Date and time formatted as a String.
      */
-    public String getFormattedDate() {
-        return createdAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    public String getFormattedOpeningTimestamp() {
+        return opened.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 }
