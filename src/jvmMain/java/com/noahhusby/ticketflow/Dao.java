@@ -233,18 +233,46 @@ public class Dao {
      */
     public void loadEntitiesIntoCache() {
         TicketFlow.getLogger().info("Loading entities into cache ...");
-        Result users = select(new Select(ConstantsKt.DB_USERS_TABLE, "*", null));
-        if (users == null) {
-            TicketFlow.getLogger().warn("Failed to load user cache!");
-        } else if (!users.getRows().isEmpty()) {
-            List<User> tempUsers = new ArrayList<>();
-            for (Row row : users.getRows()) {
-                int admin = (int) row.get("admin");
-                tempUsers.add(new User((Integer) row.get("id"), (String) row.get("username"), (String) row.get("name"), admin == 1, (LocalDateTime) row.get("created_at")));
+        long start = System.currentTimeMillis();
+
+        // Users
+        {
+            Result users = select(new Select(ConstantsKt.DB_USERS_TABLE, "*", null));
+            if (users == null) {
+                TicketFlow.getLogger().warn("Failed to load user cache!");
+            } else if (!users.getRows().isEmpty()) {
+                List<User> tempUsers = new ArrayList<>();
+                for (Row row : users.getRows()) {
+                    int admin = (int) row.get("admin");
+                    tempUsers.add(new User((Integer) row.get("id"), (String) row.get("username"), (String) row.get("name"), admin == 1, (LocalDateTime) row.get("created_at")));
+                }
+                UserHandler.getInstance().writeToCache(tempUsers);
             }
-            UserHandler.getInstance().insertStoredUsers(tempUsers);
         }
-        TicketFlow.getLogger().info("Finished loading entities into cache.");
+
+        // Tickets
+        {
+            Result tickets = select(new Select(ConstantsKt.DB_TICKETS_TABLE, "*", null));
+            if (tickets == null) {
+                TicketFlow.getLogger().warn("Failed to load tickets cache!");
+            } else if (!tickets.getRows().isEmpty()) {
+                List<Ticket> tempTickets = new ArrayList<>();
+                for (Row row : tickets.getRows()) {
+                    int id = (int) row.get("id");
+                    int issuer = (int) row.get("issuer");
+                    String description = (String) row.get("description");
+                    LocalDateTime opened = (LocalDateTime) row.get("opened");
+                    LocalDateTime closed = null;
+                    if (row.getKeys().contains("closed")) {
+                        closed = (LocalDateTime) row.get("closed");
+                    }
+                    tempTickets.add(new Ticket(id, issuer, description, opened, closed));
+                }
+                TicketHandler.getInstance().writeToCache(tempTickets);
+            }
+        }
+
+        TicketFlow.getLogger().info("Finished loading entities into cache. (" + (System.currentTimeMillis() - start) + "ms)");
     }
 
     /**
@@ -335,7 +363,7 @@ public class Dao {
     /**
      * Saves a new ticket for specified issuer with a given description.
      *
-     * @param user The user who issued the ticket.
+     * @param user        The user who issued the ticket.
      * @param description The description of the ticket.
      * @return A new {@link Ticket} object.
      */

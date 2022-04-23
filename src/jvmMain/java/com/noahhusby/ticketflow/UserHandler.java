@@ -18,10 +18,7 @@
 package com.noahhusby.ticketflow;
 
 import com.noahhusby.ticketflow.entities.User;
-import com.noahhusby.ticketflow.util.Pair;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -187,8 +184,8 @@ public class UserHandler {
      *
      * @param userList A list of users to be inserted into the cache.
      */
-    protected void insertStoredUsers(List<User> userList) {
-        Map<Integer, User> temp = new HashMap<>();
+    protected void writeToCache(List<User> userList) {
+        Map<Integer, User> temp = new TreeMap<>();
         userList.forEach(user -> temp.put(user.getId(), user));
         this.users = temp;
     }

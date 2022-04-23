@@ -31,6 +31,6 @@ const val DB_HISTORY_TABLE = "n_husb_history"
 
 // I disagree with this approach to storing tickets, but it is what it is. Ticket status [open / closed] is determined by whether "closed" is null or not.
 // An alternative would be to use a history-based system to track all administrators / moderators that have interacted with the ticket. Similar to a GitHub issue.
-const val DB_CREATE_TICKETS_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS $DB_TICKETS_TABLE(id INT AUTO_INCREMENT PRIMARY KEY, issuer INT, description VARCHAR(200), closed INT, opened DATETIME DEFAULT CURRENT_TIMESTAMP, closed DATETIME)"
+const val DB_CREATE_TICKETS_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS $DB_TICKETS_TABLE(id INT AUTO_INCREMENT PRIMARY KEY, issuer INT, description VARCHAR(200), opened DATETIME DEFAULT CURRENT_TIMESTAMP, closed DATETIME)"
 const val DB_CREATE_USERS_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS $DB_USERS_TABLE(id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(30), password VARCHAR(30), name VARCHAR(70), admin int, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)"
 const val DB_CREATE_HISTORY_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS $DB_HISTORY_TABLE(created_at DATETIME DEFAULT CURRENT_TIMESTAMP, user INT, type VARCHAR(255), msg VARCHAR(255))"

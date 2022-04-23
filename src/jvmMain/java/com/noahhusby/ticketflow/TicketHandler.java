@@ -17,18 +17,31 @@
 
 package com.noahhusby.ticketflow;
 
+import com.noahhusby.ticketflow.entities.Ticket;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 /**
  * A handler for managing tickets.
  *
  * @author Noah Husby
  */
 public class TicketHandler {
+
     private static final TicketHandler instance = new TicketHandler();
+    private Map<Integer, Ticket> ticketCache = new TreeMap<>();
 
     protected TicketHandler() {
     }
 
     public static TicketHandler getInstance() {
         return instance;
+    }
+
+    public void writeToCache(List<Ticket> ticketList) {
+        Map<Integer, Ticket> temp = new TreeMap<>();
+        ticketList.forEach(ticket -> temp.put(ticket.getId(), ticket));
+        this.ticketCache = temp;
     }
 }
