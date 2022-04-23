@@ -158,8 +158,7 @@ public class UserHandler {
         if (name == null) {
             name = username;
         }
-        Pair<Integer, LocalDateTime> userEntry = Dao.getInstance().saveNewUser(username, password, name, admin);
-        User user = new User(userEntry.getKey(), username, name, admin, userEntry.getValue());
+        User user = Dao.getInstance().saveNewUser(username, password, name, admin);
         users.put(user.getId(), user);
         return user;
     }

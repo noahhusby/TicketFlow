@@ -26,8 +26,8 @@ import com.noahhusby.lib.data.sql.actions.Row;
 import com.noahhusby.lib.data.sql.actions.Select;
 import com.noahhusby.lib.data.sql.actions.Update;
 import com.noahhusby.lib.data.sql.actions.UpdateValue;
+import com.noahhusby.ticketflow.entities.Ticket;
 import com.noahhusby.ticketflow.entities.User;
-import com.noahhusby.ticketflow.util.Pair;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.io.IOException;
@@ -314,16 +314,32 @@ public class Dao {
      * @param admin    True if the user has administrative rights, false otherwise.
      * @return An entry consisting of the user's id, and the time of account creation.
      */
-    public Pair<Integer, LocalDateTime> saveNewUser(String username, String password, String name, boolean admin) {
+    protected User saveNewUser(String username, String password, String name, boolean admin) {
         TicketFlow.getLogger().debug("Saving user: " + name);
-        if (!execute(new Insert(ConstantsKt.DB_USERS_TABLE, "username,password,name,admin", username, password, name, String.valueOf(admin ? 1 : 0)))) {
-            TicketFlow.getLogger().warn("Failed to save new user: " + username);
+        ResultSet set = executeAndGetKeys(new Insert(ConstantsKt.DB_USERS_TABLE, "username,password,name,admin", username, password, name, String.valueOf(admin ? 1 : 0)));
+        if (set == null) {
+            TicketFlow.getLogger().warn("Failed to save new user: " + name);
+        } else {
+            try {
+                int id = set.getInt("id");
+                LocalDateTime createdAt = set.getObject("created_at", LocalDateTime.class);
+                return new User(id, username, name, admin, createdAt);
+                // TODO: History
+            } catch (SQLException e) {
+                TicketFlow.getLogger().error("Error while trying to create new user: ", e);
+            }
         }
-        Result result = select(new Select(ConstantsKt.DB_USERS_TABLE, "id,created_at", "username='" + username + "'"));
-        return new Pair<>((Integer) result.getRows().get(0).get("id"), (LocalDateTime) result.getRows().get(0).get("created_at"));
+        return null;
     }
 
-    public Pair<Integer, LocalDateTime> saveNewTicket(User user, String description) {
+    /**
+     * Saves a new ticket for specified issuer with a given description.
+     *
+     * @param user The user who issued the ticket.
+     * @param description The description of the ticket.
+     * @return A new {@link Ticket} object.
+     */
+    protected Ticket saveNewTicket(User user, String description) {
         TicketFlow.getLogger().debug("Saving new ticket for: " + user.getName());
         ResultSet set = executeAndGetKeys(new Insert(ConstantsKt.DB_TICKETS_TABLE, "issuer,description", String.valueOf(user.getId()), description));
         if (set == null) {
@@ -331,8 +347,8 @@ public class Dao {
         } else {
             try {
                 int id = set.getInt("id");
-                LocalDateTime localDateTime = set.getObject("opened", LocalDateTime.class);
-                return new Pair<>(id, localDateTime);
+                LocalDateTime opened = set.getObject("opened", LocalDateTime.class);
+                return new Ticket(id, user.getId(), description, opened);
                 // TODO: History
             } catch (SQLException e) {
                 TicketFlow.getLogger().error("Error while trying to save ticket: ", e);
