@@ -113,7 +113,7 @@ public class Dao {
             stmt = con.createStatement();
             stmt.execute(query.query());
         } catch (SQLException e) {
-            TicketFlow.getLogger().error("Error while executing statement.");
+            TicketFlow.getLogger().error("Error while executing statement.", e);
         } finally {
             if (stmt != null) {
                 try {
@@ -122,14 +122,14 @@ public class Dao {
                     //noinspection ReturnInsideFinallyBlock
                     return true;
                 } catch (SQLException e) {
-                    TicketFlow.getLogger().error("Error while closing statement.");
+                    TicketFlow.getLogger().error("Error while closing statement.", e);
                 }
             }
         }
         try {
             con.close();
         } catch (SQLException e) {
-            TicketFlow.getLogger().error("Error while closing connection.");
+            TicketFlow.getLogger().error("Error while closing connection.", e);
         }
         return false;
     }
@@ -154,13 +154,13 @@ public class Dao {
             TicketFlow.getLogger().warn("Connection is null. Cancelling execution.");
             return null;
         }
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         try {
-            stmt = con.createStatement();
-            stmt.execute(query.query());
+            stmt = con.prepareStatement(query.query(), Statement.RETURN_GENERATED_KEYS);
+            stmt.execute();
             return stmt.getGeneratedKeys();
         } catch (SQLException e) {
-            TicketFlow.getLogger().error("Error while executing statement.");
+            TicketFlow.getLogger().error("Error while executing statement.", e);
         } finally {
             if (stmt != null) {
                 try {
@@ -168,14 +168,14 @@ public class Dao {
                     con.close();
                     //noinspection ReturnInsideFinallyBlock
                 } catch (SQLException e) {
-                    TicketFlow.getLogger().error("Error while closing statement.");
+                    TicketFlow.getLogger().error("Error while closing statement.", e);
                 }
             }
         }
         try {
             con.close();
         } catch (SQLException e) {
-            TicketFlow.getLogger().error("Error while closing connection.");
+            TicketFlow.getLogger().error("Error while closing connection.", e);
         }
         return null;
     }
@@ -402,6 +402,20 @@ public class Dao {
             }
         }
         return null;
+    }
+
+    /**
+     * Saves a new history event for specified user with a given type.
+     *
+     * @param user    The user of the action.
+     * @param type    {@link HistoryType}.
+     * @param message The message of the event.
+     * @return New {@link History} instance.
+     */
+    protected History saveNewHistory(User user, HistoryType type, String message) {
+        TicketFlow.getLogger().debug("Saving new history event for: " + user.getName());
+        execute(new Insert(ConstantsKt.DB_HISTORY_TABLE, "user,type,msg", String.valueOf(user.getId()), type.name(), message));
+        return new History(LocalDateTime.now(), user.getId(), type, message);
     }
 
     /**

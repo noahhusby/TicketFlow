@@ -45,7 +45,7 @@ public class HistoryHandler {
     }
 
     public void writeToCache(List<History> historyList) {
-        Map<LocalDateTime, History> _historyByTimestamp = new TreeMap<>();
+        Map<LocalDateTime, History> _historyByTimestamp = new TreeMap<>(Collections.reverseOrder());
         Map<Integer, Map<LocalDateTime, History>> _historyByUser = new HashMap<>();
         for (History history : historyList) {
             _historyByTimestamp.put(history.getTimestamp(), history);
@@ -93,5 +93,19 @@ public class HistoryHandler {
      */
     public boolean doesUserHaveHistory(User user) {
         return historyByUser.containsKey(user.getId());
+    }
+
+    /**
+     * Writes a history event to the database and cache.
+     *
+     * @param user    The user of the event.
+     * @param type    {@link HistoryType}.
+     * @param message The message of the event.
+     */
+    public void write(User user, HistoryType type, String message) {
+        History history = Dao.getInstance().saveNewHistory(user, type, message);
+        historyByTimestamp.put(history.getTimestamp(), history);
+        historyByUser.putIfAbsent(user.getId(), new TreeMap<>(Collections.reverseOrder()));
+        historyByUser.get(user.getId()).put(history.getTimestamp(), history);
     }
 }

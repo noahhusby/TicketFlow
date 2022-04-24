@@ -42,6 +42,7 @@ public class UserHandler {
      * Logs the current user out.
      */
     public void logout() {
+        HistoryHandler.getInstance().write(authenticatedUser, HistoryType.LOGOUT, "Logged out.");
         authenticatedUser = null;
     }
 
@@ -82,8 +83,8 @@ public class UserHandler {
                 }
                 authenticatedUser = user;
                 future.complete(AuthenticationResult.SUCCESS);
-
                 boolean admin = authenticatedUser.isAdmin();
+                HistoryHandler.getInstance().write(user, HistoryType.LOGIN, "Logged in.");
                 TicketFlow.getLogger().info(String.format("Successfully authenticated user: \"%s\"", username) + (admin ? " w/ admin privileges." : "."));
             } catch (IOException e) {
                 future.complete(AuthenticationResult.FAILURE);
