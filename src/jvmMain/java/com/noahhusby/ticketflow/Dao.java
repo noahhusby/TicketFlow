@@ -26,6 +26,7 @@ import com.noahhusby.lib.data.sql.actions.Row;
 import com.noahhusby.lib.data.sql.actions.Select;
 import com.noahhusby.lib.data.sql.actions.Update;
 import com.noahhusby.lib.data.sql.actions.UpdateValue;
+import com.noahhusby.ticketflow.entities.History;
 import com.noahhusby.ticketflow.entities.Ticket;
 import com.noahhusby.ticketflow.entities.User;
 import com.zaxxer.hikari.HikariConfig;
@@ -269,6 +270,24 @@ public class Dao {
                     tempTickets.add(new Ticket(id, issuer, description, opened, closed));
                 }
                 TicketHandler.getInstance().writeToCache(tempTickets);
+            }
+        }
+
+        // History
+        {
+            Result history = select(new Select(ConstantsKt.DB_HISTORY_TABLE, "*", null));
+            if (history == null) {
+                TicketFlow.getLogger().warn("Failed to load history cache!");
+            } else if (!history.getRows().isEmpty()) {
+                List<History> tempHistory = new ArrayList<>();
+                for (Row row : history.getRows()) {
+                    LocalDateTime timestamp = (LocalDateTime) row.get("created_at");
+                    int user = (int) row.get("user");
+                    HistoryType type = HistoryType.valueOf((String) row.get("type"));
+                    String message = (String) row.get("msg");
+                    tempHistory.add(new History(timestamp, user, type, message));
+                }
+                HistoryHandler.getInstance().writeToCache(tempHistory);
             }
         }
 

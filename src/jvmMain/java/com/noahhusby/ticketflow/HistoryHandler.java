@@ -84,4 +84,14 @@ public class HistoryHandler {
     public Map<LocalDateTime, History> getHistoryByUser(Integer id) {
         return historyByUser.get(id);
     }
+
+    /**
+     * Gets whether a given user has any history written.
+     *
+     * @param user The user to check.
+     * @return True if user has history, false otherwise.
+     */
+    public boolean doesUserHaveHistory(User user) {
+        return historyByUser.containsKey(user.getId());
+    }
 }

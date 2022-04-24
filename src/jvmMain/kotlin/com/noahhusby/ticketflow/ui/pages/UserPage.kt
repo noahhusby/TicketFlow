@@ -157,14 +157,17 @@ class UserPage : Page {
                                             Surface(Modifier.fillMaxWidth().wrapContentHeight().padding(vertical = 40.dp), tonalElevation = 3.dp, shadowElevation = 1.dp, shape = RoundedCornerShape(10.dp)) {
                                                 Column(Modifier.padding(20.dp)) {
                                                     Text("User History", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.wrapContentHeight())
-                                                    LazyColumn {
-                                                        for (history in HistoryHandler.getInstance().getHistoryByUser(user)) {
-                                                            item {
-                                                                UserHistoryCard(history.value, user, renderName = false).render()
+                                                    if (HistoryHandler.getInstance().doesUserHaveHistory(user)) {
+                                                        LazyColumn {
+                                                            for (history in HistoryHandler.getInstance().getHistoryByUser(user)) {
+                                                                item {
+                                                                    UserHistoryCard(history.value, user, renderName = false).render()
+                                                                }
                                                             }
                                                         }
+                                                    } else {
+                                                        Text("User has no history on record.", style = MaterialTheme.typography.labelMedium)
                                                     }
-
                                                 }
                                             }
                                         }
