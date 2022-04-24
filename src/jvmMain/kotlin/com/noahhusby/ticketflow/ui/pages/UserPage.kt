@@ -145,7 +145,7 @@ class UserPage : Page {
                                 val user = users[selectedIndex]
                                 Surface(Modifier.fillMaxSize().padding(horizontal = 25.dp, vertical = 10.dp), tonalElevation = 2.dp, shadowElevation = 1.dp, shape = RoundedCornerShape(10.dp)) {
                                     Column(Modifier.fillMaxSize().padding(25.dp), verticalArrangement = Arrangement.SpaceBetween) {
-                                        Column {
+                                        Column(Modifier.fillMaxHeight(0.85f)) {
                                             Row(Modifier.fillMaxWidth().height(40.dp), verticalAlignment = Alignment.CenterVertically) {
                                                 Text(user.name, style = MaterialTheme.typography.headlineSmall)
                                                 if (user.isAdmin) {
