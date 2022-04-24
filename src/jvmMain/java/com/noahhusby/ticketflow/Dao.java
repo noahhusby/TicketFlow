@@ -154,23 +154,12 @@ public class Dao {
             TicketFlow.getLogger().warn("Connection is null. Cancelling execution.");
             return null;
         }
-        PreparedStatement stmt = null;
         try {
-            stmt = con.prepareStatement(query.query(), Statement.RETURN_GENERATED_KEYS);
-            stmt.execute();
+            Statement stmt = con.createStatement();
+            stmt.executeUpdate(query.query(), Statement.RETURN_GENERATED_KEYS);
             return stmt.getGeneratedKeys();
         } catch (SQLException e) {
             TicketFlow.getLogger().error("Error while executing statement.", e);
-        } finally {
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                    con.close();
-                    //noinspection ReturnInsideFinallyBlock
-                } catch (SQLException e) {
-                    TicketFlow.getLogger().error("Error while closing statement.", e);
-                }
-            }
         }
         try {
             con.close();
@@ -368,10 +357,11 @@ public class Dao {
             TicketFlow.getLogger().warn("Failed to save new user: " + name);
         } else {
             try {
-                int id = set.getInt("id");
-                LocalDateTime createdAt = set.getObject("created_at", LocalDateTime.class);
-                return new User(id, username, name, admin, createdAt);
-                // TODO: History
+                set.next();
+                int id = set.getInt(1);
+                set.getStatement().close();
+                set.close();
+                return new User(id, username, name, admin, LocalDateTime.now());
             } catch (SQLException e) {
                 TicketFlow.getLogger().error("Error while trying to create new user: ", e);
             }
@@ -425,7 +415,7 @@ public class Dao {
      */
     public void removeUser(int id) {
         TicketFlow.getLogger().debug("Removing user by ID: " + id);
-        if (execute(new Custom("DELETE FROM " + ConstantsKt.DB_USERS_TABLE + " WHERE id='" + id + "'"))) {
+        if (!execute(new Custom("DELETE FROM " + ConstantsKt.DB_USERS_TABLE + " WHERE id='" + id + "'"))) {
             TicketFlow.getLogger().warn(String.format("Failed to remove user \"%s\" by ID.", id));
         }
     }

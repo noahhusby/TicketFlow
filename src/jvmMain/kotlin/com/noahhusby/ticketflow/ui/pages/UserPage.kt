@@ -343,6 +343,7 @@ class UserPage : Page {
                     Button(
                         onClick = {
                             UserHandler.getInstance().createNewUser(username, password, name, isAdmin)
+                            HistoryHandler.getInstance().write(UserHandler.getInstance().authenticatedUser, HistoryType.USER_ADDED, String.format("Added user: \"%s\"", name))
                             onUserAdd.invoke()
                         },
                         enabled = isFormValid
@@ -372,6 +373,7 @@ class UserPage : Page {
                     FilledTonalButton(
                         onClick = {
                             UserHandler.getInstance().removeUser(user)
+                            HistoryHandler.getInstance().write(UserHandler.getInstance().authenticatedUser, HistoryType.USER_DELETED, String.format("Deleted user: \"%s\"", user.name))
                             onUserDelete.invoke()
                         },
                         colors = warningButtonColors()
@@ -553,6 +555,7 @@ class UserPage : Page {
                     Button(
                         onClick = {
                             UserHandler.getInstance().editUser(user, name, username, if (shouldResetPassword) password else null, isAdmin)
+                            HistoryHandler.getInstance().write(UserHandler.getInstance().authenticatedUser, HistoryType.USER_DELETED, String.format("Edited user: \"%s\"", user.name))
                             onUserAdd.invoke()
                         },
                         enabled = isFormValid
