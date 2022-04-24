@@ -198,4 +198,14 @@ public class UserHandler {
     public User getAuthenticatedUser() {
         return authenticatedUser;
     }
+
+    /**
+     * Gets a user by their id.
+     *
+     * @param id The id of the user.
+     * @return {@link User}.
+     */
+    public User getUser(int id) {
+        return users.get(id);
+    }
 }

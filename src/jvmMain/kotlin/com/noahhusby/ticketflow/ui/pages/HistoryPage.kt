@@ -17,9 +17,8 @@
 
 package com.noahhusby.ticketflow.ui.pages
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -27,6 +26,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.noahhusby.ticketflow.HistoryHandler
+import com.noahhusby.ticketflow.UserHandler
+import com.noahhusby.ticketflow.ui.elements.UserHistoryCard
 
 class HistoryPage : Page {
 
@@ -36,6 +38,17 @@ class HistoryPage : Page {
             Surface(Modifier.padding(48.dp)) {
                 Column {
                     Text("History", style = MaterialTheme.typography.displayLarge)
+                    Surface(Modifier.fillMaxWidth().fillMaxHeight().padding(vertical = 40.dp), tonalElevation = 2.dp, shadowElevation = 1.dp, shape = RoundedCornerShape(10.dp)) {
+                        Column(Modifier.padding(20.dp)) {
+                            LazyColumn {
+                                for (history in HistoryHandler.getInstance().history) {
+                                    item {
+                                        UserHistoryCard(history.value, UserHandler.getInstance().getUser(history.value.user), modifier = Modifier.height(96.dp).padding(vertical = 5.dp).fillMaxWidth()).render()
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

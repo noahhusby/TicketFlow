@@ -32,12 +32,12 @@ import com.noahhusby.ticketflow.entities.History
 import com.noahhusby.ticketflow.entities.User
 import com.noahhusby.ticketflow.ui.theme.surfaceColorAtElevation
 
-class UserHistoryCard(private val history: History, private val user: User, private val renderName: Boolean = true) {
+class UserHistoryCard(private val history: History, private val user: User, private val renderName: Boolean = true, private val modifier: Modifier = Modifier.height(96.dp).padding(vertical = 5.dp).width(350.dp)) {
 
     @Composable
     fun render() {
         Card(
-            modifier = Modifier.height(96.dp).width(350.dp).padding(vertical = 10.dp),
+            modifier = modifier,
             shape = RoundedCornerShape(10.dp),
             backgroundColor = surfaceColorAtElevation(2.dp),
             contentColor = MaterialTheme.colorScheme.onSurface
