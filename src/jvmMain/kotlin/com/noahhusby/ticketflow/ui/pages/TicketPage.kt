@@ -63,7 +63,6 @@ class TicketPage : Page {
             }
             LazyColumn(Modifier.fillMaxSize()) {
                 item {
-                    TicketCell().gui()
                 }
             }
         }

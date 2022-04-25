@@ -56,7 +56,6 @@ public class Dao {
     protected Dao() {
         // Using a few utility classes from HusbyLib, my own library, to keep data structured.
         credentials = new Credentials(TicketFlowConfig.DB_HOST, TicketFlowConfig.DB_PORT, TicketFlowConfig.DB_USERNAME, TicketFlowConfig.DB_PASSWORD, TicketFlowConfig.DB_NAME);
-        new Select(null, null, null).query();
     }
 
     /**
@@ -88,7 +87,6 @@ public class Dao {
      */
     public Connection getConnection() {
         try {
-
             return ds.getConnection();
         } catch (SQLException e) {
             TicketFlow.getLogger().error("Failed to get database connection.", e);
@@ -125,11 +123,6 @@ public class Dao {
                     TicketFlow.getLogger().error("Error while closing statement.", e);
                 }
             }
-        }
-        try {
-            con.close();
-        } catch (SQLException e) {
-            TicketFlow.getLogger().error("Error while closing connection.", e);
         }
         return false;
     }
