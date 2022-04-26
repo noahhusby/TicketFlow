@@ -17,19 +17,20 @@
 
 package com.noahhusby.ticketflow.ui.elements
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Surface
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ConfirmationNumber
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.unit.dp
 import com.noahhusby.ticketflow.ui.theme.surfaceColorAtElevation
+import com.noahhusby.ticketflow.ui.theme.tf_ticket_open
 
 const val idWeight = .2f
 const val descriptionWeight = .5f
@@ -37,23 +38,35 @@ const val actionWeight = .3f
 
 
 class TicketCell {
+    @OptIn(ExperimentalComposeUiApi::class)
     @Composable
     fun render() {
-        Card(
-            modifier = Modifier.height(96.dp).width(350.dp).padding(vertical = 10.dp),
-            shape = RoundedCornerShape(10.dp),
-            backgroundColor = surfaceColorAtElevation(2.dp),
-            contentColor = MaterialTheme.colorScheme.onSurface
+        var hover by remember { mutableStateOf(false) }
+        Surface(Modifier.fillMaxWidth()
+            .height(64.dp)
+            .onPointerEvent(PointerEventType.Enter) { hover = true }
+            .onPointerEvent(PointerEventType.Exit) { hover = false },
+            color = if (hover) surfaceColorAtElevation(5.dp) else Color.Transparent
         ) {
-            Row(Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                Row {
-                    Text("Test")
-                }
-                Surface(Modifier.width(100.dp).fillMaxHeight(), color = Color.Transparent, border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface), shape = RoundedCornerShape(30.dp)) {
-                    Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-                        Text("Open")
+            Column(Modifier.fillMaxSize()) {
+                Surface(modifier = Modifier.height(63.dp).fillMaxWidth(), color = Color.Transparent) {
+                    Row(Modifier.fillMaxSize().padding(10.dp)) {
+                        Column {
+                            Checkbox(false, onCheckedChange = null, Modifier.scale(0.75f))
+                        }
+                        Spacer(Modifier.width(2.dp))
+                        Column {
+                            Icon(Icons.Filled.ConfirmationNumber, contentDescription = "Ticket", tint = tf_ticket_open, modifier = Modifier.scale(0.8f))
+                        }
+                        Spacer(Modifier.width(2.dp))
+                        Column(verticalArrangement = Arrangement.Center) {
+                            Text("Test ticket descriptionnnn")
+                            Text("#56 by Noah Husby was opened 1 hour ago", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+                        }
                     }
                 }
+                Surface(modifier = Modifier.height(1.dp).fillMaxWidth(), color = MaterialTheme.colorScheme.outline) { }
             }
         }
     }
