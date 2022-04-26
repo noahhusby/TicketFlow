@@ -42,6 +42,7 @@ class TicketCell {
     @Composable
     fun render() {
         var hover by remember { mutableStateOf(false) }
+        var selected by remember { mutableStateOf(false) }
         Surface(Modifier.fillMaxWidth()
             .height(64.dp)
             .onPointerEvent(PointerEventType.Enter) { hover = true }
@@ -52,7 +53,7 @@ class TicketCell {
                 Surface(modifier = Modifier.height(63.dp).fillMaxWidth(), color = Color.Transparent) {
                     Row(Modifier.fillMaxSize().padding(10.dp)) {
                         Column {
-                            Checkbox(false, onCheckedChange = null, Modifier.scale(0.75f))
+                            Checkbox(selected, onCheckedChange = { c -> selected = c }, Modifier.scale(0.75f))
                         }
                         Spacer(Modifier.width(2.dp))
                         Column {
