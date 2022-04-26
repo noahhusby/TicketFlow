@@ -28,7 +28,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.noahhusby.ticketflow.ui.TicketCell
+import com.noahhusby.ticketflow.ui.elements.TicketCell
 
 class TicketPage : Page {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -63,6 +63,7 @@ class TicketPage : Page {
             }
             LazyColumn(Modifier.fillMaxSize()) {
                 item {
+                    TicketCell().render()
                 }
             }
         }
