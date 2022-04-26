@@ -19,6 +19,7 @@ package com.noahhusby.ticketflow.entities;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 /**
  * A representation of a ticket object.
@@ -42,6 +43,29 @@ public class Ticket {
         this.description = description;
         this.opened = opened;
         this.closed = closed;
+    }
+
+    /**
+     * Gets the difference between now and a specified DateTime.
+     *
+     * @param dateTime The specified comparative DateTime.
+     * @return Difference between now and the specified DateTime.
+     */
+    private static String getDifference(LocalDateTime dateTime) {
+        LocalDateTime current = LocalDateTime.now();
+        long seconds = ChronoUnit.SECONDS.between(dateTime, current);
+        long minutes = ChronoUnit.MINUTES.between(dateTime, current);
+        long hours = ChronoUnit.HOURS.between(dateTime, current);
+        long days = ChronoUnit.DAYS.between(dateTime, current);
+        if (seconds < 60) {
+            return seconds + " " + (seconds == 1 ? "second" : "seconds");
+        } else if (minutes < 60) {
+            return minutes + " " + (minutes == 1 ? "minute" : "minutes");
+        } else if (hours < 24) {
+            return hours + " " + (hours == 1 ? "hour" : "hours");
+        } else {
+            return days + " " + (days == 1 ? "day" : "days");
+        }
     }
 
     /**
@@ -101,6 +125,29 @@ public class Ticket {
         } else {
             this.closed = null;
         }
+    }
+
+    /**
+     * Gets the difference between now and the ticket opening.
+     * Formatted as "30 minutes" for example.
+     *
+     * @return Difference between now and the ticket opening.
+     */
+    public String getOpenedDifference() {
+        return getDifference(opened);
+    }
+
+    /**
+     * Gets the difference between now and the ticket closure.
+     * Formatted as "30 minutes" for example.
+     *
+     * @return Difference between now and the ticket closure if ticket is closed, null otherwise.
+     */
+    public String getClosedDifference() {
+        if (closed == null) {
+            return null;
+        }
+        return getDifference(closed);
     }
 
     /**

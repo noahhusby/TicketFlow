@@ -61,7 +61,7 @@ class TicketCell {
                         }
                         Spacer(Modifier.width(2.dp))
                         Column(verticalArrangement = Arrangement.Center) {
-                            Text("Test ticket descriptionnnn")
+                            Text("Test ticket description")
                             Text("#56 by Noah Husby was opened 1 hour ago", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
                         }
