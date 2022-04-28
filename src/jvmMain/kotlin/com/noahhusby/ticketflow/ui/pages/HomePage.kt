@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.noahhusby.ticketflow.HistoryHandler
 import com.noahhusby.ticketflow.TicketHandler
 import com.noahhusby.ticketflow.UserHandler
 import com.noahhusby.ticketflow.ui.elements.charts.PieChartData
@@ -108,7 +109,23 @@ class HomePage : Page {
                         shape = RoundedCornerShape(15.dp),
                         backgroundColor = surfaceColorAtElevation(1.dp),
                         contentColor = MaterialTheme.colorScheme.onSurface
-                    ) {}
+                    ) {
+                        Row(Modifier.fillMaxSize()) {
+                            Column(Modifier.weight(0.3f).padding(top = 25.dp, start = 25.dp)) {
+                                Text("System Breakdown", style = MaterialTheme.typography.titleLarge, color = onSurfaceColorAtElevation(1.dp))
+                                Column(
+                                    modifier = Modifier.fillMaxHeight(),
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Text("Total Tickets: " + TicketHandler.getInstance().tickets.size + " tickets", style = MaterialTheme.typography.headlineSmall)
+                                    Spacer(Modifier.height(4.dp))
+                                    Text("Total Users: " + UserHandler.getInstance().users.size + " users", style = MaterialTheme.typography.headlineSmall)
+                                    Spacer(Modifier.height(4.dp))
+                                    Text("Total History: " + HistoryHandler.getInstance().history.size + " entries", style = MaterialTheme.typography.headlineSmall)
+                                }
+                            }
+                        }
+                    }
                     Spacer(Modifier.weight(0.05f))
                     Card(
                         Modifier.fillMaxHeight().weight(0.3f),
