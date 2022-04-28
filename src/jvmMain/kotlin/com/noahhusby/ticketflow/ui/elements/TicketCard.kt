@@ -35,7 +35,7 @@ import com.noahhusby.ticketflow.entities.Ticket
 import com.noahhusby.ticketflow.ui.theme.surfaceColorAtElevation
 import com.noahhusby.ticketflow.ui.theme.tf_ticket_open
 
-class TicketCell(private val ticket: Ticket, val onTicketEdit: () -> Unit, val onTicketDelete: () -> Unit, val onTicketToggleState: () -> Unit) {
+class TicketCell(private val ticket: Ticket, private val admin: Boolean, val onTicketEdit: () -> Unit, val onTicketDelete: () -> Unit, val onTicketToggleState: () -> Unit) {
     @OptIn(ExperimentalComposeUiApi::class)
     @Composable
     fun render() {
@@ -66,13 +66,15 @@ class TicketCell(private val ticket: Ticket, val onTicketEdit: () -> Unit, val o
                             IconButton(onClick = { onTicketEdit.invoke() }) {
                                 Icon(imageVector = Icons.Filled.Edit, contentDescription = "")
                             }
-                            Spacer(Modifier.width(8.dp))
-                            IconButton(onClick = { onTicketDelete.invoke() }) {
-                                Icon(imageVector = Icons.Filled.Delete, contentDescription = "")
-                            }
-                            Spacer(Modifier.width(4.dp))
-                            FilledTonalButton(onClick = { onTicketToggleState.invoke() }) {
-                                Text(text = if (ticket.isClosed) "Open Ticket" else "Close Ticket")
+                            if (admin) {
+                                Spacer(Modifier.width(8.dp))
+                                IconButton(onClick = { onTicketDelete.invoke() }) {
+                                    Icon(imageVector = Icons.Filled.Delete, contentDescription = "")
+                                }
+                                Spacer(Modifier.width(4.dp))
+                                FilledTonalButton(onClick = { onTicketToggleState.invoke() }) {
+                                    Text(text = if (ticket.isClosed) "Open Ticket" else "Close Ticket")
+                                }
                             }
                         }
                     }

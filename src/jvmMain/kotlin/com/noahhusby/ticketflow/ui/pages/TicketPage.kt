@@ -124,24 +124,29 @@ class TicketPage : Page {
                             item {
                                 Surface(Modifier.fillMaxSize().height(48.dp), color = surfaceColorAtElevation(5.dp), border = BorderStroke(0.01.dp, MaterialTheme.colorScheme.outline)) {}
                             }
+                            val user = UserHandler.getInstance().authenticatedUser
+                            val admin = user.isAdmin
                             for (ticket: Ticket in tickets) {
-                                item {
-                                    TicketCell(
-                                        ticket,
-                                        onTicketEdit = {
-                                            currentTicket = ticket
-                                            isEditTicketDialogOpen = true
-                                        },
-                                        onTicketDelete = {
-                                            currentTicket = ticket
-                                            isDeleteTicketDialogOpen = true
-                                        },
-                                        onTicketToggleState = {
-                                            TicketHandler.getInstance().setTicketClosed(UserHandler.getInstance().authenticatedUser, ticket, !ticket.isClosed)
-                                            tickets.removeAll { true }
-                                            tickets.addAll(TicketHandler.getInstance().tickets.values)
-                                        }
-                                    ).render()
+                                if (!admin && user.id == ticket.issuer || admin) {
+                                    item {
+                                        TicketCell(
+                                            ticket,
+                                            admin,
+                                            onTicketEdit = {
+                                                currentTicket = ticket
+                                                isEditTicketDialogOpen = true
+                                            },
+                                            onTicketDelete = {
+                                                currentTicket = ticket
+                                                isDeleteTicketDialogOpen = true
+                                            },
+                                            onTicketToggleState = {
+                                                TicketHandler.getInstance().setTicketClosed(user, ticket, !ticket.isClosed)
+                                                tickets.removeAll { true }
+                                                tickets.addAll(TicketHandler.getInstance().tickets.values)
+                                            }
+                                        ).render()
+                                    }
                                 }
                             }
                         }
