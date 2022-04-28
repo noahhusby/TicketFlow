@@ -35,11 +35,6 @@ import com.noahhusby.ticketflow.entities.Ticket
 import com.noahhusby.ticketflow.ui.theme.surfaceColorAtElevation
 import com.noahhusby.ticketflow.ui.theme.tf_ticket_open
 
-const val idWeight = .2f
-const val descriptionWeight = .5f
-const val actionWeight = .3f
-
-
 class TicketCell(private val ticket: Ticket, val onTicketEdit: () -> Unit, val onTicketDelete: () -> Unit, val onTicketToggleState: () -> Unit) {
     @OptIn(ExperimentalComposeUiApi::class)
     @Composable
