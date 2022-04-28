@@ -20,7 +20,10 @@ package com.noahhusby.ticketflow.ui.elements
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ConfirmationNumber
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -29,6 +32,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.unit.dp
+import com.noahhusby.ticketflow.UserHandler
+import com.noahhusby.ticketflow.entities.Ticket
 import com.noahhusby.ticketflow.ui.theme.surfaceColorAtElevation
 import com.noahhusby.ticketflow.ui.theme.tf_ticket_open
 
@@ -37,12 +42,11 @@ const val descriptionWeight = .5f
 const val actionWeight = .3f
 
 
-class TicketCell {
+class TicketCell(val ticket: Ticket) {
     @OptIn(ExperimentalComposeUiApi::class)
     @Composable
     fun render() {
         var hover by remember { mutableStateOf(false) }
-        var selected by remember { mutableStateOf(false) }
         Surface(Modifier.fillMaxWidth()
             .height(64.dp)
             .onPointerEvent(PointerEventType.Enter) { hover = true }
@@ -52,18 +56,16 @@ class TicketCell {
             Column(Modifier.fillMaxSize()) {
                 Surface(modifier = Modifier.height(63.dp).fillMaxWidth(), color = Color.Transparent) {
                     Row(Modifier.fillMaxSize().padding(10.dp)) {
-                        Column {
-                            Checkbox(selected, onCheckedChange = { c -> selected = c }, Modifier.scale(0.75f))
-                        }
                         Spacer(Modifier.width(2.dp))
                         Column {
                             Icon(Icons.Filled.ConfirmationNumber, contentDescription = "Ticket", tint = tf_ticket_open, modifier = Modifier.scale(0.8f))
                         }
                         Spacer(Modifier.width(2.dp))
                         Column(verticalArrangement = Arrangement.Center) {
-                            Text("Test ticket description")
-                            Text("#56 by Noah Husby was opened 1 hour ago", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-
+                            Text(ticket.description)
+                            var text = "#" + ticket.id + " by " + UserHandler.getInstance().getUser(ticket.issuer).name + " was "
+                            text += (if (ticket.isClosed) "closed " + ticket.closedDifference else "opened " + ticket.openedDifference) + " ago"
+                            Text(text, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }
