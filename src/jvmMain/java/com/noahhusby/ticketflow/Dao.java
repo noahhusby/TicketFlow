@@ -390,12 +390,44 @@ public class Dao {
     }
 
     /**
+     * Updates whether a ticket is closed or not by a ticket's id.
+     *
+     * @param user   The user who initiated the status change.
+     * @param id     The id of the ticket to close.
+     * @param closed True if the ticket should be closed, false otherwise.
+     */
+    public void setTicketClosed(User user, int id, boolean closed) {
+        boolean success = execute(new Update(ConstantsKt.DB_TICKETS_TABLE, new UpdateValue("closed", closed ? LocalDateTime.now().toString() : null), "id='" + id + "'"));
+        if (success) {
+            HistoryHandler.getInstance().write(user, closed ? HistoryType.TICKET_CLOSED : HistoryType.TICKET_OPENED, String.format("Ticket #%s", id));
+        } else {
+            TicketFlow.getLogger().warn(String.format("Failed to update ticket \"%s\" with closure status \"%s\"", id, closed));
+        }
+    }
+
+    /**
+     * Updates a ticket's description by its id.
+     *
+     * @param user        The user who initiated the status change.
+     * @param id          The id of the ticket to close.
+     * @param description The new description of the ticket.
+     */
+    public void setTicketDescription(User user, int id, String description) {
+        boolean success = execute(new Update(ConstantsKt.DB_TICKETS_TABLE, new UpdateValue("description", description), "id='" + id + "'"));
+        if (success) {
+            HistoryHandler.getInstance().write(user, HistoryType.TICKET_EDITED, String.format("Changed description of Ticket #%s to \"%s\"", id, description));
+        } else {
+            TicketFlow.getLogger().warn(String.format("Failed to update ticket \"%s\" with new description \"%s\"", id, description));
+        }
+    }
+
+    /**
      * Removes a ticket from the database given its id.
      *
      * @param user who initiated the request.
      * @param id   ID of ticket to remove.
      */
-    public void removeTicket(User user, int id) {
+    protected void removeTicket(User user, int id) {
         TicketFlow.getLogger().debug("Removing ticket by ID: " + id);
         if (!execute(new Custom("DELETE FROM " + ConstantsKt.DB_TICKETS_TABLE + " WHERE id='" + id + "'"))) {
             TicketFlow.getLogger().warn(String.format("Failed to remove ticket \"%s\" by ID.", id));

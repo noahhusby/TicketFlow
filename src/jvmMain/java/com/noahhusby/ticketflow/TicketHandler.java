@@ -73,4 +73,28 @@ public class TicketHandler {
         Dao.getInstance().removeTicket(user, ticket.getId());
         this.ticketCache.remove(ticket.getId());
     }
+
+    /**
+     * Sets whether a ticket should be closed or not.
+     *
+     * @param user   The user who initiated the request.
+     * @param ticket The ticket to be edited.
+     * @param closed True if the ticket should be closed, false otherwise.
+     */
+    public void setTicketClosed(User user, Ticket ticket, boolean closed) {
+        Dao.getInstance().setTicketClosed(user, ticket.getId(), closed);
+        ticketCache.get(ticket.getId()).setClosed(closed);
+    }
+
+    /**
+     * Sets a new description for a ticket.
+     *
+     * @param user        The user who initiated the request.
+     * @param ticket      The ticket to be edited.
+     * @param description The new description of the ticket.
+     */
+    public void setTicketDescription(User user, Ticket ticket, String description) {
+        Dao.getInstance().setTicketDescription(user, ticket.getId(), description);
+        ticketCache.get(ticket.getId()).setDescription(description);
+    }
 }
