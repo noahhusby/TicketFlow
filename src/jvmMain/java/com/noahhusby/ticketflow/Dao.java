@@ -397,7 +397,12 @@ public class Dao {
      * @param closed True if the ticket should be closed, false otherwise.
      */
     public void setTicketClosed(User user, int id, boolean closed) {
-        boolean success = execute(new Update(ConstantsKt.DB_TICKETS_TABLE, new UpdateValue("closed", closed ? LocalDateTime.now().toString() : null), "id='" + id + "'"));
+        boolean success;
+        if (closed) {
+            success = execute(new Update(ConstantsKt.DB_TICKETS_TABLE, new UpdateValue("closed", LocalDateTime.now().toString()), "id='" + id + "'"));
+        } else {
+            success = execute(new Custom("UPDATE " + ConstantsKt.DB_TICKETS_TABLE + " SET closed = NULL WHERE id='" + id + "'"));
+        }
         if (success) {
             HistoryHandler.getInstance().write(user, closed ? HistoryType.TICKET_CLOSED : HistoryType.TICKET_OPENED, String.format("Ticket #%s", id));
         } else {

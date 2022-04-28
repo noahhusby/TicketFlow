@@ -136,7 +136,11 @@ class TicketPage : Page {
                                             currentTicket = ticket
                                             isDeleteTicketDialogOpen = true
                                         },
-                                        onTicketToggleState = {}
+                                        onTicketToggleState = {
+                                            TicketHandler.getInstance().setTicketClosed(UserHandler.getInstance().authenticatedUser, ticket, !ticket.isClosed)
+                                            tickets.removeAll { true }
+                                            tickets.addAll(TicketHandler.getInstance().tickets.values)
+                                        }
                                     ).render()
                                 }
                             }
