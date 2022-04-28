@@ -55,6 +55,7 @@ class TicketPage : Page {
 
         var isDeleteTicketDialogOpen by remember { mutableStateOf(false) }
         var isAddTicketDialogOpen by remember { mutableStateOf(false) }
+        var isEditTicketDialogOpen by remember { mutableStateOf(false) }
 
         if (isDeleteTicketDialogOpen) {
             dialog(
@@ -88,6 +89,20 @@ class TicketPage : Page {
             }
         }
 
+        if (isEditTicketDialogOpen) {
+            dialog(
+                onCloseRequest = { isEditTicketDialogOpen = false },
+                height = 250.dp,
+                width = 500.dp
+            ) {
+                editTicketDialog(currentTicket, onCloseDialog = { isEditTicketDialogOpen = false }, onSave = {
+                    isEditTicketDialogOpen = false
+                    tickets.removeAll { true }
+                    tickets.addAll(TicketHandler.getInstance().tickets.values)
+                })
+            }
+        }
+
         Scaffold(
             floatingActionButton = {
                 ExtendedFloatingActionButton(
@@ -113,7 +128,10 @@ class TicketPage : Page {
                                 item {
                                     TicketCell(
                                         ticket,
-                                        onTicketEdit = {},
+                                        onTicketEdit = {
+                                            currentTicket = ticket
+                                            isEditTicketDialogOpen = true
+                                        },
                                         onTicketDelete = {
                                             currentTicket = ticket
                                             isDeleteTicketDialogOpen = true
@@ -127,7 +145,6 @@ class TicketPage : Page {
                 }
             }
         }
-        // TODO("Not yet implemented")
     }
 
     @Composable
@@ -198,6 +215,53 @@ class TicketPage : Page {
                         enabled = isFormValid
                     ) {
                         Text("Create")
+                        Icon(Icons.Default.Check, contentDescription = null)
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun editTicketDialog(ticket: Ticket, onCloseDialog: () -> Unit, onSave: () -> Unit) {
+        Surface(shape = RoundedCornerShape(10.dp), modifier = Modifier.fillMaxSize()) {
+            var description by remember { mutableStateOf(ticket.description) }
+            val isFormValid by derivedStateOf { description.isNotEmpty() }
+
+            Column(
+                Modifier.fillMaxSize().padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(Modifier.fillMaxWidth().wrapContentHeight()) {
+                    Text("Edit Ticket #" + ticket.id)
+                    Spacer(Modifier.height(32.dp))
+
+                    // Description
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = description,
+                        onValueChange = { description = it },
+                        label = { Text(text = "Description") },
+                        colors = ticketingFieldColors(),
+                        singleLine = true
+                    )
+                }
+
+                // Action Row
+                Row(Modifier.fillMaxWidth().wrapContentHeight(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End) {
+                    TextButton(onClick = { onCloseDialog.invoke() }) {
+                        Text("Cancel")
+                    }
+                    Spacer(Modifier.width(12.dp))
+                    Button(
+                        onClick = {
+                            TicketHandler.getInstance().setTicketDescription(UserHandler.getInstance().authenticatedUser, ticket, description)
+                            onSave.invoke()
+                        },
+                        enabled = isFormValid
+                    ) {
+                        Text("Save")
                         Icon(Icons.Default.Check, contentDescription = null)
                     }
                 }
