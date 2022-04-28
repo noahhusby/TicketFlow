@@ -20,14 +20,12 @@ package com.noahhusby.ticketflow.ui.elements
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ConfirmationNumber
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
@@ -55,17 +53,32 @@ class TicketCell(val ticket: Ticket) {
         ) {
             Column(Modifier.fillMaxSize()) {
                 Surface(modifier = Modifier.height(63.dp).fillMaxWidth(), color = Color.Transparent) {
-                    Row(Modifier.fillMaxSize().padding(10.dp)) {
-                        Spacer(Modifier.width(2.dp))
-                        Column {
-                            Icon(Icons.Filled.ConfirmationNumber, contentDescription = "Ticket", tint = tf_ticket_open, modifier = Modifier.scale(0.8f))
+                    Row(Modifier.fillMaxSize().padding(10.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                        Row() {
+                            Spacer(Modifier.width(2.dp))
+                            Column(verticalArrangement = Arrangement.Center, modifier = Modifier.fillMaxHeight()) {
+                                Icon(Icons.Filled.ConfirmationNumber, contentDescription = "Ticket", tint = if (ticket.isClosed) Color.Red else tf_ticket_open)
+                            }
+                            Spacer(Modifier.width(6.dp))
+                            Column(verticalArrangement = Arrangement.Center) {
+                                Text(ticket.description)
+                                var text = "#" + ticket.id + " by " + UserHandler.getInstance().getUser(ticket.issuer).name + " was "
+                                text += (if (ticket.isClosed) "closed " + ticket.closedDifference else "opened " + ticket.openedDifference) + " ago"
+                                Text(text, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
                         }
-                        Spacer(Modifier.width(2.dp))
-                        Column(verticalArrangement = Arrangement.Center) {
-                            Text(ticket.description)
-                            var text = "#" + ticket.id + " by " + UserHandler.getInstance().getUser(ticket.issuer).name + " was "
-                            text += (if (ticket.isClosed) "closed " + ticket.closedDifference else "opened " + ticket.openedDifference) + " ago"
-                            Text(text, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Row() {
+                            IconButton(onClick = {}) {
+                                Icon(imageVector = Icons.Filled.Edit, contentDescription = "")
+                            }
+                            Spacer(Modifier.width(8.dp))
+                            IconButton(onClick = {}) {
+                                Icon(imageVector = Icons.Filled.Delete, contentDescription = "")
+                            }
+                            Spacer(Modifier.width(4.dp))
+                            FilledTonalButton(onClick = {}) {
+                                Text(text = if (ticket.isClosed) "Open Ticket" else "Close Ticket")
+                            }
                         }
                     }
                 }
