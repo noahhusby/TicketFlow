@@ -18,6 +18,7 @@
 package com.noahhusby.ticketflow.entities;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
@@ -52,7 +53,7 @@ public class Ticket {
      * @return Difference between now and the specified DateTime.
      */
     private static String getDifference(LocalDateTime dateTime) {
-        LocalDateTime current = LocalDateTime.now();
+        LocalDateTime current = LocalDateTime.now(ZoneOffset.UTC);;
         long seconds = ChronoUnit.SECONDS.between(dateTime, current);
         long minutes = ChronoUnit.MINUTES.between(dateTime, current);
         long hours = ChronoUnit.HOURS.between(dateTime, current);
@@ -121,7 +122,7 @@ public class Ticket {
      */
     public void setClosed(boolean closed) {
         if (closed) {
-            this.closed = LocalDateTime.now();
+            this.closed = LocalDateTime.now(ZoneOffset.UTC);
         } else {
             this.closed = null;
         }

@@ -39,6 +39,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -354,7 +355,7 @@ public class Dao {
                 int id = set.getInt(1);
                 set.getStatement().close();
                 set.close();
-                return new User(id, username, name, admin, LocalDateTime.now());
+                return new User(id, username, name, admin, LocalDateTime.now(ZoneOffset.UTC));
             } catch (SQLException e) {
                 TicketFlow.getLogger().error("Error while trying to create new user: ", e);
             }
@@ -381,7 +382,7 @@ public class Dao {
                 set.getStatement().close();
                 set.close();
                 HistoryHandler.getInstance().write(user, HistoryType.TICKET_OPENED, String.format("Opened ticket #%s w/ description: %s", id, description));
-                return new Ticket(id, user.getId(), description, LocalDateTime.now());
+                return new Ticket(id, user.getId(), description, LocalDateTime.now(ZoneOffset.UTC));
             } catch (SQLException e) {
                 TicketFlow.getLogger().error("Error while trying to save ticket: ", e);
             }
@@ -399,7 +400,7 @@ public class Dao {
     public void setTicketClosed(User user, int id, boolean closed) {
         boolean success;
         if (closed) {
-            success = execute(new Update(ConstantsKt.DB_TICKETS_TABLE, new UpdateValue("closed", LocalDateTime.now().toString()), "id='" + id + "'"));
+            success = execute(new Update(ConstantsKt.DB_TICKETS_TABLE, new UpdateValue("closed", LocalDateTime.now(ZoneOffset.UTC).toString()), "id='" + id + "'"));
         } else {
             success = execute(new Custom("UPDATE " + ConstantsKt.DB_TICKETS_TABLE + " SET closed = NULL WHERE id='" + id + "'"));
         }
@@ -452,7 +453,7 @@ public class Dao {
     protected History saveNewHistory(User user, HistoryType type, String message) {
         TicketFlow.getLogger().debug("Saving new history event for: " + user.getName());
         execute(new Insert(ConstantsKt.DB_HISTORY_TABLE, "user,type,msg", String.valueOf(user.getId()), type.name(), message));
-        return new History(LocalDateTime.now(), user.getId(), type, message);
+        return new History(LocalDateTime.now(ZoneOffset.UTC), user.getId(), type, message);
     }
 
     /**
