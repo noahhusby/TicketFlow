@@ -48,7 +48,7 @@ public class Ticket {
     /**
      * Gets the difference between now and a specified DateTime.
      *
-     * @param dateTime The specified comparative DateTime.
+     * @param dateTime The comparative datetime.
      * @return Difference between now and the specified DateTime.
      */
     private static String getDifference(LocalDateTime dateTime) {

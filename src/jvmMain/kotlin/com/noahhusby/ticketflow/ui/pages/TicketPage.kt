@@ -35,7 +35,6 @@ import com.noahhusby.ticketflow.TicketHandler
 import com.noahhusby.ticketflow.entities.Ticket
 import com.noahhusby.ticketflow.ui.elements.TicketCell
 import com.noahhusby.ticketflow.ui.theme.surfaceColorAtElevation
-import java.time.LocalDateTime
 
 class TicketPage : Page {
     @OptIn(ExperimentalMaterial3Api::class)
