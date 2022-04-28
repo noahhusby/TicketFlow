@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.noahhusby.ticketflow.TicketHandler
 import com.noahhusby.ticketflow.UserHandler
 import com.noahhusby.ticketflow.ui.elements.charts.PieChartData
 import com.noahhusby.ticketflow.ui.elements.charts.PieChartLegendKey
@@ -53,6 +54,26 @@ class HomePage : Page {
                         contentColor = MaterialTheme.colorScheme.onSurface
                     ) {
                         Row(Modifier.fillMaxSize()) {
+                            var openTickets = 0f
+                            var closedTickets = 0f
+                            for (ticket in TicketHandler.getInstance().tickets.values) {
+                                if (ticket.isClosed) {
+                                    closedTickets++
+                                } else {
+                                    openTickets++
+                                }
+                            }
+                            val totalTickets = openTickets + closedTickets
+                            val openPercent: Float = if (openTickets == 0f) {
+                                0f
+                            } else {
+                                ((openTickets / totalTickets) * 100)
+                            }
+                            val closedPercent: Float = if (closedTickets == 0f) {
+                                0f
+                            } else {
+                                ((closedTickets / totalTickets) * 100)
+                            }
                             Column(Modifier.weight(0.3f).padding(top = 25.dp, start = 25.dp)) {
                                 Text("Ticket Breakdown", style = MaterialTheme.typography.titleLarge, color = onSurfaceColorAtElevation(1.dp))
                                 Column(
@@ -74,8 +95,8 @@ class HomePage : Page {
                                 modifier = Modifier.weight(0.6f).padding(40.dp),
                                 pieChartData = PieChartData(
                                     slices = listOf(
-                                        PieChartData.Slice(29f, MaterialTheme.colorScheme.primary),
-                                        PieChartData.Slice(71f, MaterialTheme.colorScheme.tertiary),
+                                        PieChartData.Slice(openPercent, MaterialTheme.colorScheme.primary),
+                                        PieChartData.Slice(closedPercent, MaterialTheme.colorScheme.tertiary),
                                     )
                                 )
                             )
