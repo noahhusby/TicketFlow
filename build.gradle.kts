@@ -44,6 +44,7 @@ compose.desktop {
     application {
         mainClass = "com.noahhusby.ticketflow.TicketFlowKt"
         nativeDistributions {
+            includeAllModules = true
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi)
             packageName = "TicketFlow"
             packageVersion = "1.0.0"
