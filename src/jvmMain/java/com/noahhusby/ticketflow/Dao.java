@@ -128,7 +128,7 @@ public class Dao {
     }
 
     /*
-     * The method above and below this comment block are nearly indentical in purpose.
+     * The method above and below this comment block are nearly identical in purpose.
      * It's a hacky way to get generated keys.
      *
      * I would really like to use my SQL library for this,
@@ -376,10 +376,12 @@ public class Dao {
             TicketFlow.getLogger().warn("Failed to save new ticket for: " + user.getName());
         } else {
             try {
-                int id = set.getInt("id");
-                LocalDateTime opened = set.getObject("opened", LocalDateTime.class);
-                return new Ticket(id, user.getId(), description, opened);
-                // TODO: History
+                set.next();
+                int id = set.getInt(1);
+                set.getStatement().close();
+                set.close();
+                HistoryHandler.getInstance().write(user, HistoryType.TICKET_OPENED, String.format("Opened ticket #%s w/ description: %s", id, description));
+                return new Ticket(id, user.getId(), description, LocalDateTime.now());
             } catch (SQLException e) {
                 TicketFlow.getLogger().error("Error while trying to save ticket: ", e);
             }

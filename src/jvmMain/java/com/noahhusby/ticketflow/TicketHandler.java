@@ -18,6 +18,7 @@
 package com.noahhusby.ticketflow;
 
 import com.noahhusby.ticketflow.entities.Ticket;
+import com.noahhusby.ticketflow.entities.User;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -47,5 +48,18 @@ public class TicketHandler {
 
     public Map<Integer, Ticket> getTickets() {
         return ticketCache;
+    }
+
+    /**
+     * Creates a new ticket and saves it to the database / cache.
+     *
+     * @param user        The user who issued the ticket.
+     * @param description The description of the ticket.
+     * @return {@link Ticket}.
+     */
+    public Ticket createNewTicket(User user, String description) {
+        Ticket ticket = Dao.getInstance().saveNewTicket(user, description);
+        ticketCache.put(ticket.getId(), ticket);
+        return ticket;
     }
 }

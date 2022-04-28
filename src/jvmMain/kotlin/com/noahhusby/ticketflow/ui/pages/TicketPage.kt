@@ -18,32 +18,58 @@
 package com.noahhusby.ticketflow.ui.pages
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.noahhusby.ticketflow.TicketHandler
+import com.noahhusby.ticketflow.UserHandler
 import com.noahhusby.ticketflow.entities.Ticket
 import com.noahhusby.ticketflow.ui.elements.TicketCell
+import com.noahhusby.ticketflow.ui.elements.dialog
 import com.noahhusby.ticketflow.ui.theme.surfaceColorAtElevation
+import com.noahhusby.ticketflow.ui.theme.ticketingFieldColors
 
 class TicketPage : Page {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun render() {
+        val tickets = remember { mutableStateListOf<Ticket>() }
+        LaunchedEffect(true) {
+            tickets.removeAll { true }
+            tickets.addAll(TicketHandler.getInstance().tickets.values)
+        }
+
+        var isAddTicketDialogOpen by remember { mutableStateOf(false) }
+
+        if (isAddTicketDialogOpen) {
+            dialog(
+                onCloseRequest = { isAddTicketDialogOpen = false },
+                height = 250.dp,
+                width = 500.dp
+            ) {
+                addTicketDialog(onCloseDialog = { isAddTicketDialogOpen = false }, onTicketAdd = {
+                    isAddTicketDialogOpen = false
+                    tickets.removeAll { true }
+                    tickets.addAll(TicketHandler.getInstance().tickets.values)
+                })
+            }
+        }
+
         Scaffold(
             floatingActionButton = {
                 ExtendedFloatingActionButton(
-                    onClick = {},
+                    onClick = { isAddTicketDialogOpen = true },
                     text = {
                         Text("New Ticket")
                     },
@@ -53,13 +79,13 @@ class TicketPage : Page {
                 )
             }
         ) {
-            table()
+            table(tickets)
         }
         // TODO("Not yet implemented")
     }
 
     @Composable
-    private fun table() {
+    private fun table(tickets: SnapshotStateList<Ticket>) {
         Surface(Modifier.fillMaxSize(), shape = RoundedCornerShape(topStart = 25.dp, bottomStart = 25.dp), tonalElevation = 1.dp) {
             Surface(Modifier.padding(48.dp)) {
                 Column {
@@ -69,7 +95,7 @@ class TicketPage : Page {
                             item {
                                 Surface(Modifier.fillMaxSize().height(48.dp), color = surfaceColorAtElevation(5.dp), border = BorderStroke(0.01.dp, MaterialTheme.colorScheme.outline)) {}
                             }
-                            for (ticket: Ticket in TicketHandler.getInstance().tickets.values) {
+                            for (ticket: Ticket in tickets) {
                                 item {
                                     TicketCell(
                                         ticket,
@@ -80,6 +106,53 @@ class TicketPage : Page {
                                 }
                             }
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun addTicketDialog(onCloseDialog: () -> Unit, onTicketAdd: () -> Unit) {
+        Surface(shape = RoundedCornerShape(10.dp), modifier = Modifier.fillMaxSize()) {
+            var description by remember { mutableStateOf("") }
+            val isFormValid by derivedStateOf { description.isNotEmpty() }
+
+            Column(
+                Modifier.fillMaxSize().padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(Modifier.fillMaxWidth().wrapContentHeight()) {
+                    Text("Create a new ticket")
+                    Spacer(Modifier.height(32.dp))
+
+                    // Description
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = description,
+                        onValueChange = { description = it },
+                        label = { Text(text = "Description") },
+                        colors = ticketingFieldColors(),
+                        singleLine = true
+                    )
+                }
+
+                // Action Row
+                Row(Modifier.fillMaxWidth().wrapContentHeight(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End) {
+                    TextButton(onClick = { onCloseDialog.invoke() }) {
+                        Text("Cancel")
+                    }
+                    Spacer(Modifier.width(12.dp))
+                    Button(
+                        onClick = {
+                            TicketHandler.getInstance().createNewTicket(UserHandler.getInstance().authenticatedUser, description)
+                            onTicketAdd.invoke()
+                        },
+                        enabled = isFormValid
+                    ) {
+                        Text("Create")
+                        Icon(Icons.Default.Check, contentDescription = null)
                     }
                 }
             }
