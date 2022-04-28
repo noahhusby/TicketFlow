@@ -45,5 +45,7 @@ val HISTORY_ICONS = mapOf(
     HistoryType.USER_EDITED to Icons.Filled.ManageAccounts,
     HistoryType.USER_DELETED to Icons.Filled.PersonRemove,
     HistoryType.TICKET_OPENED to Icons.Filled.AddCircle,
+    HistoryType.TICKET_EDITED to Icons.Filled.Edit,
+    HistoryType.TICKET_DELETED to Icons.Filled.Delete,
     HistoryType.TICKET_CLOSED to Icons.Filled.Delete
 )

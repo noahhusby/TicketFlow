@@ -27,7 +27,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,18 +38,41 @@ import com.noahhusby.ticketflow.ui.elements.TicketCell
 import com.noahhusby.ticketflow.ui.elements.dialog
 import com.noahhusby.ticketflow.ui.theme.surfaceColorAtElevation
 import com.noahhusby.ticketflow.ui.theme.ticketingFieldColors
+import com.noahhusby.ticketflow.ui.theme.warningButtonColors
 
 class TicketPage : Page {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun render() {
         val tickets = remember { mutableStateListOf<Ticket>() }
+
+        // Bad practice ... Ran out of time.
+        var currentTicket by remember { mutableStateOf(Ticket(0, 0, null, null)) }
         LaunchedEffect(true) {
             tickets.removeAll { true }
             tickets.addAll(TicketHandler.getInstance().tickets.values)
         }
 
+        var isDeleteTicketDialogOpen by remember { mutableStateOf(false) }
         var isAddTicketDialogOpen by remember { mutableStateOf(false) }
+
+        if (isDeleteTicketDialogOpen) {
+            dialog(
+                onCloseRequest = { isDeleteTicketDialogOpen = false },
+                height = 125.dp,
+                width = 500.dp
+            ) {
+                deleteTicketDialog(
+                    ticket = currentTicket,
+                    onCloseDialog = { isDeleteTicketDialogOpen = false },
+                    onDelete = {
+                        isDeleteTicketDialogOpen = false
+                        tickets.removeAll { true }
+                        tickets.addAll(TicketHandler.getInstance().tickets.values)
+                    }
+                )
+            }
+        }
 
         if (isAddTicketDialogOpen) {
             dialog(
@@ -79,16 +101,8 @@ class TicketPage : Page {
                 )
             }
         ) {
-            table(tickets)
-        }
-        // TODO("Not yet implemented")
-    }
-
-    @Composable
-    private fun table(tickets: SnapshotStateList<Ticket>) {
-        Surface(Modifier.fillMaxSize(), shape = RoundedCornerShape(topStart = 25.dp, bottomStart = 25.dp), tonalElevation = 1.dp) {
-            Surface(Modifier.padding(48.dp)) {
-                Column {
+            Surface(Modifier.fillMaxSize(), shape = RoundedCornerShape(topStart = 25.dp, bottomStart = 25.dp), tonalElevation = 1.dp) {
+                Column(Modifier.padding(48.dp)) {
                     Text("Tickets", style = MaterialTheme.typography.displayLarge)
                     Surface(Modifier.fillMaxSize().padding(vertical = 30.dp), shape = RoundedCornerShape(30.dp), color = Color.Transparent, border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)) {
                         LazyColumn(Modifier.fillMaxSize()) {
@@ -100,12 +114,44 @@ class TicketPage : Page {
                                     TicketCell(
                                         ticket,
                                         onTicketEdit = {},
-                                        onTicketDelete = {},
+                                        onTicketDelete = {
+                                            currentTicket = ticket
+                                            isDeleteTicketDialogOpen = true
+                                        },
                                         onTicketToggleState = {}
                                     ).render()
                                 }
                             }
                         }
+                    }
+                }
+            }
+        }
+        // TODO("Not yet implemented")
+    }
+
+    @Composable
+    private fun deleteTicketDialog(ticket: Ticket, onCloseDialog: () -> Unit, onDelete: () -> Unit) {
+        Surface(shape = RoundedCornerShape(10.dp), modifier = Modifier.fillMaxSize()) {
+            Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.SpaceBetween) {
+                Text("Are you sure you want to delete ticket #" + ticket.id + "?")
+                Row(Modifier.fillMaxWidth().wrapContentHeight(), verticalAlignment = Alignment.CenterVertically) {
+                    OutlinedButton(
+                        onClick = {
+                            onCloseDialog.invoke()
+                        }
+                    ) {
+                        Text("Cancel")
+                    }
+                    Spacer(Modifier.width(12.dp))
+                    FilledTonalButton(
+                        onClick = {
+                            TicketHandler.getInstance().removeTicket(UserHandler.getInstance().authenticatedUser, ticket)
+                            onDelete.invoke()
+                        },
+                        colors = warningButtonColors()
+                    ) {
+                        Text(text = "Yes")
                     }
                 }
             }

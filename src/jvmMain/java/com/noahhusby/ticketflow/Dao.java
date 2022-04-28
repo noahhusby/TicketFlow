@@ -390,6 +390,21 @@ public class Dao {
     }
 
     /**
+     * Removes a ticket from the database given its id.
+     *
+     * @param user who initiated the request.
+     * @param id   ID of ticket to remove.
+     */
+    public void removeTicket(User user, int id) {
+        TicketFlow.getLogger().debug("Removing ticket by ID: " + id);
+        if (!execute(new Custom("DELETE FROM " + ConstantsKt.DB_TICKETS_TABLE + " WHERE id='" + id + "'"))) {
+            TicketFlow.getLogger().warn(String.format("Failed to remove ticket \"%s\" by ID.", id));
+        } else {
+            HistoryHandler.getInstance().write(user, HistoryType.TICKET_DELETED, String.format("Deleted ticket #%s.", id));
+        }
+    }
+
+    /**
      * Saves a new history event for specified user with a given type.
      *
      * @param user    The user of the action.

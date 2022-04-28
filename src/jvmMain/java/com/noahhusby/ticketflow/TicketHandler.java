@@ -62,4 +62,15 @@ public class TicketHandler {
         ticketCache.put(ticket.getId(), ticket);
         return ticket;
     }
+
+    /**
+     * Removes a ticket based upon a given ticket object.
+     *
+     * @param user   who initiated the request.
+     * @param ticket The ticket to be deleted.
+     */
+    public void removeTicket(User user, Ticket ticket) {
+        Dao.getInstance().removeTicket(user, ticket.getId());
+        this.ticketCache.remove(ticket.getId());
+    }
 }

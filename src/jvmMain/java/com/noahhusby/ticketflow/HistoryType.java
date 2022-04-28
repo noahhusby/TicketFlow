@@ -54,6 +54,16 @@ public enum HistoryType {
     TICKET_OPENED,
 
     /*
+     * Event fired each time a ticket is edited.
+     */
+    TICKET_EDITED,
+
+    /*
+     * Event fired each time a ticket is deleted.
+     */
+    TICKET_DELETED,
+
+    /*
      * Event fired each time a ticket is closed.
      */
     TICKET_CLOSED
