@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.noahhusby.ticketflow.TicketHandler
 import com.noahhusby.ticketflow.UserHandler
 import com.noahhusby.ticketflow.entities.Ticket
-import com.noahhusby.ticketflow.ui.elements.TicketCell
+import com.noahhusby.ticketflow.ui.elements.TicketCard
 import com.noahhusby.ticketflow.ui.elements.dialog
 import com.noahhusby.ticketflow.ui.theme.surfaceColorAtElevation
 import com.noahhusby.ticketflow.ui.theme.ticketingFieldColors
@@ -129,7 +129,7 @@ class TicketPage : Page {
                             for (ticket: Ticket in tickets) {
                                 if (!admin && user.id == ticket.issuer || admin) {
                                     item {
-                                        TicketCell(
+                                        TicketCard(
                                             ticket,
                                             admin,
                                             onTicketEdit = {

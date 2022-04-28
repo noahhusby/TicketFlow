@@ -35,7 +35,7 @@ import com.noahhusby.ticketflow.entities.Ticket
 import com.noahhusby.ticketflow.ui.theme.surfaceColorAtElevation
 import com.noahhusby.ticketflow.ui.theme.tf_ticket_open
 
-class TicketCell(private val ticket: Ticket, private val admin: Boolean, val onTicketEdit: () -> Unit, val onTicketDelete: () -> Unit, val onTicketToggleState: () -> Unit) {
+class TicketCard(private val ticket: Ticket, private val admin: Boolean, val onTicketEdit: () -> Unit, val onTicketDelete: () -> Unit, val onTicketToggleState: () -> Unit) {
     @OptIn(ExperimentalComposeUiApi::class)
     @Composable
     fun render() {

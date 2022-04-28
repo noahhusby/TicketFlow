@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.noahhusby.ticketflow.HistoryHandler
 import com.noahhusby.ticketflow.TicketHandler
 import com.noahhusby.ticketflow.UserHandler
+import com.noahhusby.ticketflow.ui.elements.RecentTicketCard
 import com.noahhusby.ticketflow.ui.elements.charts.PieChartData
 import com.noahhusby.ticketflow.ui.elements.charts.PieChartLegendKey
 import com.noahhusby.ticketflow.ui.elements.charts.pieChart
@@ -132,7 +133,19 @@ class HomePage : Page {
                         shape = RoundedCornerShape(15.dp),
                         backgroundColor = surfaceColorAtElevation(1.dp),
                         contentColor = MaterialTheme.colorScheme.onSurface
-                    ) {}
+                    ) {
+                        Column(Modifier.fillMaxSize().padding(25.dp)) {
+                            Text("Recent Tickets", style = MaterialTheme.typography.titleLarge, color = onSurfaceColorAtElevation(1.dp))
+                            Spacer(Modifier.height(4.dp))
+                            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center) {
+                                TicketHandler.getInstance().tickets.values.reversed().forEachIndexed { index, ticket ->
+                                    if (index < 3) {
+                                        RecentTicketCard(ticket).render()
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
                 Row(Modifier.weight(0.5f)) {}
             }
