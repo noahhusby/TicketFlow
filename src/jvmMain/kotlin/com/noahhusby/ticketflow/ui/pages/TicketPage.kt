@@ -70,7 +70,10 @@ class TicketPage : Page {
                                 Surface(Modifier.fillMaxSize().height(48.dp), color = surfaceColorAtElevation(5.dp), border = BorderStroke(0.01.dp, MaterialTheme.colorScheme.outline)) {}
                             }
                             item {
-                                TicketCell(Ticket(0, 1, "Test ticket 123!", LocalDateTime.parse("2022-04-25T16:12:01"), LocalDateTime.parse("2022-04-26T10:12:01"))).render()
+                                TicketCell(Ticket(0, 1, "Test ticket 123!", LocalDateTime.parse("2022-04-25T16:12:01"), LocalDateTime.parse("2022-04-26T10:12:01")),
+                                    onTicketEdit = {},
+                                    onTicketDelete = {},
+                                    onTicketToggleState = {}).render()
                             }
                         }
                     }

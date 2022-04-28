@@ -40,7 +40,7 @@ const val descriptionWeight = .5f
 const val actionWeight = .3f
 
 
-class TicketCell(val ticket: Ticket) {
+class TicketCell(private val ticket: Ticket, val onTicketEdit: () -> Unit, val onTicketDelete: () -> Unit, val onTicketToggleState: () -> Unit) {
     @OptIn(ExperimentalComposeUiApi::class)
     @Composable
     fun render() {
@@ -54,7 +54,7 @@ class TicketCell(val ticket: Ticket) {
             Column(Modifier.fillMaxSize()) {
                 Surface(modifier = Modifier.height(63.dp).fillMaxWidth(), color = Color.Transparent) {
                     Row(Modifier.fillMaxSize().padding(10.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Row() {
+                        Row {
                             Spacer(Modifier.width(2.dp))
                             Column(verticalArrangement = Arrangement.Center, modifier = Modifier.fillMaxHeight()) {
                                 Icon(Icons.Filled.ConfirmationNumber, contentDescription = "Ticket", tint = if (ticket.isClosed) Color.Red else tf_ticket_open)
@@ -67,16 +67,16 @@ class TicketCell(val ticket: Ticket) {
                                 Text(text, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
-                        Row() {
-                            IconButton(onClick = {}) {
+                        Row {
+                            IconButton(onClick = { onTicketEdit.invoke() }) {
                                 Icon(imageVector = Icons.Filled.Edit, contentDescription = "")
                             }
                             Spacer(Modifier.width(8.dp))
-                            IconButton(onClick = {}) {
+                            IconButton(onClick = { onTicketDelete.invoke() }) {
                                 Icon(imageVector = Icons.Filled.Delete, contentDescription = "")
                             }
                             Spacer(Modifier.width(4.dp))
-                            FilledTonalButton(onClick = {}) {
+                            FilledTonalButton(onClick = { onTicketToggleState.invoke() }) {
                                 Text(text = if (ticket.isClosed) "Open Ticket" else "Close Ticket")
                             }
                         }
