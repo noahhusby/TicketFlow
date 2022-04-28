@@ -31,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.noahhusby.ticketflow.TicketHandler
 import com.noahhusby.ticketflow.entities.Ticket
 import com.noahhusby.ticketflow.ui.elements.TicketCell
 import com.noahhusby.ticketflow.ui.theme.surfaceColorAtElevation
@@ -69,11 +70,15 @@ class TicketPage : Page {
                             item {
                                 Surface(Modifier.fillMaxSize().height(48.dp), color = surfaceColorAtElevation(5.dp), border = BorderStroke(0.01.dp, MaterialTheme.colorScheme.outline)) {}
                             }
-                            item {
-                                TicketCell(Ticket(0, 1, "Test ticket 123!", LocalDateTime.parse("2022-04-25T16:12:01"), LocalDateTime.parse("2022-04-26T10:12:01")),
-                                    onTicketEdit = {},
-                                    onTicketDelete = {},
-                                    onTicketToggleState = {}).render()
+                            for (ticket: Ticket in TicketHandler.getInstance().tickets.values) {
+                                item {
+                                    TicketCell(
+                                        ticket,
+                                        onTicketEdit = {},
+                                        onTicketDelete = {},
+                                        onTicketToggleState = {}
+                                    ).render()
+                                }
                             }
                         }
                     }

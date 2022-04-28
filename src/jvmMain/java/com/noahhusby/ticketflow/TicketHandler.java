@@ -18,6 +18,7 @@
 package com.noahhusby.ticketflow;
 
 import com.noahhusby.ticketflow.entities.Ticket;
+import com.sun.source.tree.Tree;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -43,5 +44,9 @@ public class TicketHandler {
         Map<Integer, Ticket> temp = new TreeMap<>();
         ticketList.forEach(ticket -> temp.put(ticket.getId(), ticket));
         this.ticketCache = temp;
+    }
+
+    public Map<Integer, Ticket> getTickets() {
+        return ticketCache;
     }
 }
