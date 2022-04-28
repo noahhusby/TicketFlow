@@ -141,7 +141,7 @@ class TicketPage : Page {
                                                 isDeleteTicketDialogOpen = true
                                             },
                                             onTicketToggleState = {
-                                                TicketHandler.getInstance().setTicketClosed(user, ticket, !ticket.isClosed)
+                                                TicketHandler.getInstance().setTicketClosed(ticket, !ticket.isClosed)
                                                 tickets.removeAll { true }
                                                 tickets.addAll(TicketHandler.getInstance().tickets.values)
                                             }
@@ -172,7 +172,7 @@ class TicketPage : Page {
                     Spacer(Modifier.width(12.dp))
                     FilledTonalButton(
                         onClick = {
-                            TicketHandler.getInstance().removeTicket(UserHandler.getInstance().authenticatedUser, ticket)
+                            TicketHandler.getInstance().removeTicket(ticket)
                             onDelete.invoke()
                         },
                         colors = warningButtonColors()
@@ -218,7 +218,7 @@ class TicketPage : Page {
                     Spacer(Modifier.width(12.dp))
                     Button(
                         onClick = {
-                            TicketHandler.getInstance().createNewTicket(UserHandler.getInstance().authenticatedUser, description)
+                            TicketHandler.getInstance().createNewTicket(description)
                             onTicketAdd.invoke()
                         },
                         enabled = isFormValid
@@ -265,7 +265,7 @@ class TicketPage : Page {
                     Spacer(Modifier.width(12.dp))
                     Button(
                         onClick = {
-                            TicketHandler.getInstance().setTicketDescription(UserHandler.getInstance().authenticatedUser, ticket, description)
+                            TicketHandler.getInstance().setTicketDescription(ticket, description)
                             onSave.invoke()
                         },
                         enabled = isFormValid

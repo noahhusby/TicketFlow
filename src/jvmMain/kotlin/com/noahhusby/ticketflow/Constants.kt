@@ -28,9 +28,15 @@ const val ADD_USER_USERNAME_SUPPORTS = "Username is invalid. Valid characters in
 const val ADD_USER_PASSWORD_INVALID = "Password must have minimum eight characters, at least one letter and one number."
 const val ADD_USER_PASSWORDS_DONT_MATCH = "Passwords don't match."
 
-const val DB_TICKETS_TABLE = "n_husb_tickets"
-const val DB_USERS_TABLE = "n_husb_users"
-const val DB_HISTORY_TABLE = "n_husb_history"
+const val DB_HOST = "www.papademas.net"
+const val DB_PORT = 3307
+const val DB_USERNAME = "fp411"
+const val DB_PASSWORD = "411"
+const val DB_NAME = "tickets"
+
+const val DB_TICKETS_TABLE = "nhusb_tickets"
+const val DB_USERS_TABLE = "nhusb_users"
+const val DB_HISTORY_TABLE = "nhusb_history"
 
 // I disagree with this approach to storing tickets, but it is what it is. Ticket status [open / closed] is determined by whether "closed" is null or not.
 // An alternative would be to use a history-based system to track all administrators / moderators that have interacted with the ticket. Similar to a GitHub issue.

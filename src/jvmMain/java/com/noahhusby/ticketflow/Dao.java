@@ -56,7 +56,7 @@ public class Dao {
 
     protected Dao() {
         // Using a few utility classes from HusbyLib, my own library, to keep data structured.
-        credentials = new Credentials(TicketFlowConfig.DB_HOST, TicketFlowConfig.DB_PORT, TicketFlowConfig.DB_USERNAME, TicketFlowConfig.DB_PASSWORD, TicketFlowConfig.DB_NAME);
+        credentials = new Credentials(ConstantsKt.DB_HOST, ConstantsKt.DB_PORT, ConstantsKt.DB_USERNAME, ConstantsKt.DB_PASSWORD, ConstantsKt.DB_NAME);
     }
 
     /**
@@ -111,21 +111,20 @@ public class Dao {
         try {
             stmt = con.createStatement();
             stmt.execute(query.query());
+            return true;
         } catch (SQLException e) {
-            TicketFlow.getLogger().error("Error while executing statement.", e);
+            TicketFlow.getLogger().error("Error while executing statement: \"{}\"", query.query(), e);
+            return false;
         } finally {
             if (stmt != null) {
                 try {
                     stmt.close();
                     con.close();
-                    //noinspection ReturnInsideFinallyBlock
-                    return true;
                 } catch (SQLException e) {
-                    TicketFlow.getLogger().error("Error while closing statement.", e);
+                    TicketFlow.getLogger().error("Error while closing statement: \"{}\"", query.query(), e);
                 }
             }
         }
-        return false;
     }
 
     /*
@@ -153,14 +152,11 @@ public class Dao {
             stmt.executeUpdate(query.query(), Statement.RETURN_GENERATED_KEYS);
             return stmt.getGeneratedKeys();
         } catch (SQLException e) {
-            TicketFlow.getLogger().error("Error while executing statement.", e);
+            TicketFlow.getLogger().error("Error while executing statement: \"{}\"", query.query(), e);
+            return null;
+        } finally {
+            ensureConnectionShutdown(con);
         }
-        try {
-            con.close();
-        } catch (SQLException e) {
-            TicketFlow.getLogger().error("Error while closing connection.", e);
-        }
-        return null;
     }
 
     /**
@@ -198,16 +194,16 @@ public class Dao {
             }
             res.close();
             stmt.close();
-            con.close();
             return result;
         } catch (SQLException e) {
-            TicketFlow.getLogger().error("Error while running SQL query.", e);
+            TicketFlow.getLogger().error("Error while executing statement: \"{}\"", select.query(), e);
+            return null;
+        } finally {
             try {
                 con.close();
-            } catch (SQLException conCloseEx) {
+            } catch (SQLException e) {
                 TicketFlow.getLogger().error("Error while closing connection.", e);
             }
-            return null;
         }
     }
 
@@ -330,7 +326,12 @@ public class Dao {
      * @param value  The new value.
      */
     public void updateUser(int id, String column, String value) {
-        if (!execute(new Update(ConstantsKt.DB_USERS_TABLE, new UpdateValue(column, value), "id='" + id + "'"))) {
+        User user = UserHandler.getInstance().getAuthenticatedUser();
+        TicketFlow.getLogger().debug("Updating user #{} in column \"{}\" with value \"{}\".", id, column, value);
+        boolean success = execute(new Update(ConstantsKt.DB_USERS_TABLE, new UpdateValue(column, value), "id='" + id + "'"));
+        if (success) {
+            HistoryHandler.getInstance().write(user, HistoryType.USER_EDITED, String.format("Edited user #%s in column \"%s\" with value \"%s\".", id, column, value));
+        } else {
             TicketFlow.getLogger().warn(String.format("Failed to update user \"%s\" in column \"%s\" with value \"%s\"", id, column, value));
         }
     }
@@ -355,6 +356,7 @@ public class Dao {
                 int id = set.getInt(1);
                 set.getStatement().close();
                 set.close();
+                HistoryHandler.getInstance().write(UserHandler.getInstance().getAuthenticatedUser(), HistoryType.USER_ADDED, String.format("Created new user #%s as \"%s\".", id, name));
                 return new User(id, username, name, admin, LocalDateTime.now(ZoneOffset.UTC));
             } catch (SQLException e) {
                 TicketFlow.getLogger().error("Error while trying to create new user: ", e);
@@ -366,12 +368,12 @@ public class Dao {
     /**
      * Saves a new ticket for specified issuer with a given description.
      *
-     * @param user        The user who issued the ticket.
      * @param description The description of the ticket.
      * @return A new {@link Ticket} object.
      */
-    protected Ticket saveNewTicket(User user, String description) {
-        TicketFlow.getLogger().debug("Saving new ticket for: " + user.getName());
+    protected Ticket saveNewTicket(String description) {
+        User user = UserHandler.getInstance().getAuthenticatedUser();
+        TicketFlow.getLogger().debug("Saving new ticket for \"{}\" with description: {}", user.getName(), description);
         ResultSet set = executeAndGetKeys(new Insert(ConstantsKt.DB_TICKETS_TABLE, "issuer,description", String.valueOf(user.getId()), description));
         if (set == null) {
             TicketFlow.getLogger().warn("Failed to save new ticket for: " + user.getName());
@@ -393,11 +395,12 @@ public class Dao {
     /**
      * Updates whether a ticket is closed or not by a ticket's id.
      *
-     * @param user   The user who initiated the status change.
      * @param id     The id of the ticket to close.
      * @param closed True if the ticket should be closed, false otherwise.
      */
-    public void setTicketClosed(User user, int id, boolean closed) {
+    public void setTicketClosed(int id, boolean closed) {
+        User user = UserHandler.getInstance().getAuthenticatedUser();
+        TicketFlow.getLogger().debug("Changing status of ticket #{} to \"{}\".", id, closed);
         boolean success;
         if (closed) {
             success = execute(new Update(ConstantsKt.DB_TICKETS_TABLE, new UpdateValue("closed", LocalDateTime.now(ZoneOffset.UTC).toString()), "id='" + id + "'"));
@@ -414,11 +417,12 @@ public class Dao {
     /**
      * Updates a ticket's description by its id.
      *
-     * @param user        The user who initiated the status change.
      * @param id          The id of the ticket to close.
      * @param description The new description of the ticket.
      */
-    public void setTicketDescription(User user, int id, String description) {
+    public void setTicketDescription(int id, String description) {
+        User user = UserHandler.getInstance().getAuthenticatedUser();
+        TicketFlow.getLogger().debug("Changing description of ticket #{} to \"{}\".", id, description);
         boolean success = execute(new Update(ConstantsKt.DB_TICKETS_TABLE, new UpdateValue("description", description), "id='" + id + "'"));
         if (success) {
             HistoryHandler.getInstance().write(user, HistoryType.TICKET_EDITED, String.format("Changed description of Ticket #%s to \"%s\"", id, description));
@@ -430,13 +434,13 @@ public class Dao {
     /**
      * Removes a ticket from the database given its id.
      *
-     * @param user who initiated the request.
-     * @param id   ID of ticket to remove.
+     * @param id ID of ticket to remove.
      */
-    protected void removeTicket(User user, int id) {
-        TicketFlow.getLogger().debug("Removing ticket by ID: " + id);
+    protected void removeTicket(int id) {
+        User user = UserHandler.getInstance().getAuthenticatedUser();
+        TicketFlow.getLogger().debug("Removing ticket by ID: {}", id);
         if (!execute(new Custom("DELETE FROM " + ConstantsKt.DB_TICKETS_TABLE + " WHERE id='" + id + "'"))) {
-            TicketFlow.getLogger().warn(String.format("Failed to remove ticket \"%s\" by ID.", id));
+            TicketFlow.getLogger().warn("Failed to remove ticket \"{}\" by ID.", id);
         } else {
             HistoryHandler.getInstance().write(user, HistoryType.TICKET_DELETED, String.format("Deleted ticket #%s.", id));
         }
@@ -451,7 +455,7 @@ public class Dao {
      * @return New {@link History} instance.
      */
     protected History saveNewHistory(User user, HistoryType type, String message) {
-        TicketFlow.getLogger().debug("Saving new history event for: " + user.getName());
+        TicketFlow.getLogger().debug("Saving new history event [{}] for \"{}\" w/ message: {}", type.name(), user.getName(), message);
         execute(new Insert(ConstantsKt.DB_HISTORY_TABLE, "user,type,msg", String.valueOf(user.getId()), type.name(), message));
         return new History(LocalDateTime.now(ZoneOffset.UTC), user.getId(), type, message);
     }
@@ -462,47 +466,35 @@ public class Dao {
      * @param id ID of user to remove.
      */
     public void removeUser(int id) {
-        TicketFlow.getLogger().debug("Removing user by ID: " + id);
-        if (!execute(new Custom("DELETE FROM " + ConstantsKt.DB_USERS_TABLE + " WHERE id='" + id + "'"))) {
+        User user = UserHandler.getInstance().getAuthenticatedUser();
+        TicketFlow.getLogger().debug("Removing user by ID: {}", id);
+        boolean success = execute(new Custom("DELETE FROM " + ConstantsKt.DB_USERS_TABLE + " WHERE id='" + id + "'"));
+        if (success) {
+            HistoryHandler.getInstance().write(user, HistoryType.USER_DELETED, String.format("User #%s was deleted.", id));
+        } else {
             TicketFlow.getLogger().warn(String.format("Failed to remove user \"%s\" by ID.", id));
         }
     }
 
-    /*
-    public int insertRecords(String ticketName, String ticketDesc) {
-
-        int id = 0;
-        try {
-            statement = getConnection().createStatement();
-            statement.executeUpdate("Insert into jpapa_tickets" + "(ticket_issuer, ticket_description) values(" + " '"
-                                    + ticketName + "','" + ticketDesc + "')", Statement.RETURN_GENERATED_KEYS);
-
-            // retrieve ticket id number newly auto generated upon record insertion
-            ResultSet resultSet = null;
-            resultSet = statement.getGeneratedKeys();
-            if (resultSet.next()) {
-                // retrieve first field in table
-                id = resultSet.getInt(1);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return id;
-
-    }
-
-    public ResultSet readRecords() {
-
-        ResultSet results = null;
-        try {
-            //statement = connect.createStatement();
-            results = statement.executeQuery("SELECT * FROM jpapa_tickets");
-            //connect.close();
-        } catch (SQLException e1) {
-            e1.printStackTrace();
-        }
-        return results;
-    }
+    /**
+     * Utility method to ensure that all connections are shutdown.
+     *
+     * @param connection The connection to watch.
      */
+    private void ensureConnectionShutdown(Connection connection) {
+        Thread thread = new Thread(() -> {
+            long start = System.currentTimeMillis();
+            while (start + 5000 > System.currentTimeMillis()) {
+            }
+            try {
+                if (connection != null && !connection.isClosed()) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                TicketFlow.getLogger().warn("Failed to close connection.", e);
+            }
+        });
+        thread.setName("TF-Connection-Watchdog");
+        thread.start();
+    }
 }

@@ -53,7 +53,8 @@ public class Ticket {
      * @return Difference between now and the specified DateTime.
      */
     private static String getDifference(LocalDateTime dateTime) {
-        LocalDateTime current = LocalDateTime.now(ZoneOffset.UTC);;
+        LocalDateTime current = LocalDateTime.now(ZoneOffset.UTC);
+        ;
         long seconds = ChronoUnit.SECONDS.between(dateTime, current);
         long minutes = ChronoUnit.MINUTES.between(dateTime, current);
         long hours = ChronoUnit.HOURS.between(dateTime, current);

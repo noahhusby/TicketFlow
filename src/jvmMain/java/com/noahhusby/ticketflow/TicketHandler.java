@@ -18,7 +18,6 @@
 package com.noahhusby.ticketflow;
 
 import com.noahhusby.ticketflow.entities.Ticket;
-import com.noahhusby.ticketflow.entities.User;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -53,12 +52,11 @@ public class TicketHandler {
     /**
      * Creates a new ticket and saves it to the database / cache.
      *
-     * @param user        The user who issued the ticket.
      * @param description The description of the ticket.
      * @return {@link Ticket}.
      */
-    public Ticket createNewTicket(User user, String description) {
-        Ticket ticket = Dao.getInstance().saveNewTicket(user, description);
+    public Ticket createNewTicket(String description) {
+        Ticket ticket = Dao.getInstance().saveNewTicket(description);
         ticketCache.put(ticket.getId(), ticket);
         return ticket;
     }
@@ -66,35 +64,32 @@ public class TicketHandler {
     /**
      * Removes a ticket based upon a given ticket object.
      *
-     * @param user   who initiated the request.
      * @param ticket The ticket to be deleted.
      */
-    public void removeTicket(User user, Ticket ticket) {
-        Dao.getInstance().removeTicket(user, ticket.getId());
+    public void removeTicket(Ticket ticket) {
+        Dao.getInstance().removeTicket(ticket.getId());
         this.ticketCache.remove(ticket.getId());
     }
 
     /**
      * Sets whether a ticket should be closed or not.
      *
-     * @param user   The user who initiated the request.
      * @param ticket The ticket to be edited.
      * @param closed True if the ticket should be closed, false otherwise.
      */
-    public void setTicketClosed(User user, Ticket ticket, boolean closed) {
-        Dao.getInstance().setTicketClosed(user, ticket.getId(), closed);
+    public void setTicketClosed(Ticket ticket, boolean closed) {
+        Dao.getInstance().setTicketClosed(ticket.getId(), closed);
         ticketCache.get(ticket.getId()).setClosed(closed);
     }
 
     /**
      * Sets a new description for a ticket.
      *
-     * @param user        The user who initiated the request.
      * @param ticket      The ticket to be edited.
      * @param description The new description of the ticket.
      */
-    public void setTicketDescription(User user, Ticket ticket, String description) {
-        Dao.getInstance().setTicketDescription(user, ticket.getId(), description);
+    public void setTicketDescription(Ticket ticket, String description) {
+        Dao.getInstance().setTicketDescription(ticket.getId(), description);
         ticketCache.get(ticket.getId()).setDescription(description);
     }
 }

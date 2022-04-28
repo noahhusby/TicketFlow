@@ -17,8 +17,6 @@
 
 package com.noahhusby.ticketflow;
 
-import com.noahhusby.lib.application.config.Configuration;
-import com.noahhusby.lib.application.config.exception.ClassNotConfigException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,17 +48,6 @@ public class TicketFlow {
      */
     public void start() {
         logger.info("Starting TicketFlow ...");
-
-        // Load config
-        try {
-            logger.info("Loading configuration ...");
-            Configuration configuration = Configuration.of(TicketFlowConfig.class);
-            configuration.sync(TicketFlowConfig.class);
-            logger.info("Successfully loaded configuration ...");
-        } catch (ClassNotConfigException ignored) {
-            // I wrote the config library. This exception won't be thrown, so it can be ignored (:
-        }
-
         Dao.getInstance().connect();
         Dao.getInstance().createTables();
         Dao.getInstance().loadEntitiesIntoCache();
