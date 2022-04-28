@@ -98,7 +98,6 @@ class HomePage : Page {
                 }
                 Row(Modifier.weight(0.5f)) {}
             }
-
         }
     }
 }

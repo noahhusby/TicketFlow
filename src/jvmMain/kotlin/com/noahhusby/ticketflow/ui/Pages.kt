@@ -26,7 +26,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.noahhusby.ticketflow.ui.pages.*
 
 enum class Pages(val prettyName: String, val icon: ImageVector, val page: Page, val requireAdmin: Boolean) {
-    HOME("Home", Icons.Filled.Home, HomePage(), false),
+    HOME("Home", Icons.Filled.Home, HomePage(), true),
     TICKETS("Tickets", Icons.Filled.ConfirmationNumber, TicketPage(), false),
     USERS("Users", Icons.Filled.People, UserPage(), true),
     HISTORY("History", Icons.Filled.History, HistoryPage(), true)

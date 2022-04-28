@@ -35,10 +35,10 @@ class MainWindow(private val startedDarkMode: Boolean, val toggleDarkMode: () ->
     @Composable
     fun gui() {
         val user = UserHandler.getInstance().authenticatedUser
-        var currentPage by remember { mutableStateOf(Pages.HOME) }
+        var currentPage by remember { mutableStateOf(if (user.isAdmin) Pages.HOME else Pages.TICKETS) }
         var darkModeIcon by remember { mutableStateOf(startedDarkMode) }
         Row(modifier = Modifier.background(color = MaterialTheme.colorScheme.surface).fillMaxSize()) {
-            var selectedItem by remember { mutableStateOf(0) }
+            var selectedItem by remember { mutableStateOf(if (user.isAdmin) 0 else 1) }
             Column(Modifier.width(80.dp).fillMaxHeight().padding(vertical = 36.dp)) {
                 NavigationRail(Modifier.weight(0.5f)) {
                     Pages.values().forEachIndexed { index, page ->
